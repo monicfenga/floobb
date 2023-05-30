@@ -1,20 +1,21 @@
-﻿flooBB
-Copyright 2011. Ross Lagerwall
+# FlooBB Reboot
+> Copyright 2011-2012 Ross Lagerwall
+> 2023 monicfenga
 
-flooBB is an easy to use bulletin board system which does not rely on an
-external database. It simply uses text files to store the data and is optimized
-for speed. It incorporates TinyMCE to provide a WYSIWYG method of entering
-posts into the system.
+Flobb is a minimalist and easy-to-use electronic bulletin board software that *does not rely on external databases*. It only uses text files to store data and is *optimized for speed*.
 
-Requirements/Prerequisites:
-* A webserver (Apache, Lighttpd, etc.).
-* PHP 5.2+
-* The PHP GD extension.
+FloBB supports many features including multiple forums, voting, private messaging, topic moderation, and sticky topic.
 
-Thanks:
-tinymce - http://tinymce.moxiecode.com/
+FloBB is free software (open source) licensed under GNU GPLv3+.
 
-License:
+## Requirements/Prerequisites:
+
+- **A webserver** (Apache, Nginx, etc.)
+- **PHP 5.2+** *(PHP 7+ is recommended)*
+- **PHP GD extension** for displaying vote result graph.
+
+
+## License:
 
     Copyright (C) 2011 Ross Lagerwall <rosslagerwall@gmail.com>
 
