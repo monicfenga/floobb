@@ -1,192 +1,176 @@
 <?php
-	include("common.php");
-	include_once("class.Poll.php");
-	
-	$topic = new Topic(file_get_contents("db/Topics/".$_GET['topicId']."/topic.dat"));
-	
-	outHtml1($topic->getTopicName());
+include("common.php");
+include_once("class.Poll.php");
+
+$topic = new Topic(file_get_contents("db/Topics/" . $_GET['topicId'] . "/topic.dat"));
+
+outHtml1($topic->getTopicName());
 ?>
 
-<!-- TinyMCE -->
-<script type="text/javascript" src="tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript" src="tiny_mce_init.js"></script>
+<?php call_editor(); ?>
 <script type="text/javascript">
-	function addQuote(row)
-	{
+	function addQuote(row) {
+		/*
 		var str = document.getElementById("tbl").rows[row].cells[2].innerHTML;
-		if (str.lastIndexOf("<div class=") == -1)
-		{
-			str = str.substring(str.indexOf("Quote</a")+9);
+		if (str.lastIndexOf("<div class=") == -1) {
+			str = str.substring(str.indexOf("Quote</a") + 9);
+		} else {
+			str = str.substring(str.indexOf("Quote</a") + 9, str.lastIndexOf("<div class="));
 		}
-		else
-		{
-			str = str.substring(str.indexOf("Quote</a")+9,str.lastIndexOf("<div class="));
-		}
-		return "<blockquote class='quote'><span style='font-size: 12px; font-weight: bold;'>Quote: "+ document.getElementById("tbl").rows[row].cells[0].firstChild.innerHTML +"</span><hr />"+ str +"</blockquote>";
+		return "<blockquote class='quote'><span style='font-size: 12px; font-weight: bold;'>Quote: " + document.getElementById("tbl").rows[row].cells[0].firstChild.innerHTML + "</span><hr />" + str + "</blockquote>";
+		*/
 	}
 </script>
 
 <?php
-	outHtml2($_SESSION['forum']->getForumName(),"viewTopics.php?forumId=".$_SESSION['forum']->getForumId());
+outHtml2(/*$_SESSION['forum']->getForumName() . '' . */$topic->getTopicName(), "viewTopics.php?forumId=" . $_SESSION['forum']->getForumId());
 
-			if ($_SESSION['loggedIn'] == true)
-			{
-				if ($_SESSION['user']->getLevel() > 1)
-				{
-					echo "<div id='adminControls'>Moderator Controls: ";
-					if ($topic->isLocked() == "false")
-					{
-                                                echo "<a href='lockExecute.php?mode=lock&topicId=".htmlentities($_GET["topicId"])."'>Lock</a>&nbsp";
-					}
-					else
-					{
-						echo "<a href='lockExecute.php?mode=unlock&topicId=".htmlentities($_GET["topicId"])."'>Unlock</a>&nbsp";
-					}
-					if ($topic->isSticky() == "false")
-					{
-						echo "<a href='stickyExecute.php?mode=sticky&forumId=".$_SESSION['forum']->getForumId()."&topicId=".htmlentities($_GET["topicId"])."'>Sticky</a>&nbsp";
-					}
-					else
-					{
-						echo "<a href='stickyExecute.php?mode=unsticky&forumId=".$_SESSION['forum']->getForumId()."&topicId=".htmlentities($_GET["topicId"])."'>Unsticky</a>&nbsp";
-					}
-					echo "</div>";
-				}
+if (isUserLoggedIn()) {
+	if ($_SESSION['user']->getLevel() > 1) {
+		echo "<div id='adminControls' class='m-t-1 m-b-1'>Moderator Controls: ";
+		if ($topic->isLocked() == "false") {
+			echo "<a class='btn btn-warning' href='lockExecute.php?mode=lock&topicId=" . htmlentities($_GET["topicId"]) . "'>Lock</a> ";
+		} else {
+			echo "<a class='btn btn-warning btn-ghost' href='lockExecute.php?mode=unlock&topicId=" . htmlentities($_GET["topicId"]) . "'>Unlock</a> ";
+		}
+		if ($topic->isSticky() == "false") {
+			echo "<a class='btn btn-info' href='stickyExecute.php?mode=sticky&forumId=" . $_SESSION['forum']->getForumId() . "&topicId=" . htmlentities($_GET["topicId"]) . "'>Sticky</a> ";
+		} else {
+			echo "<a class='btn btn-info btn-ghost' href='stickyExecute.php?mode=unsticky&forumId=" . $_SESSION['forum']->getForumId() . "&topicId=" . htmlentities($_GET["topicId"]) . "'>Unsticky</a> ";
+		}
+		echo "</div>";
+	}
+}
+?>
+
+<?php
+
+$tpId = $_GET["topicId"];
+
+$postArr = array();
+
+$fileC = file("db/Topics/" . $tpId . "/posts.dat");
+
+foreach ($fileC as $line) {
+	array_push($postArr, new Post($line));
+}
+
+if (file_exists("db/Topics/" . $tpId . "/poll.dat")) {
+	$poll = new Poll(file_get_contents("db/Topics/" . $tpId . "/poll.dat"));
+	echo "<div id='pollDiv' class='card grid'>";
+	$sum = 0;
+	$str = "";
+	$optionArr = $poll->getOptions();
+	foreach ($optionArr as $option) {
+		$sum += $option[1];
+		$str .= $option[1] . ",";
+	}
+	$str = substr($str, 0, strlen($str) - 1);
+
+	if ($sum == 0) {
+		echo "<div class='card-header cell'>No votes yet.</div>";
+	} else {
+		echo "<div class='card-header cell cell-2'><img src='createImage.php?values=" . $str . "' /></div>";
+		$color = array(
+			"#5B8FF9",
+			"#61DDAA",
+			"#65789B",
+			"#F6BD16",
+			"#7262fd",
+			"#78D3F8",
+			"#9661BC",
+			"#F6903D",
+			"#008685",
+			"#F08BB4",
+		);
+		echo '<div class="card-body cell"><ol>';
+		for ($i = 0; $i < count($optionArr); $i++) {
+			echo "<li><span class='tag' style='--bg-color: " . $color[$i] . "'>" . $optionArr[$i][0] . ": " . $optionArr[$i][1] . "</span></li>";
+		}
+		echo '</ol></div>';
+	}
+
+	if ((isset($_SESSION['loggedIn']) && $_SESSION['loggedIn']) && (time() < strtotime($poll->getEndDate()) || $poll->getEndDate() == "") && $topic->isLocked() == 'false') {
+		if (!in_array($_SESSION['user']->getUserId(), $poll->getUsers())) {
+			echo "<div id='options' class='card-body cell'><form name='poll' action='voteExecute.php?topicId=" . $tpId . "' method='post'>";
+			for ($i = 0; $i < count($optionArr); $i++) {
+				echo "<label><input type='radio' name='option' value='$i' /> " . $optionArr[$i][0] . "</label><br>";
 			}
-		?>
-		
-		<table class='list' style="margin-top: 10px; margin-bottom: 10px; font-family: Trebuchet MS;">
-			<tr>
-				<td class='listuser' style="background: url(images/bar.png) repeat-x; color: white;"><u>User</u></td>
-				<td class='listdate' style='font-size: 12px; padding: 10px 0px 10px 0px; background: url(images/bar.png) repeat-x; color: white;'><u>Date</u></td>
-				<td class='listmessage' style="background: url(images/bar.png) repeat-x; color: white;"><u>Post</u></td>
-			</tr>
-		</table>
-		
-		<?php
-			
-			$tpId = $_GET["topicId"];
-			
-			$postArr = array();
-			
-			$fileC = file("db/Topics/".$tpId."/posts.dat");
-			
-			foreach ($fileC as $line)
-			{ 
-				array_push($postArr, new Post($line));
+			echo "<input class='btn btn-primary' type='submit' value='Vote' />";
+			echo "</form></div>";
+		}
+	}
+	echo "</div>";
+}
+
+echo "<div id='tbl' class='list'>";
+$count = 0;
+foreach ($postArr as $key => $item) {
+	$count++;
+	$sig = "";
+	if (trim($item->getUser()->getSig()) != "") {
+		$sig = "<div class='sig dashed-top'>" . trim($item->getUser()->getSig()) . "</div>";
+	}
+	$avatarStr = "";
+	if ($item->getUser()->getAvatar() != "") {
+		$avatarStr = "<img src='" . $item->getUser()->getAvatar() . "' />";
+	}
+	$deleteStr = "";
+	if (isUserLoggedIn() && $_SESSION['user']->getLevel() > 1 && count($postArr) > 1) {
+		$deleteStr = " <a class='tag tag-error' href='moderate.php?flag=post&postId=" . $item->getPostId() . "&topicId=" . htmlentities($_GET['topicId']) . "'>Delete</a>";
+	}
+
+	if (isUserLoggedIn() && $_SESSION['user']->getLevel() > 1) {
+		$deleteStr .= " <a class='tag tag-info' href='editPost.php?postId=" . $key . "&topicId=" . htmlentities($_GET['topicId']) . "'>Edit</a>";
+	}
+	if (isUserLoggedIn()) {
+		$deleteStr .= ' <a class="tag tag-primary" href="javascript:;" onClick="tinyMCE.execCommand(\'mceInsertContent\',false,addQuote(' . $key . '));">Quote</a>';
+	}
+	echo "<div class='form-group'>"
+		. "<div class='listmessage form-control'>"
+		. '<div class="grid-inline grid-between">'
+		. '<time>'
+		. $item->getDateTime()
+		. '</time>'
+		. '<div>'
+		. $deleteStr
+		. "</div>"
+		. "</div>"
+		. '<div>'
+		. $item->getMessage()
+		. $sig
+		. "</div>"
+		. "</div>"
+		. "<div class='listuser form-label'>"
+		. "<a href='viewUser.php?userId=" . $item->getUser()->getUserId() . "'>" . $item->getUser()->getUserId() . "</a>"
+		. $avatarStr
+		. "</div>"
+		. "</div>";
+
+	$count = $item->getPostId() + 1;
+}
+echo "</div>";
+?>
+
+<?php
+if (isUserLoggedIn() && $topic->isLocked() == "false") {
+?>
+	<form action="postExecute.php?topicId=<?php echo htmlentities($_GET['topicId']) . "&postId=" . $count; ?>" method="post" onsubmit="return verify(this);">
+		<div id='replyId'>
+			<label class="form-group">
+				<textarea id="reply" name="reply" class="textboxes form-control"></textarea>
+				<span class="form-label">Post Reply:</span>
+				<div id="imageInfo" class="help-block">Images may be no bigger than 600 x 600 and 200kB.</div>
+			</label>
+			<?php
+			if (isset($_GET['error']) && $_GET['error'] == 1) {
+				echo "<div class='alert alert-error'>Please enter a post!</div>";
 			}
-			
-			if (file_exists("db/Topics/".$tpId."/poll.dat"))
-			{
-				$poll = new Poll(file_get_contents("db/Topics/".$tpId."/poll.dat"));
-				echo "<div id='pollDiv'>";
-				$sum = 0;
-				$str = "";
-				$optionArr = $poll->getOptions();
-				foreach ($optionArr as $option)
-				{
-					$sum += $option[1];
-					$str .= $option[1].",";
-				}
-				$str = substr($str,0,strlen($str)-1);
-				
-				if ($sum == 0)
-				{
-					echo "No votes yet.<br /><br />";
-				}
-				else
-				{
-					echo "<img src='createImage.php?values=".$str."' /><br /><br />";
-					$color[0] = "red";
-					$color[1] = "green";
-					$color[2] = "blue";
-					$color[3] = "#AABBCC";
-					$color[4] = "black";
-					$color[5] = "#2affed";
-					$color[6] = "#ffd8bc";
-					$color[7] = "#daffbc";
-					$color[8] = "#ff12a9";
-					$color[9] = "#762e2e";
-					
-					for ($i = 0; $i < sizeOf($optionArr); $i++)
-					{
-						echo "<span style='color: ".$color[$i]."'>".$optionArr[$i][0].": ".$optionArr[$i][1]."</span><br />";
-					}
-		
-				}
-			
-				if ($_SESSION['loggedIn'] && (time() < strtotime($poll->getEndDate()) || $poll->getEndDate() == "") && $topic->isLocked() == 'false')
-				{
-					if (!in_array($_SESSION['user']->getUserId(),$poll->getUsers()))
-					{
-						echo "<br /><div id='options'><form name='poll' action='voteExecute.php?topicId=".$tpId."' method='post'>";
-						for ($i = 0; $i < sizeOf($optionArr); $i++)
-						{
-							echo "<input type='radio' name='option' value='$i' />".$optionArr[$i][0]."<br />";
-						}
-						echo "<input type='submit' value='Vote' />";
-						echo "</form></div>";
-					}
-				}
-				echo "</div>";
-			}
-			
-			echo "<table id='tbl' class='list'>";
-			$count = 0;
-			foreach ($postArr as $key => $item)
-			{
-				$count++;
-				$sig = "";
-				if (trim($item->getUser()->getSig()) != "")
-				{
-					$sig = "<div class='sig'>".trim($item->getUser()->getSig())."</div>";
-				}
-				$avatarStr = "";
-				if ($item->getUser()->getAvatar() != "")
-				{
-					$avatarStr = "<img style='padding-top: 5px;' src='".$item->getUser()->getAvatar()."' />";
-				}
-				$deleteStr = "";
-				if ($_SESSION['loggedIn'] == true && $_SESSION['user']->getLevel() > 1 && sizeOf($postArr) > 1)
-				{
-					$deleteStr = "<a class='delete' href='moderate.php?flag=post&postId=".$item->getPostId()."&topicId=".htmlentities($_GET['topicId'])."'>delete</a><br />";			
-				}
-				
-				if ($_SESSION['loggedIn'] == true && $_SESSION['user']->getLevel() > 1)
-				{
-					$deleteStr .= "<a class='delete' href='editPost.php?postId=".$key."&topicId=".htmlentities($_GET['topicId'])."'>edit</a><br />";
-				}
-				if ($_SESSION['loggedIn'] == true)
-				{
-					$deleteStr .= '<a class="delete" href="javascript:;" onClick="tinyMCE.execCommand(\'mceInsertContent\',false,addQuote('.$key.'));">Quote</a>';
-				}
-				echo "<tr><td class='listuser'><a href='viewUser.php?userId=".$item->getUser()->getUserId()."'>".$item->getUser()->getUserId()."</a><br />".$avatarStr."</td>
-					<td class='listdate'>".$item->getDateTime()."</td>
-					<td class='listmessage'>".$deleteStr.$item->getMessage().$sig."</td></tr>";
-				$count = $item->getPostId()+1;
-			}
-			echo "</table>";
-		?>
-		
-		<?php
-			if ($_SESSION['loggedIn'] == true && $topic->isLocked() == "false")
-			{
-				?>
-					<form action="postExecute.php?topicId=<?php echo htmlentities($_GET['topicId'])."&postId=".$count; ?>" method="post" onsubmit="return verify(this);">
-						<div id='replyId'>
-							Post Reply:<br />
-							<div id="imageInfo">Images may be no bigger than 600 x 600 and 200kB.</div>
-							<textarea id="reply" name="reply" style="width: 100%; height: 350px;"></textarea>
-							<?php
-								if ($_GET['error'] == 1)
-								{
-									echo "<div class='error'>Please enter a post!</div>";
-								}
-							?>
-							<input type='submit' value='Reply' id="submitId" />
-						</div>
-					</form>
-					<?php
-			}
-	outHtml3();
+			?>
+			<input type='submit' value='Reply' id="submitId" class="btn btn-primary full-width" />
+		</div>
+	</form>
+<?php
+}
+outHtml3();
 ?>

@@ -7,7 +7,7 @@
 		$fileC = file("db/forumOnlineUsers.dat",FILE_IGNORE_NEW_LINES);
 		
 		$updated = false;
-		for ($i = 0; $i < sizeOf($fileC); $i += 2)
+		for ($i = 0; $i < count($fileC); $i += 2)
 		{
 			if ($fileC[$i] == $userName)
 			{
@@ -37,7 +37,7 @@
 		$fileC = file("db/forumOnlineGuests.dat",FILE_IGNORE_NEW_LINES);
 		
 		$updated = false;
-		for ($i = 0; $i < sizeOf($fileC); $i += 2)
+		for ($i = 0; $i < count($fileC); $i += 2)
 		{
 			if ($fileC[$i] == $ip)
 			{
@@ -67,7 +67,7 @@
 	{
 		$fileC = file("db/forumOnlineGuests.dat",FILE_IGNORE_NEW_LINES);
 		$str = "";
-		for ($i = 0; $i < sizeOf($fileC)-1; $i += 2)
+		for ($i = 0; $i < count($fileC)-1; $i += 2)
 		{
 			if (time() - $fileC[$i+1] <= 300)
 			{
@@ -85,7 +85,7 @@
 		
 		$fileC = file("db/forumOnlineUsers.dat",FILE_IGNORE_NEW_LINES);
 		$str = "";
-		for ($i = 0; $i < sizeOf($fileC)-1; $i += 2)
+		for ($i = 0; $i < count($fileC)-1; $i += 2)
 		{
 			if (time() - $fileC[$i+1] <= 300)
 			{
@@ -108,7 +108,7 @@
 	{
 		$fileC = file("db/forumOnlineUsers.dat",FILE_IGNORE_NEW_LINES);
 		$str = "";
-		for ($i = 0; $i < sizeOf($fileC)-1; $i += 2)
+		for ($i = 0; $i < count($fileC)-1; $i += 2)
 		{
 			if ($fileC[$i] != $userName)
 			{
@@ -131,7 +131,7 @@
 	{
 		$fileC = file("db/forumOnlineGuests.dat",FILE_IGNORE_NEW_LINES);
 		$str = "";
-		for ($i = 0; $i < sizeOf($fileC)-1; $i += 2)
+		for ($i = 0; $i < count($fileC)-1; $i += 2)
 		{
 			if ($fileC[$i] != $ip)
 			{

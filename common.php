@@ -27,18 +27,20 @@
 			}
 		}
 	}
+
+	function isUserLoggedIn() {
+		return isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == true;
+	}
 	
-	if ($_SESSION['loggedIn'] == true)
-	{
+	if (isUserLoggedIn()) {
 		addUser($_SESSION['user']->getUserId());
 	}
-	else
-	{
+	else {
 		addGuest($_SERVER['SERVER_ADDR']);
 	}
 	
 	$boardname = trim(file_get_contents("db/boardname.dat"));
 	$boarddescription = trim(file_get_contents("db/boarddescription.dat"));
-	define(BOARDNAME,$boardname);
-	define(BOARDDESCRIPTION,$boarddescription);
+	define('BOARDNAME',$boardname);
+	define('BOARDDESCRIPTION',$boarddescription);
 ?>

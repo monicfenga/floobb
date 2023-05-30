@@ -1,8 +1,10 @@
 <?php
 
-	if ($_SESSION['loggedIn'] == true)
+	if (isUserLoggedIn())
 	{
-		echo "Logged in as <a href='editUser.php?userId=".$_SESSION['user']->getUserId()."'>".$_SESSION['user']->getUserId()."</a><br />";
+		$loginHeader = "<li><span class='sr-only'>
+		Logged in as </span>
+		<a href='editUser.php?userId=".$_SESSION['user']->getUserId()."'>".$_SESSION['user']->getUserId()."</a></li>";
 		$fileC = file("db/PMs/".$_SESSION['user']->getUserId().".dat");
 			
 		$messageNo = 0;
@@ -22,11 +24,11 @@
 		{
 			$inboxStr = "";
 		}
-		echo "<a href='pmInbox.php'>Inbox".$inboxStr."</a>";
-		echo '<br /><a href="logout.php">Logout</a>';
+		$loginHeader .= "<li><a href='pmInbox.php'>Inbox".$inboxStr."</a></li>";
+		$loginHeader .= '<li><a href="logout.php">Logout</a></li>';
 	}
 	else
 	{
-		echo '<a href="login.php">Login</a> or <a href="register.php">Register</a>';
+		$loginHeader = '<li><a href="login.php">Login</a> or <a href="register.php">Register</a></li>';
 	}
 ?>

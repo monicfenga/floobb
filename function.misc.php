@@ -1,9 +1,13 @@
 <?php
-	/* Return the size of a remote url or a local file specified by $url.
-	$thereturn specifies the unit returned (either bytes "", MiB "mb" or KiB
-	"kb"). */
+	/** 
+	 * Return the size of a remote url or a local file specified by $url.
+	 * @param string $url
+	 * @param string $thereturn specifies the unit returned (either bytes "", MiB "mb" or KiB "kb"). 
+	 * @deprecated
+	 * */
 	function urlfilesize($url,$thereturn)
 	{
+		/*
 		if (substr($url,0,4)=='http')
 		{
 			$x = array_change_key_case(get_headers($url, 1),CASE_LOWER);
@@ -25,5 +29,7 @@
 		{
 			return round($x / (1024),0);
 		}
+		*/
+		return 0;
 	}
 ?>

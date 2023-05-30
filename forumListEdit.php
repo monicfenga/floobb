@@ -10,35 +10,35 @@
 		}
 	}
 	
-	outHtml1("Edit Foru");
+	outHtml1("Edit Forum");
 ?>
 
-<!-- TinyMCE -->
-<script type="text/javascript" src="tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript" src="tiny_mce_init.js"></script>
+<?php call_editor(); ?>
 
 <?php
 	outHtml2("Edit Forum:","index.php");
 ?>	
 		<form action="forumListEditExecute.php?forumId=<?php echo $forum->getForumId(); ?>" method="post">
 			<div id="forumDiv">
-				Forum Name:<br />
-				<input type="text" name="name" class="textboxes" value="<?php echo $forum->getForumName() ?>" /><br />
-				Forum Description:<br />
-				<div style="margin-top: 10px; margin-left: 5%;">
-				<textarea name="description" class="textboxes" style="width: 95%; height: 150px"><?php echo $forum->getDescription() ?></textarea><br />
-				</div>
+			<label class="form-group">
+				<input type="text" name="name" class="textboxes form-control" value="<?php echo $forum->getForumName() ?>" />
+				<span class="form-label">Forum Name:</span>
+			</label>
+			<label class="form-group">
+			<textarea name="description" class="textboxes form-control"><?php echo $forum->getDescription() ?></textarea>
+				<span class="form-label">Forum Description:</span>
+			</label>
 				<?php
-					if ($_GET['error'] == 1)
+					if (isset($_GET['error']) && $_GET['error'] == 1)
 					{
 						echo "<div class='error'>Please enter a forum name!</div>";
 					}
-					else if ($_GET['error'] == 2)
+					else if (isset($_GET['error']) && $_GET['error'] == 2)
 					{
 						echo "<div class='error'>Please enter a forum description!</div>";
 					}
 				?>
-				<input type="submit" value="Update" />
+				<input class="btn btn-primary" type="submit" value="Update" />
 			</div>
 		</form>
 	
