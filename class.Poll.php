@@ -36,7 +36,7 @@ class Poll
 		$this->endDate = $strArr[3];
 		
 		$this->options = array();
-		for ($i = 4; $i < sizeOf($strArr); $i++)
+		for ($i = 4; $i < count($strArr); $i++)
 		{
 			if (trim($strArr[$i]) != "")
 			{

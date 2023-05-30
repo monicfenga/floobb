@@ -1,80 +1,65 @@
 <?php
-	include("common.php");
-	
-        outHtml1("View User - ".htmlentities($_GET['userId']));
+include("common.php");
+
+outHtml1("View User - " . htmlentities($_GET['userId']));
 ?>
-<style>
-.list {
-	table-layout: fixed;
-	border-spacing: 0px;
-	border-collapse: collapse;
-	width: 90%;
-	border: solid 1px;
-	margin: auto;
-	font-size: 12px;
-	font-weight: normal;
-	margin-top: 10px;
-}
 
-.list tr {
-	border: solid 1px;
-}
-
-.listleft {
-	background-color: #bfbfbf;
-	border-right: 1px solid;
-	width: 35%;
-	padding: 10px 0px 10px 10px;
-	font-family: "Trebuchet MS";
-}
-
-.listright {
-	background-color: #e9f3ff;
-	width: 65%;
-	padding: 10px 0px 10px 10px;
-}
-</style>
 <?php
-	outHtml2("View User: ".htmlentities($_GET['userId']),$_SERVER['HTTP_REFERER']);
-?>
+outHtml2("View User: " . htmlentities($_GET['userId']), $_SERVER['HTTP_REFERER']);
 
-		<table class='list'>
-			<?php
-			
-				$temp = new User(file_get_contents("db/Users/".$_GET['userId'].".dat"));
-				echo "<tr><td class='listLeft'>Name</td><td class='listRight'>".$temp->getUserId()."</td></tr>";
-				if ($temp->isBanned() == 'false')
-				{
-					echo "<tr><td class='listLeft'>Banned</td><td class='listRight'>No</td></tr>";
-				}
-				else
-				{
-					echo "<tr><td class='listLeft'>Banned</td><td class='listRight'>Yes</td></tr>";
-				}
-				if ($temp->isHideEmail() == false && $_SESSION['loggedIn'] == true)
-				{
-					echo "<tr><td class='listLeft'>Email Address</td><td class='listRight'>".$temp->getEmail()."</td></tr>";
-				}
-				echo "<tr><td class='listLeft'>Join Date</td><td class='listRight'>".$temp->getJoinDate()."</td></tr>";
-				echo "<tr><td class='listLeft'>No Of Posts</td><td class='listRight'>".$temp->getNoPosts()."</td></tr>";
-				echo "<tr><td class='listLeft'>No Of Topics</td><td class='listRight'>".$temp->getNoTopics()."</td></tr>";
-				echo "<tr><td class='listLeft'>Level</td><td class='listRight'>".$temp->getLevel()."</td></tr>";
-				if ($temp->getSig() != "")
-				{
-					echo "<tr><td class='listLeft'>Signature</td><td class='listRight'>".$temp->getSig()."</td></tr>";
-				}
-				if ($temp->getAvatar() != "")
-				{
-					echo "<tr><td class='listLeft'>Avatar</td><td class='listRight'><img src='".$temp->getAvatar()."' /></td></tr>";
-				}
-			?>
-		</table>
-		
+$temp = new User(file_get_contents("db/Users/" . $_GET['userId'] . ".dat"));
+?>
+<div class="grid">
+
+	<div class="cell cell-2">
 		<?php
-			if ($_SESSION['loggedIn'] == true)
-			{
-				echo "<div align='center' style='margin-top: 5px;'><a href='pmCompose.php?userId=".htmlentities($_GET['userId'])."'>PM User</a></div>";
-			}
+		if ($temp->getAvatar() != "") {
+			echo "<img src='" . $temp->getAvatar() . "' />";
+		}
+		?>
 
-	outHtml3();
-?>
+
+	</div>
+
+	<div class="cell cell-10">
+		<div class="grid">
+
+			<label class="form-group cell cell-4">
+				<span class="textboxes form-control"><?= $temp->getUserId() ?></span>
+				<span class="form-label">Name</span>
+			</label>
+			<label class="form-group cell cell-4">
+				<span class="textboxes form-control"><?= $temp->getLevel() ?></span>
+				<span class="form-label">Level</span>
+			</label>
+			<label class="form-group cell cell-4">
+				<span class="textboxes form-control"><?= ($temp->isBanned() == 'false' ? 'No' : 'Yes') ?></span>
+				<span class="form-label">Banned</span>
+			</label>
+		</div>
+	</div>
+
+	<label class="form-group form-info cell cell-4">
+		<span class="textboxes form-control"><?= $temp->getJoinDate() ?></span>
+		<span class="form-label">Join Date</span>
+	</label>
+	<label class="form-group form-info cell cell-4">
+		<span class="textboxes form-control"><?= $temp->getNoPosts() ?></span>
+		<span class="form-label">No Of Posts</span>
+	</label>
+	<label class="form-group form-info cell cell-4">
+		<span class="textboxes form-control"><?= $temp->getNoTopics() ?></span>
+		<span class="form-label">No Of Topics</span>
+	</label>
+	<label class="form-group cell cell-12">
+		<span class="textboxes form-control"><?= $temp->getSig() ?></span>
+		<span class="form-label">Signature</span>
+	</label>
+</div>
+
+<?php if (isUserLoggedIn()) : ?>
+	<a href='pmCompose.php?userId=<?= htmlentities($temp->getUserId()) ?>' class="btn btn-primary ">PM User</a>
+<?php endif; ?>
+
+
+<?php outHtml3(); ?>

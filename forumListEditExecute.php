@@ -11,7 +11,7 @@
 	$description = str_replace("\r\n","",$description);
 	$description = str_replace("\r","",$description);
 	$description = str_replace("~","",$description);
-	$description = substr($description,3,strlen($description)-7);
+	//$description = substr($description,3,strlen($description)-7);
 	
 	if (trim($name) == "")
 	{

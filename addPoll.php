@@ -13,21 +13,21 @@
 			var cell = row.insertCell(-1);
 			cell.className = "tblleft";
 			var text = document.createElement("span");
-			text.appendChild(document.createTextNode("Option"));
-			text.style.textDecoration = "underline";
+			text.appendChild(document.createTextNode("Option "));
 			cell.appendChild(text);
 			var delButton = document.createElement("input");
 			delButton.type = "button";
 			delButton.name = "delButton";
 			delButton.setAttribute("value","Delete");
 			delButton.setAttribute("onClick","del("+(document.getElementById("table").rows.length-1)+");");
-			delButton.style.marginLeft = "10px";
+			delButton.className = "btn btn-error btn-ghost"
 			delButton.id = document.getElementById("table").rows.length-1;
 			cell.appendChild(delButton);
 			var cell = row.insertCell(-1);
 			cell.className = "tblright";
 			var inputBox = document.createElement("input");
 			inputBox.type = "text";
+			inputBox.className = 'form-control';
 			inputBox.name = "option[]";
 			cell.appendChild(inputBox);
 		}
@@ -49,35 +49,35 @@
 		<form action="addPollExecute.php?forumId=<?php echo $_GET['forumId']?>" method="post">
 			<table class="tbl" id="table">
 				<tr>
-					<td class="tblleft"><u>Poll Question</u></td>
-					<td class="tblright"><input type="text" name="pollQuestion"/></td>
+					<td class="tblleft" style="width:30%">Poll Question</td>
+					<td class="tblright" style="width:70%"><input class="form-control" type="text" name="pollQuestion"/></td>
 				</tr>
 				<tr>
-					<td class="tblleft"><u>Number Of Days (0 is forever)</u></td>
-					<td class="tblright"><input type="text" name="pollLength" value="0" /></td>
+					<td class="tblleft">Number Of Days (0 is forever)</td>
+					<td class="tblright"><input class="form-control" type="number" min="0" max="3650" step="1" name="pollLength" value="0" /></td>
 				</tr>
 				<tr>
-					<td class="tblleft"><u>Option</u><input type="button" style="margin-left: 10px" name="delButton" id="2" value="Delete" onClick="del(2)" /></td>
-					<td class="tblright"><input type="text" name="option[]" /></td>
+					<td class="tblleft">Option <input type="button" class="btn btn-error btn-ghost" name="delButton" id="2" value="Delete" onClick="del(2)" /></td>
+					<td class="tblright"><input class="form-control" type="text" name="option[]" /></td>
 				</tr>
 				<tr>
-					<td class="tblleft"><u>Option</u><input type="button" style="margin-left: 10px" name="delButton" id="3" value="Delete" onClick="del(3)" /></td>
-					<td class="tblright"><input type="text" name="option[]" /></td>
+					<td class="tblleft">Option <input type="button" class="btn btn-error btn-ghost" name="delButton" id="3" value="Delete" onClick="del(3)" /></td>
+					<td class="tblright"><input class="form-control" type="text" name="option[]" /></td>
 				</tr>
 			</table>
 			<?php
-				if ($_GET['error'] == 1)
+				if (isset($_GET['error']) && $_GET['error'] == 1)
 				{
 					echo "<div class='error'>Please enter a poll question!</div>";
 				}
-				else if ($_GET['error'] == 2)
+				else if (isset($_GET['error']) && $_GET['error'] == 2)
 				{
 					echo "<div class='error'>Please fill in all the visible options.</div>";
 				}
 			?>
 			<div class="buttons">
-				<input type="button" name="addOption" value="Add Option" onClick="add();" />
-				<input type="submit" name="submit" value="Add Poll" />
+				<input class="btn btn-success" type="button" name="addOption" value="Add Option" onClick="add();" />
+				<input class="btn btn-primary" type="submit" name="submit" value="Add Poll" />
 			</div>
 		</form>
 <?php

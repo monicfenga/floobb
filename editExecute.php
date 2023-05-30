@@ -1,17 +1,7 @@
 <?php
 
-	function isValidEmail($email)
-	{
-		$pattern = "/^[\w\.=-]+@[\w\.-]+\.[\w]{2,3}$/";
-		
-		if (preg_match($pattern,$email) == 1)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+	function isValidEmail($email) {
+		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 
 	include_once("function.misc.php");
@@ -35,7 +25,7 @@
 	$sigStr = str_replace("\r\n","",$sigStr);
 	$sigStr = str_replace("\r","",$sigStr);
 
-	preg_match_all("/<img.*? \/>/",$sigStr,$matches);
+	/* preg_match_all("/<img.*? \/>/",$sigStr,$matches);
 
 	foreach ($matches[0] as $match)
 	{
@@ -53,7 +43,7 @@
 		{
 			$sigStr = str_replace($match,"",$sigStr);
 		}
-	}
+	} */
 	
 	$sigStr = strip_tags($sigStr,'<p><br><b><i><u><strong><em><li><ul><ol><img><table><tr><td><hr><font><span><sub><sup><tbody><blockquote>');
 	
@@ -65,13 +55,15 @@
 	{
 		$hideEmail = 0;
 	}
+
+	$img = !empty($_POST['avatar']) ? strip_tags($_POST['avatar']) : '';
 	
-	if (@urlfilesize($_POST['avatar'],"kb") <= 100)
+	/* if (@urlfilesize($_POST['avatar'],"kb") <= 100)
 	{
 		$imgDimensions = @getimagesize($_POST['avatar']);
 		if ($imgDimensions[0] <= 70 && $imgDimensions[1] <= 70 && $imgDimensions != false)
 		{
-			$img = $_POST['avatar'];
+			
 		}
 		else
 		{
@@ -81,7 +73,7 @@
 	else
 	{
 		$img = "";
-	}
+	} */
 	
 	$newUserStr = $_SESSION['user']->getUserId()."\n".trim(stripslashes($_POST['password']))."\nfalse\n".$_SESSION['user']->getNoTopics()."\n".$_SESSION['user']->getNoPosts()."\n".$_SESSION['user']->getJoinDate()."\n".$_SESSION['user']->getLevel()."\n".$sigStr."\n".trim(stripslashes($_POST['email']))."\n".$hideEmail."\n".$img;
 	
@@ -91,4 +83,3 @@
 	$_SESSION['loggedIn'] = true;
 	$_SESSION['user'] = $temp;
 	header("location: editUser.php?userId=".$_SESSION['user']->getUserId());
-?>

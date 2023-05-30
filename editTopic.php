@@ -12,11 +12,14 @@ outHtml2("Edit Topic:","viewTopics.php?forumId=".$topic->getForumId());
 		
 		<form action="editTopicExecute.php?topicId=<?php echo htmlentities($_GET['topicId'])."&forumId=".$topic->getForumId(); ?>" method="post">
 			<div id="topicDiv">
-				Topic Name:<br />
-				<input type="text" name="name" id="name" value="<?php echo $topic->getTopicName() ?>" /><br />
-				<input type="submit" value="Update" />
+			<label class="form-group">
+			<input class="form-control" type="text" name="name" id="name" value="<?php echo $topic->getTopicName() ?>" />
+				<span class="form-label">Topic Name:</span>
+			</label>
+			
+				<input class="btn btn-primary" type="submit" value="Update" />
 				<?php
-					if ($_GET['error'] == 1)
+					if (isset($_GET['error']) && $_GET['error'] == 1)
 					{
 						echo "<div class='error'>Please enter a topic name!</div>";
 					}
