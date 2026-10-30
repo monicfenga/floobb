@@ -14,9 +14,9 @@
 | Phase 1 | B2 论坛核心 | ✅ 已 commit | `KICKOFF-B2.md` |
 | Phase 1 | B3-1 个人设置 | ✅ 已 commit（`f7212ab`） | — |
 | Phase 1 | B3-2 PM 私信 | ✅ 已 commit（`22db5ac`） | — |
-| Phase 1 | **B3-3 Poll 投票** | ✅ **已验收（31/31 curl PASS），待统一 commit** | 见 §3 与 `PROGRESS.md` |
-| Phase 1 | **B3-4 举报 + 版主队列** | ⬜ 待开始 | `KICKOFF-B3-4.md` |
-| Phase 1 | **B3-5 搜索** | ⬜ 待开始（先出「四问方案」） | `KICKOFF-B3-5.md` |
+| Phase 1 | B3-3 Poll 投票 | ✅ 已验收已 commit（含时间字段 unix int 化） | 决策见 §1 |
+| Phase 1 | B3-4a 举报+队列 / B3-4b 封禁体系 | ✅ 已验收已 commit（banned_until=unix int） | `KICKOFF-B3-4.md` |
+| Phase 1 | **B3-5 搜索** | 🔄 已实现待验收（stripos 子串匹配、无索引、posts 池 1000、3 秒标准） | `KICKOFF-B3-5.md` |
 | Phase 2 | SNS 动态时间线 | ⬜ 待开始 | `KICKOFF-PHASE2.md` |
 | Phase 3 | 身份与安全（TOTP） | ⬜ 待开始 | `KICKOFF-PHASE3.md` |
 

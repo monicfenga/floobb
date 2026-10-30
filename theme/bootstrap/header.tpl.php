@@ -19,6 +19,14 @@
 		<div class="collapse navbar-collapse" id="mainNav">
 			<ul class="navbar-nav ms-auto">
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url() ?>">首页</a></li>
+				<li class="nav-item">
+					<form class="d-flex" method="get" action="<?= Router::url('search') ?>" role="search">
+						<label for="nav-q" class="visually-hidden">搜索</label>
+						<input class="form-control form-control-sm me-2" type="search" id="nav-q" name="q" value="" placeholder="搜索…" maxlength="100">
+						<input type="hidden" name="scope" value="topics">
+						<button class="btn btn-outline-secondary btn-sm" type="submit">搜</button>
+					</form>
+				</li>
 				<?php if (Auth::isLoggedIn()): $navUser = Auth::user(); ?>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/view/' . urlencode((string) $navUser['username'])) ?>"><?= htmlspecialchars((string) ($navUser['nickname'] ?? $navUser['username'])) ?></a></li>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/settings') ?>">设置</a></li>
