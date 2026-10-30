@@ -10,7 +10,7 @@
 <div class="flex between items-start wrap gap-2 mb-1">
     <h1 class="mb-0">
         <?php if (!empty($topic['sticky'])): ?><span class="tag tag-warning me-1">置顶</span><?php endif; ?>
-        <?php if (!empty($topic['locked'])): ?><span class="tag me-1">已锁定</span><?php endif; ?>
+        <?php if (!empty($topic['locked'])): ?><span class="tag tag-error me-1">已锁定</span><?php endif; ?>
         <?= htmlspecialchars($topic['title'] ?? '') ?>
     </h1>
     <ul class="list-group list-group-horizontal mb-2">
@@ -97,7 +97,7 @@
 <?= $pageLinks ?>
 
 <?php if (!empty($topic['locked'])): ?>
-<div class="alert" role="status">主题已锁定，无法回帖。</div>
+<div class="alert alert-error" role="status">主题已锁定，无法回帖。</div>
 <?php elseif (Auth::isLoggedIn()): ?>
 <h2 class="small mt-4">回复</h2>
 <form method="post" action="<?= Router::url('post/create/' . $topic['id']) ?>">

@@ -11,7 +11,7 @@
             <li>
                 <div>
                     <?php if (!empty($t['sticky'])): ?><span class="tag tag-warning me-1">置顶</span><?php endif; ?>
-                    <?php if (!empty($t['locked'])): ?><span class="tag me-1">已锁定</span><?php endif; ?>
+                    <?php if (!empty($t['locked'])): ?><span class="tag tag-error me-1">已锁定</span><?php endif; ?>
                     <a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
                 </div>
                 <small class="muted">

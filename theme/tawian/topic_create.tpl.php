@@ -48,9 +48,10 @@
             </label>
             <label class="form-group">
                 <textarea class="form-control" id="t-poll-opts" name="poll_options" rows="4"><?= htmlspecialchars($values['poll_options'] ?? '') ?></textarea>
-                <span class="form-label">投票选项（每行一个，忽略空行和重复选项）</span>
+                <span class="form-label">投票选项</span>
+                <div class="help-block">（每行一个，忽略空行和重复选项）</div>
             </label>
-            <div class="flex gap-3 wrap">
+            <div class="flex gap-3 wrap form-vertical">
                 <div>
                     <span class="form-label d-block">类型</span>
                     <label class="flex items-center gap-1"><input type="radio" name="poll_mode" value="single" <?= ($values['poll_mode'] ?? 'single') !== 'multi' ? 'checked' : '' ?>> 单选</label>

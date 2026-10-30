@@ -33,7 +33,7 @@
     <li class="flex between items-center wrap gap-2">
         <div>
             <span class="tag tag-warning me-1">置顶</span>
-            <?php if (!empty($t['locked'])): ?><span class="tag me-1">已锁定</span><?php endif; ?>
+            <?php if (!empty($t['locked'])): ?><span class="tag tag-error me-1">已锁定</span><?php endif; ?>
             <a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
             <small class="muted ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', $t['created'] ?? 0) ?></small>
         </div>
@@ -51,7 +51,7 @@
     <?php foreach ($topics as $t): ?>
     <li class="flex between items-center wrap gap-2">
         <div>
-            <?php if (!empty($t['locked'])): ?><span class="tag me-1">已锁定</span><?php endif; ?>
+            <?php if (!empty($t['locked'])): ?><span class="tag tag-error me-1">已锁定</span><?php endif; ?>
             <a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
             <small class="muted ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', $t['created'] ?? 0) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖 · <?= $t['views'] ?? 0 ?> 查看</small>
         </div>
