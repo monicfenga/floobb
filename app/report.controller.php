@@ -22,8 +22,8 @@ class ReportController {
 		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
 
-		$reason = (string) param('reason', '', FALSE);
-		$detail = trim((string) param('detail', '', FALSE));
+		$reason = param('reason', '');
+		$detail = trim(param('detail', ''));
 		$id = Report::create($type, $targetId, $user['username'], $reason, $detail);
 		if ($id === null) self::notFound('举报目标不存在或举报参数无效。');
 
@@ -41,7 +41,7 @@ class ReportController {
 		if (!Auth::isLoggedIn()) self::redirect('auth/login');
 		if (Auth::level() < 2) self::forbidden();
 
-		$tab = (string) Router::query('tab', 'open');
+		$tab = Router::query('tab', 'open');
 		if (!in_array($tab, array('open', 'done'), true)) $tab = 'open';
 
 		$lists = Report::listAll();
@@ -57,7 +57,7 @@ class ReportController {
 		if (!Auth::isLoggedIn()) self::redirect('auth/login');
 		if (Auth::level() < 2) self::forbidden();
 
-		$action = (string) param('action', '', FALSE); // delete|dismiss|ban（user 专用）
+		$action = param('action', ''); // delete|dismiss|ban（user 专用）
 		$r = Report::get($id);
 		if ($r === null) self::notFound('举报不存在。');
 		if (!in_array($action, array('delete', 'dismiss', 'ban'), true)) self::forbidden();
@@ -83,8 +83,8 @@ class ReportController {
 			if ((string) $targetUser['username'] === (string) $me['username']) self::forbidden();
 			if ((int) $targetUser['level'] >= (int) $me['level']) self::forbidden();
 			list($until, $untilText) = UserController::resolveDuration(
-				(string) param('duration', '', FALSE),
-				(string) param('until', '', FALSE)
+			param('duration', ''),
+			param('until', '')
 			);
 			if ($until === false) {
 				http_response_code(422);

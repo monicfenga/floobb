@@ -79,13 +79,13 @@ class UserController {
 		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
 
-		$nickname = trim(strip_tags((string) param('nickname', '', FALSE)));
-		$email = trim((string) param('email', '', FALSE));
-		$bio = trim(strip_tags((string) param('bio', '', FALSE)));
+		$nickname = trim(strip_tags(param('nickname', '')));
+		$email = trim(param('email', ''));
+		$bio = trim(strip_tags(param('bio', '')));
 		// 密码字段禁 htmlspecialchars（会改坏原值，批次 1 教训）
-		$oldPass = (string) param('old_password', '', FALSE);
-		$newPass = (string) param('new_password', '', FALSE);
-		$confirm = (string) param('confirm_password', '', FALSE);
+		$oldPass = param('old_password', '');
+		$newPass = param('new_password', '');
+		$confirm = param('confirm_password', '');
 
 		$errors = array();
 		if (!User::validNickname($nickname)) $errors[] = '昵称需为 1-30 个字符，且不含控制字符。';
@@ -171,8 +171,8 @@ class UserController {
 		if ((int) $target['level'] >= (int) $mod['level']) self::forbidden();
 
 		list($until, $untilText) = self::resolveDuration(
-			(string) param('duration', '', FALSE),
-			(string) param('until', '', FALSE)
+			param('duration', ''),
+			param('until', '')
 		);
 		if ($until === false) {
 			http_response_code(422);
@@ -180,7 +180,7 @@ class UserController {
 			exit('422: 封禁时长参数无效（custom 需合法的 ISO 时间戳，且晚于当前时间）。');
 		}
 
-		$reason = trim(strip_tags((string) param('reason', '', FALSE)));
+		$reason = trim(strip_tags(param('reason', '')));
 		$username = (string) $target['username'];
 		$wasBanned = User::isBanned($target);
 		if (!User::setBan($username, $until, (string) $mod['username'], $reason)) self::forbidden();

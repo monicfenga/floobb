@@ -70,7 +70,7 @@ class PMController {
 	public function compose() {
 		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
-		$to = trim((string) Router::query('to', ''));
+		$to = trim(Router::query('to', ''));
 		self::render('pm_compose', array(
 			'error' => null,
 			'values' => array('to' => $to, 'subject' => '', 'body' => ''),
@@ -82,9 +82,9 @@ class PMController {
 		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
 
-		$to = trim((string) param('to', '', FALSE));
-		$subject = trim((string) param('subject', '', FALSE));
-		$body = (string) param('body', '', FALSE);
+		$to = trim(param('to', ''));
+		$subject = trim(param('subject', ''));
+		$body = param('body', '');
 		$values = array('to' => $to, 'subject' => $subject, 'body' => $body);
 
 		$renderError = function ($msg) use ($values) {
@@ -132,7 +132,7 @@ class PMController {
 		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
 
-		$side = (string) param('side', 'inbox', FALSE);
+		$side = param('side', 'inbox');
 		if (!in_array($side, array('inbox', 'outbox'), true)) self::forbidden();
 		PM::remove($user['username'], $side, $id);
 		self::redirect('pm/' . $side);

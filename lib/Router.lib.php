@@ -20,68 +20,37 @@ function array_value($arr, $key, $default = '') {
 }
 
 /**
- * 从 $_REQUEST 中获取参数值
- * 
- * @param int $key 参数键值
- * @param string $defval 默认值
- * @param bool $htmlspecialchars 是否 HTML 编码
- * @param bool $addslashes 是否 添加反斜杠
- * @return string 参数值
+ * 取请求参数（RAW，不做 HTML 转义）。
+ * 返回值类型由 $defval 决定，调用方【禁止】再用 (string)/(int)/(float)/(bool) 强转：
+ *   param('x', '')      → string
+ *   param('x', 0)       → int
+ *   param('x', 0.0)     → float
+ *   param('x', false)   → bool
+ *   param('x', [])      → array
+ * HTML 转义只在【输出层】做（模板里用 htmlspecialchars），控制器逻辑一律用原始值。
+ *
+ * @param string|int|float|bool|array $defval 默认值；其类型决定返回值类型
+ * @return string|int|float|bool|array
  */
-function param($key, $defval = '', $htmlspecialchars = TRUE, $addslashes = FALSE) {
-	if (!isset($_REQUEST[$key]) || ($key === 0 && empty($_REQUEST[$key]))) {
-		if (is_array($defval)) {
-			return array();
-		} else {
-			return $defval;
-		}
+function param($key, $defval = '') {
+	$raw = $_REQUEST[$key] ?? null;
+	if ($raw === null) {
+		return $defval;
 	}
-	$val = $_REQUEST[$key];
-	$val = param_force($val, $defval, $htmlspecialchars, $addslashes);
-	return $val;
-}
-
-/**
- * 从 $_REQUEST 中获取参数值 - 内部逻辑
- * 
- * @param string $val 参数值
- * @param string $defval 默认值
- * @param bool $htmlspecialchars 是否 HTML 编码
- * @param bool $addslashes 是否 添加反斜杠
- * @return string 参数值
- */
-function param_force($val, $defval, $htmlspecialchars = TRUE, $addslashes = FALSE) {
 	if (is_array($defval)) {
-		$defval = empty($defval) ? '' : $defval[0]; // 数组的第一个元素，如果没有则为空字符串
-		if (is_array($val)) {
-			foreach ($val as &$v) {
-				if (is_array($v)) {
-					$v = $defval;
-				} else {
-					if (is_string($defval)) {
-						$addslashes and $v = addslashes($v);
-						$htmlspecialchars and $v = htmlspecialchars($v);
-					} else {
-						$v = intval($v);
-					}
-				}
-			}
-		} else {
-			return array();
-		}
-	} else {
-		if (is_array($val)) {
-			$val = $defval;
-		} else {
-			if (is_string($defval)) {
-				$addslashes and $val = addslashes($val);
-				$htmlspecialchars and $val = htmlspecialchars($val);
-			} else {
-				$val = intval($val);
-			}
-		}
+		return is_array($raw) ? $raw : array();
 	}
-	return $val;
+	if (is_int($defval)) {
+		return is_array($raw) ? (int) ($raw[0] ?? 0) : (int) $raw;
+	}
+	if (is_float($defval)) {
+		return is_array($raw) ? (float) ($raw[0] ?? 0) : (float) $raw;
+	}
+	if (is_bool($defval)) {
+		return is_array($raw) ? false : filter_var($raw, FILTER_VALIDATE_BOOLEAN);
+	}
+	// 默认 string
+	return is_array($raw) ? '' : (string) $raw;
 }
 
 /**
@@ -188,7 +157,7 @@ class Router {
 	 * @return mixed 查询参数值
 	 */
 	public static function query($key, $defval = '') {
-		return param($key, $defval, TRUE, FALSE);
+		return param($key, $defval);
 	}
 
 	/**

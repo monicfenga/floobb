@@ -29,10 +29,10 @@ class ForumController {
 		if (!Auth::isLoggedIn()) self::redirect('auth/login');
 		if (Auth::level() < 3) self::forbidden();
 
-		$name = trim(strip_tags((string) param('name', '', FALSE)));
-		$description = trim(strip_tags((string) param('description', '', FALSE)));
+		$name = trim(strip_tags(param('name', '')));
+		$description = trim(strip_tags(param('description', '')));
 		// slug 可留空 → 回退 name；填写时只允许字母数字横线下划线
-		$slug = trim((string) param('slug', '', FALSE));
+		$slug = trim(param('slug', ''));
 		$values = array('name' => $name, 'slug' => $slug, 'description' => $description);
 
 		$renderError = function ($msg) use ($values) {
@@ -68,7 +68,7 @@ class ForumController {
 
 		// 排序走 query string（SPEC §3.1：非结构性修饰符不进路径）
 		// latest=最新发帖 / replied=最新回帖 / posts=最多回帖 / views=最多查看
-		$sort = (string) Router::query('sort', 'latest');
+		$sort = Router::query('sort', 'latest');
 		if (!in_array($sort, array('latest', 'replied', 'posts', 'views'), true)) $sort = 'latest';
 
 		// 置顶区独立展示，普通区分页

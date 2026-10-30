@@ -75,8 +75,7 @@ class Paginate {
 	 * @return int 当前页码	
 	 */
 	public static function pid($total) {
-		$p = param('page', 1, FALSE);
-		$p = (int) $p;
+		$p = param('page', 1);
 		if ($p < 1)
 			return 1;
 		return $p;

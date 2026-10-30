@@ -88,7 +88,8 @@ class Report {
 		if ((string) $r['status'] !== 'open') return false;
 
 		$r['status'] = $action === 'dismiss' ? 'dismissed' : 'resolved';
-		$r['resolution'] = $action; // deleted / no_action / banned
+		// resolution 用 SPEC §4 词汇表：deleted / no_action / banned
+		$r['resolution'] = $action === 'delete' ? 'deleted' : ($action === 'ban' ? 'banned' : 'no_action');
 		$r['resolved_by'] = (string) $modUsername;
 		return flatDB::saveDB('reports', $id, $r);
 	}

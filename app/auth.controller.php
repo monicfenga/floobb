@@ -11,7 +11,7 @@ defined('FLOO') or die('FlooBB');
  * - reset    GET/POST /auth/reset    recovery_codes 无邮件重置（Phase 3 升级 TOTP 挑战）
  *
  * 硬规则：写操作一律先 Auth::csrfCheck()，失败 403；用户输入一律 param()。
- * 注意 param() 默认做 htmlspecialchars——密码/验证码等原始值必须第三参传 FALSE。
+ * 注意：param() 返回原始值（不转义），类型由默认值决定；HTML 转义在输出层做。
  */
 class AuthController {
 
@@ -29,11 +29,11 @@ class AuthController {
 	public function loginPost() {
 		if (!Auth::csrfCheck()) self::forbidden();
 
-		$username = (string) param('username', '', FALSE);
-		$password = (string) param('password', '', FALSE);
+		$username = param('username', '');
+		$password = param('password', '');
 
 		if (Auth::login($username, $password, $error)) {
-			if ((string) param('remember', '', FALSE) !== '') {
+			if (param('remember', '') !== '') {
 				Auth::remember($username);
 			}
 			self::redirect('');
@@ -65,11 +65,11 @@ class AuthController {
 	public function registerPost() {
 		if (!Auth::csrfCheck()) self::forbidden();
 
-		$username = (string) param('username', '', FALSE);
-		$password = (string) param('password', '', FALSE);
-		$confirm  = (string) param('confirm', '', FALSE);
-		$email    = trim((string) param('email', '', FALSE));
-		$captcha  = (string) param('captcha', '', FALSE);
+		$username = param('username', '');
+		$password = param('password', '');
+		$confirm  = param('confirm', '');
+		$email    = trim(param('email', ''));
+		$captcha  = param('captcha', '');
 
 		$values = array('username' => $username, 'email' => $email);
 
@@ -146,10 +146,10 @@ class AuthController {
 	public function resetPost() {
 		if (!Auth::csrfCheck()) self::forbidden();
 
-		$username = (string) param('username', '', FALSE);
-		$code = (string) param('code', '', FALSE);
-		$password = (string) param('password', '', FALSE);
-		$confirm = (string) param('confirm', '', FALSE);
+		$username = param('username', '');
+		$code = param('code', '');
+		$password = param('password', '');
+		$confirm = param('confirm', '');
 
 		$user = User::get($username);
 		if ($user === null) {

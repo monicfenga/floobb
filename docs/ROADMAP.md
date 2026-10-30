@@ -126,6 +126,7 @@ B3-3 Poll 当前**未提交**，git status 显示以下待处理项，提交前�
 8. 所有写操作 `CSRF::check`（失败 403）；所有输入经 `param()`，禁直读 `$_GET/$_POST`。
 9. 全项目**禁 namespace**（裸类名）；常量在 `init.php` 已定义的直接引用，不重定义。
 10. 本地只走 `http://127.0.0.1/floobb/`；**禁自起临时服务器**；写操作只限 `M:\laragon\www\floobb\`；参考项目只读。
+11. **禁 `param()` 冗余强转反模式**（详见 SPEC §11）：`param()` 已按默认值类型返回原始值（string/int/float/bool/array），调用方**不得**写 `(string) param(...)`、`(int) param(...)`，也**不得**传第三参 `FALSE`（`param` 已无 htmlspecialchars 形参）。HTML 转义只在输出层（`htmlspecialchars()` / 模板）做。
 
 ---
 

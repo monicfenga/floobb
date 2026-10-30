@@ -33,7 +33,7 @@ class PostController {
 		if ($topic === null) self::notFound('主题不存在。');
 		if (Topic::isLocked($topic)) self::forbidden('主题已锁定，无法回帖。');
 
-		$content = (string) param('content', '', FALSE);
+		$content = param('content', '');
 		if (trim($content) === '') self::redirect('topic/view/' . rawurlencode((string) $tid));
 
 		$forumId = (string) ($topic['forum_id'] ?? '');
@@ -82,7 +82,7 @@ class PostController {
 		if ($post === null) self::notFound('帖子不存在。');
 		if ($user['username'] !== ($post['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
 
-		$content = (string) param('content', '', FALSE);
+		$content = param('content', '');
 		if (trim($content) === '') {
 			self::render('post_edit', array('error' => '正文不能为空。', 'post' => $post, 'topic' => Topic::get($post['topic_id'] ?? '')));
 		}

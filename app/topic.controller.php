@@ -32,9 +32,9 @@ class TopicController {
 		$forum = Forum::get($topic['forum_id'] ?? '');
 
 		// query string 修饰符：sort=latest/oldest（默认 oldest=时间正序）；filter=author 只看楼主
-		$sort = (string) Router::query('sort', 'oldest');
+		$sort = Router::query('sort', 'oldest');
 		if (!in_array($sort, array('latest', 'oldest'), true)) $sort = 'oldest';
-		$filter = (string) Router::query('filter', '');
+		$filter = Router::query('filter', '');
 
 		$posts = Post::listByTopic($tid);
 		if ($filter === 'author') {
@@ -146,18 +146,18 @@ class TopicController {
 		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
 
-		$fid = (string) param('fid', $fid, FALSE);
-		$title = trim(strip_tags((string) param('title', '', FALSE)));
-		$content = (string) param('content', '', FALSE);
+		$fid = param('fid', $fid);
+		$title = trim(strip_tags(param('title', '')));
+		$content = param('content', '');
 		$values = array('fid' => $fid, 'title' => $title, 'content' => $content);
 
 		// 投票字段（is_vote=1 启用；textarea 一行一选项）
-		$isVote = (string) param('is_vote', '', FALSE) === '1';
-		$pollQuestion = trim((string) param('poll_question', '', FALSE));
-		$pollOptionsRaw = (string) param('poll_options', '', FALSE);
-		$pollMax = (int) param('poll_max', 1, FALSE);
-		$pollDays = (int) param('poll_days', 7, FALSE);
-		$pollMode = (string) param('poll_mode', 'single', FALSE); // single|multi
+		$isVote = param('is_vote', '') === '1';
+		$pollQuestion = trim(param('poll_question', ''));
+		$pollOptionsRaw = param('poll_options', '');
+		$pollMax = param('poll_max', 1);
+		$pollDays = param('poll_days', 7);
+		$pollMode = param('poll_mode', 'single'); // single|multi
 		$values['is_vote'] = $isVote ? '1' : '';
 		$values['poll_question'] = $pollQuestion;
 		$values['poll_options'] = $pollOptionsRaw;
@@ -282,7 +282,7 @@ class TopicController {
 		$topic = Topic::get($tid);
 		if ($topic === null) self::notFound('主题不存在。');
 
-		$newFid = (string) param('fid', '', FALSE);
+		$newFid = param('fid', '');
 		$oldFid = (string) ($topic['forum_id'] ?? '');
 		if (!Forum::exists($newFid)) self::forbidden();
 		if ($newFid !== $oldFid) {

@@ -27,7 +27,7 @@ class Auth {
 	 * @return bool token 合法返回 true，否则 false
 	 */
 	public static function csrfCheck() {
-		return CSRF::check((string) param('token', ''));
+		return CSRF::check(param('token', ''));
 	}
 
 	/**

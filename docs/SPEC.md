@@ -415,6 +415,45 @@ data/
 
 ---
 
+## 11. 编码规约 / 反模式（2026-10-30 定，贯穿全阶段）
+
+### 11.1 `param()` 用法（重点反模式）
+`lib/Router.lib.php` 的 `param()` 已重构为**类型推导 + 原始值（不转义）**：
+
+```php
+// 返回值类型由默认值决定，调用方绝不再强转：
+param('x', '')      → string   // 注意：'123' 仍是 string，不会变 int
+param('x', 0)       → int
+param('x', 0.0)     → float
+param('x', false)   → bool
+param('x', [])      → array
+param('x', 'def')   → 缺省返回 'def'
+// HTML 转义不做——转义在【输出层】做（模板里 htmlspecialchars()）
+```
+
+**反模式（禁止，AI 极易复发，已在本项目中系统性清除）：**
+```php
+// ❌ 以下全部错误：
+$action = (string) param('action', '', FALSE);   // (string) 冗余 + FALSE 是旧接口的残留形参，现已无此参数
+$pollMax = (int) param('poll_max', 1, FALSE);    // (int) 冗余（默认 1 已是 int），FALSE 已不存在
+$sort = (string) Router::query('sort', 'latest');// (string) 冗余
+// ✅ 正确：
+$action = param('action', '');
+$pollMax = param('poll_max', 1);
+$sort = Router::query('sort', 'latest');
+```
+
+**为什么之前会复发**：旧 `param()` 默认 `htmlspecialchars = TRUE`，所以历史代码被迫传 `FALSE` 取原始值；且 AI 误以为「取参必得 string」所以再 `(string)` 强转。现接口已无 `htmlspecialchars`/`addslashes` 形参，默认值类型即返回值类型，强转纯属噪声。若确需转义，在输出处 `htmlspecialchars()`，不在取参处。
+
+### 11.2 输入来源唯一性
+- 所有用户输入经 `param()` / `Router::query()`；**禁直读 `$_GET` / `$_POST` / `$_REQUEST`**（路由层已把 PATH_INFO 段并入 `$_REQUEST`，段参数仍用 `Router::segments()` 取）。
+- `param()` 的键可为数字（`param(0)` / `param(1)`）取路径段，但控制器优先用 `Router::segments()`。
+
+### 11.3 输出转义
+- 任何用户可控字符串进 HTML，必须经 `htmlspecialchars()`（模板里统一处理）。Markdown 正文走 Parsedown 渲染并经 DOMPurify 消毒后再输出，不套 `htmlspecialchars()`。
+
+---
+
 ## 11. 不在范围内（non-goals）
 
 - 不引入数据库服务器（MySQL/MariaDB/SQLite 文件库）。
