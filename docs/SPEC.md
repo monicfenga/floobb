@@ -145,7 +145,7 @@ index.php                 ← 入口：init + 解析 param(0/1/2) + 分发到控
 | GET | `/activity` | ActivityController::timeline（Phase 2） | SNS 动态时间线 | 可能包括筛选和翻页 |
 | GET | `/search` | SearchController::query | 搜索 | 关键词 `?q=`、范围 `?scope=`（topics/posts/users，可选）、`?page=`（翻页）；**全部走 query string，路径不含关键字** |
 
-其余 controller（`post`/`user`/`pm`/`poll`/`activity`/`report`/`mod`/`search`）类推，命名空间 `Controller\{资源}Controller`。
+其余 controller（`post`/`user`/`pm`/`poll`/`activity`/`report`/`mod`/`search`）类推。~~命名空间 `Controller\{资源}Controller`~~（**已废除**：2026-10-30 起全项目禁 namespace，裸类名 `{资源}Controller`，见 §9）
 
 **嵌套路由**：`/report/post/{pid}` 等，路由器把首段映射为控制器后，把**剩余段数组**整体交给控制器做二次分发（如 `ReportController` 收到 `['post', pid]` → `create(pid)`）。对「动作+单参数」型路由（如 `/mod/resolve/{rid}`），剩余段 `['resolve', rid]` 直接对应 `ModController::resolveReport(rid)`，无需嵌套。
 
@@ -231,12 +231,16 @@ data/
   "title": "...",
   "author": "Geticer",
   "created": "2023-10-30T09:00:00",
+  "last_reply_at": "2023-10-30T10:00:00",
+  "views": 0,
   "sticky": false,
   "locked": false,
   "poll_id": null,
   "post_ids": ["..."]
 }
 ```
+
+> ⚠️ `views` 与 `last_reply_at` 为批次 2 实装时新增（SPEC 文本本段即同步处）：`views` 在 topic/view GET 时 +1；`last_reply_at` 回帖时写、首帖=created，版块页排序（replied）与首页最新主题均依赖它。旧数据缺字段走 `??` 兜底 created，不需迁移。
 
 **posts/<postId>.dat.json**
 ```json
@@ -252,7 +256,7 @@ data/
 }
 ```
 
-**pms/<username>.dat.json**
+**pms/<username>.dat.json**（⚠️ 本实体为粗稿：**PM 路由与数据操作清单在批次 3 第一回合盘点时产出并由用户确认后才准实现**——发信/已发送/标记已读/会话查看的路由 SPEC 均未定，如 `POST /pm/send` vs `POST /pm/send/{to}`、显式已读 vs 打开即已读；落定时回填本节与 §3.1 路由表）
 ```json
 { "inbox": [{"id":"","from":"","to":"","subject":"","body":"","time":"","read":false}],
   "outbox": [ /* 同上 */ ] }
@@ -378,6 +382,10 @@ data/
 | 10 | 重置密码 | **不邮件**（防原站 IP 泄露绕过 CDN）：Phase 1 用注册时生成的 **recovery_codes**（哈希存储、一次性）；Phase 3 升级为 **TOTP 挑战**（authenticator 证明本人即重置）。管理员可强制重置（level≥3）。 |
 | 11 | 举报 / 版主队列 | 新增 **ReportController**（举报 post/user/topic，防自举报/重复）+ **ModController** 举报队列（resolve=删帖/封禁、dismiss，level≥2）；纳入 Phase 1 MVP。 |
 | 12 | 用户名 vs 昵称 | **拆分**：`username` = 登录标识 / 文件名 / 唯一键，注册后**不可变**；`nickname` = 显示用昵称，用户可随时在 `/user/settings` 修改（默认初始化为 username）。所有界面展示一律用 `nickname`；提及"显示名"处（导航/帖子作者/时间线等）都取 nickname。 |
+| 13 | namespace | **全项目禁用**（2026-10-30 用户拍板）：解析陷阱（裸 `Auth::` 在 namespace 文件里解析成 `Controller\Auth` fatal）靠人肉 `\` 前缀纪律防不住，成本>收益。app/ 与 model/ 全裸类名，autoload 见 init.php。 |
+| 14 | 版块 ID | **= slug**（弃用 `newEntry()` 日期串作版块标识）：选填、留空回退 name，填写校验 `[A-Za-z0-9_-]{1,50}`，`Forum::create()` 内查重；URL 形如 `/forum/view/tech`。主题/帖子 ID 维持 `newEntry()`。 |
+| 15 | topics 增补字段 | 实装新增 **`views`**（topic/view GET +1）与 **`last_reply_at`**（回帖时写、首帖=created）：支撑「最多查看 / 最新回帖」排序与首页最新主题（§4 已同步）。 |
+| 16 | PM 设计前置 | SPEC 对 PM 记录最粗（§4 实体为粗稿、§3.1 仅 1 条路由）：**批次 3 第一回合必须先产出「PM 路由表 + 数据操作清单」经用户确认后才准实现**，落定后回填 §3.1 与 §4。 |
 
 ---
 
