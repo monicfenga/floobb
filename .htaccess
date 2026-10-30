@@ -1,9 +1,12 @@
 <IfModule mod_rewrite.c>
 RewriteEngine on
+RewriteBase /floobb/
 
-# Apache 2.4
-RewriteCond %{REQUEST_FILENAME} !-d 
-RewriteCond %{REQUEST_FILENAME} !-f 
-RewriteRule ^(.*?)([^/]*)$ $1index.php?$2 [QSA,PT,L]
+# Apache 2.4 + php-cgi(FastCGI)：PATH_INFO 形式（index.php/$1）在 FastCGI 下报
+# "No input file specified."，故用 ?r= 传输（Router.lib.php 的回退路径，段解析等价）。
+# 若部署到 mod_php 环境可改回：RewriteRule ^(.*)$ index.php/$1 [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?r=$1 [QSA,L]
 
 </IfModule>

@@ -193,16 +193,12 @@ class xssFilter extends Util {
 					$string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', '&\\1', $string);
 				}
 			} else {
-				if (PHP_VERSION < '5.4.0') {
-					$string = htmlspecialchars($string, $flags);
+				if (!defined('CHARSET') || (strtolower(CHARSET) == 'utf-8')) {
+					$charset = 'UTF-8';
 				} else {
-					if (!defined('CHARSET') || (strtolower(CHARSET) == 'utf-8')) {
-						$charset = 'UTF-8';
-					} else {
-						$charset = 'ISO-8859-1';
-					}
-					$string = htmlspecialchars($string, $flags, $charset);
+					$charset = 'ISO-8859-1';
 				}
+				$string = htmlspecialchars($string, $flags, $charset);
 			}
 		}
 

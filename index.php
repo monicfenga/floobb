@@ -6,191 +6,21 @@ if (file_exists("install.php")) {
 	header("Location: install.php");
 }
 require_once("init.php");
-include_once("common.php");
 
-$route = param(0, 'index');
-$action = param(1, '');
-$subaction = param(2, '');
+/*
+ * front-controller 分发（SPEC §3.1 三位置契约）：
+ *   /            → HomeController::index
+ *   /forum/view/1 → Controller\ForumController::view('1')
+ * 回退：index.php?r=forum/view/1
+ */
+$seg = Router::segments();
+$controller = isset($seg[0]) ? strtolower((string) $seg[0]) : 'home';
+if (!preg_match('/^[a-z][a-z0-9_]*$/', $controller)) $controller = 'home';
 
-switch ($route) {
-	case 'index':
-		require THEME_DIR . $conf['theme'] . DS . 'homepage.tpl.php';
-		break;
-	case 'view':
-		switch ($action) {
-			case 'posts':
-				require THEME_DIR . $conf['theme'] . DS . 'lastposts.tpl.php';
-				# code...
-				break;
-			case 'topics':
-				# code...
-				break;
-			case 'user':
-				# code...
-				break;
-
-			default:
-				die('unknown action ' . $action);
-				break;
-		}
-		break;
-	case 'edit':
-		switch ($action) {
-			case 'post':
-				# code...
-				break;
-			case 'topic':
-				# code...
-				break;
-			case 'forum':
-				# code...
-				break;
-			case 'user':
-				# code...
-				break;
-			case 'settings':
-				# code...
-				break;
-			default:
-				die('unknown action ' . $action);
-				break;
-		}
-		break;
-	case 'add':
-		switch ($action) {
-			case 'post':
-				# code...
-				break;
-			case 'topic':
-				# code...
-				break;
-			case 'forum':
-				# code...
-				break;
-			case 'user':
-				# code...
-				break;
-			default:
-				die('unknown action ' . $action);
-				break;
-		}
-		break;
-	case 'auth':
-		switch ($action) {
-			case 'login':
-				# code...
-				break;
-			case 'logout':
-				# code...
-				break;
-			case 'register':
-				# code...
-				break;
-			default:
-				die('unknown action ' . $action);
-				break;
-		}
-		break;
-	default:
-		die('unknown route ' . $route);
+if (!Router::dispatch($controller)) {
+	http_response_code(404);
+	header('Content-Type: text/html; charset=utf-8');
+	echo '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>404</title>';
+	echo '<body class="container py-5"><h1>404</h1><p>未知路由：<code>' . htmlspecialchars($controller) . '</code></p>';
+	echo '<p><a href="/">返回首页</a></p></body></html>';
 }
-die;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-outHtml1("Forum Index");
-
-outHtml2("Forum Index");
-?>
-
-<div class="grid">
-	<?php
-
-	$forumArr = array();
-	$fileC = file("db/forumList.dat", FILE_IGNORE_NEW_LINES);
-
-
-	foreach ($fileC as $line) {
-		array_push($forumArr, new Forum($line));
-	}
-
-	foreach ($forumArr as $count => $item) {
-		$insertStr = "";
-		if (isUserLoggedIn() && $_SESSION['user']->getLevel() == 3) {
-			$insertStr .= "<span class='controls'>";
-			if ($count == 0) {
-				$insertStr = "<a class='btn btn-primary' href='forumListChange.php?mode=down&forumId=" . $item->getForumId() . "'>&darr;</a>";
-			} else if ($count == count($forumArr) - 1) {
-				$insertStr = "<a class='btn btn-primary' href='forumListChange.php?mode=up&forumId=" . $item->getForumId() . "'>&uarr;</a>";
-			} else {
-				$insertStr = "<a class='btn btn-primary' href='forumListChange.php?mode=up&forumId=" . $item->getForumId() . "'>&uarr;</a>"
-					. "<a class='btn btn-primary' href='forumListChange.php?mode=down&forumId=" . $item->getForumId() . "'>&darr;</a> ";
-			}
-			$insertStr .= "<a class='btn btn-info' href='forumListEdit.php?forumId=" . $item->getForumId() . "'>edit</a>"
-				. "<a class='btn btn-error' href='forumListChange.php?mode=delete&forumId=" . $item->getForumId() . "'>delete</a>";
-			$insertStr .= "</span>";
-		}
-		echo "<div class='cell cell-6'><div class='card'>"
-			. "<div class='card-body'>"
-			. "<h2>"
-			. "<a href='viewTopics.php?forumId=" . $item->getForumId() . "'>"
-			. $item->getForumName()
-			. "</a>"
-			. "</h2>"
-			. "<p>"
-			. $item->getDescription()
-			. "</p>"
-			. "<p>No. Posts: "
-			. $item->getTotalPosts()
-			. "</p>"
-			. $insertStr
-			. "</div>"
-			. "</div>"
-			. "</div>";
-	}
-	?>
-</div>
-<?php if (isUserLoggedIn() && $_SESSION['user']->getLevel() == 3) : ?>
-	<div class="text-center m-t-1 m-b-1">
-		<a class="btn btn-primary" href="addForum.php">Add Forum</a>
-	</div>
-
-<?php endif; ?>
-
-
-<?php
-$fileC = file("db/forumStatistics.dat", FILE_IGNORE_NEW_LINES);
-$fileD = file("db/forumOnlineUsers.dat", FILE_IGNORE_NEW_LINES);
-$fileE = file("db/forumOnlineGuests.dat", FILE_IGNORE_NEW_LINES);
-?>
-<div id="statistics" class="grid">
-	<ul class="cell">
-		<li>Forums: <?php echo $fileC[0]; ?></li>
-		<li>Topics: <?php echo $fileC[1]; ?></li>
-		<li>Posts: <?php echo $fileC[2]; ?></li>
-		<li>Registered Users: <?php echo $fileC[3]; ?></li>
-		<li>Newest User: <?php echo $fileC[4]; ?></li>
-	</ul>
-	<?php purge(); ?>
-	<ul class="cell">
-		<li>Online Users: <?= count($fileD) / 2 ?></li>
-		<li>Online Guests: <?= count($fileE) / 2 ?></li>
-
-	</ul>
-</div>
-<?php
-outHtml3();
-?>

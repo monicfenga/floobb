@@ -36,6 +36,11 @@ const LANG_DIR = PATH_ROOT . DS . 'lang' . DS;
 const LIB_DIR = PATH_ROOT . DS . 'lib' . DS;
 const PLUGIN_DIR = PATH_ROOT . DS . 'plugin' . DS;
 const THEME_DIR = BASEPATH . DS . 'theme' . DS;
+/*
+ * Web 基准路径（子文件夹部署友好）：SCRIPT_NAME=/floobb/index.php → APP_BASE=/floobb
+ * 所有站内链接一律 Router::url('auth/login') 生成，禁止硬编码绝对根路径
+ */
+define('APP_BASE', rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/'));
 # JSON 美化输出
 if (!defined('JSON_PRETTY_PRINT')) define('JSON_PRETTY_PRINT', 128);
 
@@ -46,10 +51,9 @@ const DEBUG_MODE = true;
 if (DEBUG_MODE) {
     ini_set('error_log', PATH_ROOT . DS . 'error.log');
     if (DEBUG_MODE === true) {
-        error_reporting(E_ALL | E_STRICT | E_NOTICE);
+        error_reporting(E_ALL);
         ini_set('display_errors', true);
         ini_set('display_startup_errors', true);
-        ini_set("track_errors", 1);
         ini_set('html_errors', 1);
         set_time_limit(10);
     } else if (DEBUG_MODE === false) {
@@ -68,8 +72,36 @@ mb_http_output(CHARSET);
  *---------------------------------------------------------------
  */
 require_once LIB_DIR . 'Flatdb.lib.php';
+require_once LIB_DIR . 'Router.lib.php';
 require_once LIB_DIR . 'Utils.lib.php';
 require_once LIB_DIR . 'CSRF.lib.php';
+require_once LIB_DIR . 'Auth.lib.php';
+require_once LIB_DIR . 'Parsedown.lib.php';
+require_once LIB_DIR . 'ParsedownExtra.lib.php';
+require_once LIB_DIR . 'Pagination.lib.php';
+require_once LIB_DIR . 'Captcha.lib.php';
+require_once LIB_DIR . 'files.lib.php';
+
+/**
+ *---------------------------------------------------------------
+ * 自动加载（model/ 仓储层 + app/ 控制器，无构建步骤）
+ *---------------------------------------------------------------
+ * @param string $class 类名（如 Model\User）
+ * @return void
+ */
+function floo_spl_autoload($class) {
+	if (strpos($class, 'Model\\') === 0) {
+		$file = PATH_ROOT . DS . 'model' . DS . substr($class, 6) . '.php';
+		is_file($file) and require_once $file;
+	} elseif (strpos($class, 'Controller\\') === 0) {
+		// Controller\HomeController → app/home.controller.php
+		$name = substr($class, 11, -10); // 去前缀 Model\ / 后缀 Controller
+		$file = PATH_ROOT . DS . 'app' . DS . strtolower($name) . '.controller.php';
+		is_file($file) and require_once $file;
+	}
+}
+
+spl_autoload_register('floo_spl_autoload');
 /*
  *---------------------------------------------------------------
  * 椒盐
@@ -98,11 +130,15 @@ if (is_file('install.php')){unlink('install.php');}
 
 if (!session_id()) session_start();
 $token = CSRF::generate();
+Auth::resume();
 
+/**
+ * @var array $header 页面标题、副标题、关键词、描述
+ */
 $header = array(
 	'title'=>$conf['title'],
 	'subtitle'=>'',
 	'mobile_title'=>'',
-	'keywords'=>'', // 搜索引擎自行分析 keywords, 自己指定没用 / Search engine automatic analysis of key words, so keep it empty.
+	'keywords'=>'', 
 	'description'=>strip_tags($conf['description']),
 );

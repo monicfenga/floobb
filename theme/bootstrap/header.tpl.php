@@ -1,0 +1,32 @@
+<?php defined('FLOO') or die('potato'); // NOOOO ?>
+<!doctype html>
+<html lang="<?= htmlspecialchars($conf['lang'] ?? 'zh-CN') ?>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><?= htmlspecialchars($header['title'] ?? $conf['title']) ?></title>
+<meta name="description" content="<?= htmlspecialchars($header['description'] ?? '') ?>">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.0.19/400.css" rel="stylesheet">
+<style>
+:root { font-size: 100%; } /* 16px = 1rem，SPEC §7 */
+html, body { font-family: "Noto Sans SC", system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<header class="bg-body-tertiary border-bottom mb-4">
+	<nav class="navbar navbar-expand-lg container">
+		<a class="navbar-brand fw-bold" href="<?= Router::url() ?>"><?= htmlspecialchars($conf['title'] ?? 'FlooBB') ?></a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="切换导航">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="mainNav">
+			<ul class="navbar-nav ms-auto">
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url() ?>">首页</a></li>
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('auth/login') ?>">登录</a></li>
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('auth/register') ?>">注册</a></li>
+			</ul>
+		</div>
+	</nav>
+</header>
+<main class="container" role="main">
