@@ -1,0 +1,122 @@
+/* =========================================================================
+   FlooBB · Modal（移植自 Pico CSS Dialog，MIT）
+   tawian 主题：变量映射到 tawian 自建变量（--bg/--fg/--border 等），
+   直角设计（border-radius: 0），与 tawian-frontend 的扁平风格一致
+   配套 JS：assets/js/modal.js（data-target 属性触发）
+   ========================================================================= */
+
+dialog {
+    --spacing: 1rem;
+    display: flex;
+    z-index: 2048;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    width: inherit;
+    min-width: 100%;
+    height: inherit;
+    min-height: 100%;
+    padding: var(--spacing);
+    border: none;
+    background-color: var(--modal-overlay-background-color, rgba(0, 0, 0, 0.25));
+}
+
+dialog article {
+    width: 310px;
+    max-height: calc(100vh - var(--spacing) * 2);
+    overflow: auto;
+    background-color: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 8px 12px 24px rgba(0, 0, 0, .25);
+}
+
+@media (min-width: 576px) {
+    dialog article { width: 480px; max-width: 510px; }
+}
+
+@media (min-width: 768px) {
+    dialog article { max-width: 700px; }
+}
+
+dialog article > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75em 1em;
+    border-bottom: 1px dashed var(--border);
+}
+
+dialog article > header h5,
+dialog article > header h4 { margin: 0; font-size: 1.05rem; }
+
+dialog article > header .close {
+    padding: calc(var(--spacing) * 0.25) calc(var(--spacing) * 0.5);
+    font-size: 1.25em;
+    line-height: 1;
+    color: inherit;
+    background: none;
+    border: none;
+    text-shadow: none;
+    cursor: pointer;
+}
+
+dialog article > main { padding: 1em; }
+
+dialog article > footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.75em 1em;
+    border-top: 1px dashed var(--border);
+}
+
+dialog article p:last-of-type { margin: 0; }
+
+dialog:not([open]),
+dialog[open=false] { display: none; }
+
+/* 打开时锁滚动（--scrollbar-width 由 modal.js 注入） */
+.modal-is-open { padding-right: var(--scrollbar-width, 0); overflow: hidden; pointer-events: none; }
+.modal-is-open dialog { pointer-events: auto; }
+
+/* 进出场动画 */
+.modal-is-closing dialog,
+.modal-is-closing dialog > article,
+.modal-is-opening dialog,
+.modal-is-opening dialog > article {
+    animation-duration: .2s;
+    animation-timing-function: ease;
+    animation-fill-mode: both;
+}
+.modal-is-closing dialog,
+.modal-is-opening dialog {
+    animation-duration: .2s;
+    animation-name: flooModalFadeIn;
+}
+.modal-is-closing dialog > article,
+.modal-is-opening dialog > article {
+    animation-delay: .2s;
+    animation-name: flooModalSlideInDown;
+}
+.modal-is-closing dialog,
+.modal-is-closing dialog > article {
+    animation-delay: 0s;
+    animation-direction: reverse;
+}
+
+@keyframes flooModalFadeIn {
+    from { background-color: transparent; }
+    to { background-color: var(--modal-overlay-background-color, rgba(0, 0, 0, 0.25)); }
+}
+
+@keyframes flooModalSlideInDown {
+    from { transform: translateY(30%) scale(0.9); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

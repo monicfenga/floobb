@@ -1,6 +1,31 @@
 <?php defined('FLOO') or die('FlooBB'); ?>
     </div>
 </main>
+<!-- 全局搜索弹窗 -->
+<dialog id="search-modal" aria-label="搜索">
+    <article>
+        <header>
+            <h5>搜索</h5>
+            <button type="button" class="close" aria-label="关闭" data-target="search-modal">✕</button>
+        </header>
+        <main>
+            <form id="search-modal-form" method="get" action="<?= Router::url('search') ?>" role="search">
+                <label class="visually-hidden" for="search-modal-q">关键词</label>
+                <input class="form-control full-width mb-2" type="search" id="search-modal-q" name="q" placeholder="输入关键词…" maxlength="100" autofocus>
+                <label class="visually-hidden" for="search-modal-scope">搜索范围</label>
+                <select class="form-control full-width" id="search-modal-scope" name="scope">
+                    <option value="topics">主题标题</option>
+                    <option value="posts">帖子内容</option>
+                    <option value="users">用户名 / 昵称</option>
+                </select>
+            </form>
+        </main>
+        <footer>
+            <button type="button" class="btn btn-link" data-target="search-modal">取消</button>
+            <button type="submit" class="btn btn-primary btn-sm" form="search-modal-form">搜索</button>
+        </footer>
+    </article>
+</dialog>
 <footer class="site-footer dashed-top">
     <div class="container">
         <?= htmlspecialchars($conf['footer_text'] ? $conf['footer_text'] . ' · ' : '') ?>
@@ -22,6 +47,7 @@
         <?php endif; ?>
     </div>
 </footer>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/modal.js') ?>"></script>
 <script>
 (function () {
     'use strict';

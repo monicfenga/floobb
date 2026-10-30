@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/iosevka@latest">
 <link rel="stylesheet" href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/tawian-frontend.css') ?>">
 <link rel="stylesheet" href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/style.css') ?>">
+<link rel="stylesheet" href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/modal.css') ?>">
 <script>
 /* 尽早应用暗色偏好，避免闪白 */
 (function () {
@@ -30,9 +31,7 @@
         </nav>
         <input type="checkbox" id="navigation-toggle">
         <nav class="site-nav nav-separated">
-            <form class="site-search" method="get" action="<?= Router::url('search') ?>" role="search">
-                <input type="search" name="q" placeholder="搜索…" maxlength="100" aria-label="搜索">
-            </form>
+            <button type="button" class="btn btn-link" data-target="search-modal" aria-label="搜索">搜索</button>
             <ul>
                 <li><a href="<?= Router::url() ?>">首页</a></li>
                 <?php if (Auth::isLoggedIn()): $navUser = Auth::user(); ?>
