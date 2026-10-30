@@ -91,6 +91,7 @@ class AuthController {
 		$user = array(
 			'id' => bin2hex(random_bytes(6)),
 			'username' => $username,
+			'nickname' => $username, // 昵称默认=用户名，/user/settings 可改（SPEC §9 #12）
 			'password_hash' => password_hash($password, PASSWORD_DEFAULT),
 			'email' => $email,
 			'level' => 1,

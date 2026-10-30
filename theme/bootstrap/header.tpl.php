@@ -24,7 +24,7 @@ html, body { font-family: "Noto Sans SC", system-ui, sans-serif; }
 			<ul class="navbar-nav ms-auto">
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url() ?>">首页</a></li>
 				<?php if (Auth::isLoggedIn()): $navUser = Auth::user(); ?>
-				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/view/' . urlencode((string) $navUser['username'])) ?>"><?= htmlspecialchars((string) $navUser['username']) ?></a></li>
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/view/' . urlencode((string) $navUser['username'])) ?>"><?= htmlspecialchars((string) ($navUser['nickname'] ?? $navUser['username'])) ?></a></li>
 				<li class="nav-item">
 					<form method="post" action="<?= Router::url('auth/logout') ?>" class="d-inline">
 						<?= Auth::csrfField() ?>

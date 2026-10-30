@@ -54,6 +54,14 @@ class User {
 		return is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 	}
 
+	/**
+	 * 昵称合法性（显示名，可随时改，SPEC §9 #12）：1-30 字符，禁控制字符
+	 */
+	public static function validNickname($nickname) {
+		return is_string($nickname) && mb_strlen($nickname) >= 1 && mb_strlen($nickname) <= 30
+			&& !preg_match('/[\x00-\x1F\x7F]/', $nickname);
+	}
+
 	/* ---------------- recovery_codes（SPEC §9 #10：无邮件重置，哈希存储、一次性） ---------------- */
 
 	const RECOVERY_COUNT = 6;

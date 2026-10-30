@@ -46,6 +46,18 @@ class Post {
 	}
 
 	/**
+	 * 某作者的帖子数（个人资料页统计；flat-file 全扫，量级小可接受）
+	 */
+	public static function countByAuthor($author) {
+		$n = 0;
+		foreach (\flatDB::listDB('posts') as $file) {
+			$p = \flatDB::getDB('posts', basename($file, '.dat.json'));
+			if (is_array($p) && (string) ($p['author'] ?? '') === (string) $author) $n++;
+		}
+		return $n;
+	}
+
+	/**
 	 * Markdown → HTML（Parsedown Extra + safeMode，服务端消毒）
 	 */
 	public static function render($markdown) {

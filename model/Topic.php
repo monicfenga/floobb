@@ -37,6 +37,18 @@ class Topic {
 		return \flatDB::saveDB('topics', $topicId, $data);
 	}
 
+	/**
+	 * 某作者的主题数（个人资料页统计；flat-file 全扫，量级小可接受）
+	 */
+	public static function countByAuthor($author) {
+		$n = 0;
+		foreach (\flatDB::listDB('topics') as $file) {
+			$t = \flatDB::getDB('topics', basename($file, '.dat.json'));
+			if (is_array($t) && (string) ($t['author'] ?? '') === (string) $author) $n++;
+		}
+		return $n;
+	}
+
 	public static function create(array $data) {
 		$id = \flatDB::newEntry();
 		$data['id'] = $id;
