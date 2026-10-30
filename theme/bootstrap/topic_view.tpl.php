@@ -69,7 +69,7 @@
 			<?php endif; ?>
 		</span>
 		<small class="text-body-secondary">
-			#<?= htmlspecialchars((string) ($p['id'] ?? '')) ?>
+			<a href="#p<?= htmlspecialchars((string) ($p['id'] ?? ''))?>">#<?= substr($p['id'], -5) ?></a>
 			· <?= date('Y-m-d H:i', strtotime((string) ($p['created'] ?? ''))) ?>
 			<?php if (!empty($p['edited'])): ?>· 已编辑（<?= date('m-d H:i', strtotime((string) $p['edited'])) ?>）<?php endif; ?>
 		</small>
