@@ -2,6 +2,13 @@
 
 /*
  *---------------------------------------------------------------
+ * 请求计时起点（Server-Timing / 页脚调试共用）
+ *---------------------------------------------------------------
+ */
+$FLOO_START = microtime(true);
+
+/*
+ *---------------------------------------------------------------
  * 定义常量
  *---------------------------------------------------------------
  */
@@ -101,6 +108,21 @@ function floo_spl_autoload($class) {
 }
 
 spl_autoload_register('floo_spl_autoload');
+
+/*
+ *---------------------------------------------------------------
+ * Server-Timing API：随响应头输出耗时（所有响应含 302/403 均带）
+ * 头发送前回调，输出尚未 flush，可安全 header()
+ *---------------------------------------------------------------
+ */
+header_register_callback(function () {
+    global $FLOO_START, $FLATDB_TOTAL_QUERY_NUM;
+    $totalMs = round((microtime(true) - (float) $FLOO_START) * 1000, 1);
+    $q = is_array($FLATDB_TOTAL_QUERY_NUM) ? $FLATDB_TOTAL_QUERY_NUM : array('c' => 0, 'r' => 0, 'u' => 0, 'd' => 0);
+    $dbCount = (int) $q['c'] + (int) $q['r'] + (int) $q['u'] + (int) $q['d'];
+    // db 计数用 desc 描述（flatDB 无逐操作计时，dur 不虚构）；total 才是真实墙钟
+    header('Server-Timing: db;desc="' . $dbCount . ' ops (C:' . $q['c'] . ' R:' . $q['r'] . ' U:' . $q['u'] . ' D:' . $q['d'] . ')", total;dur=' . $totalMs);
+});
 /*
  *---------------------------------------------------------------
  * 椒盐
