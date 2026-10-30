@@ -1,0 +1,252 @@
+/* =========================================================================
+   FlooBB · tawian 主题层（薄层，叠加在 tawian-frontend.css 之上）
+   设计原则：
+   - tawian-frontend.css 已原生提供 card / btn(+变体) / tag(+变体) / alert /
+     form-group / form-label / form-control / site-header / site-nav / grid /
+     cell / list-group / progress-bar / responsive-nav / container 等组件的
+     *外观*（Material 扁平 + 底边线输入框 + box-shadow 描环标签）。本文件
+     **不得覆盖这些原生组件外观**，只做四件事：
+       1) 站点骨架与自建变量（面包屑/分页/列表补充等 tawian 没有的部分）
+       2) tawian-frontend 缺失的工具类（flex/gap/muted/btn-sm 等模板依赖）
+       3) app.css 的特征微调（listmessage 左+底边线、listuser 头像浮动、
+          nav-separated 分隔线、time 半透明、sig 虚线）
+       4) 暗色模式（html.dark 覆盖 tawian-frontend 的硬编码浅色）
+   - 字体：备选主题统一等宽 Maple Mono → Iosevka → 系统 monospace。
+   - 禁远程 HTTP 引 CSS（框架已本地 vendored），仅 Iosevka 字体走 fontsource CDN。
+   ========================================================================= */
+
+:root { font-size: 16px; }
+
+/* 我方驱动的表面变量（tawian-frontend 为硬编码、无变量；此处仅用于自建部分） */
+:root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #6b7280;
+    --link: #1565c0;
+    --border: #e0e0e0;
+    --code-bg: #f5f5f5;
+    --accent: #1565c0;
+}
+html.dark {
+    --bg: #16181d;
+    --fg: #e6e6e6;
+    --muted: #9aa0a6;
+    --link: #6ea8fe;
+    --border: #2a2d34;
+    --code-bg: #0f1115;
+    --accent: #6ea8fe;
+    color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    font-family: "Maple Mono", "Iosevka", ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", "Noto Sans SC", monospace, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.3; margin: 0 0 .5rem; }
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.1rem; }
+
+hr { border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+/* ---- 站点骨架（仅补边线与暗色变量，不动 tawian 原生 flex 布局） ---- */
+.site-header { border-bottom: 1px solid var(--border); }
+.site-main { min-height: calc(100vh - 9rem); padding: 1.25rem 0; }
+.site-footer { border-top: 1px solid var(--border); padding: 1rem 0; color: var(--muted); font-size: .85rem; text-align: center; }
+.site-title { font-weight: 700; color: var(--fg); }
+.site-title:hover { text-decoration: none; }
+
+/* tawian 的 site-nav 默认横排右推（原生已 inline-flex + margin-left:auto）；
+   移动端靠 .responsive-nav 折叠。这里只补分隔线（app.css 特征）。 */
+.site-nav.nav-separated li:after {
+    content: "";
+    border-right: 2px solid var(--border);
+    padding-right: .25em;
+    margin-right: .25em;
+}
+.site-nav a { color: var(--fg); }
+.site-search input { width: 12rem; max-width: 40vw; }
+
+/* ---- 工具类（tawian-frontend 未提供，模板依赖，属于合法补充） ---- */
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.inline { display: inline-block; }
+.between { justify-content: space-between; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.wrap { flex-wrap: wrap; }
+.gap-1 { gap: .25rem; }
+.gap-2 { gap: .5rem; }
+.gap-3 { gap: 1rem; }
+.muted, .text-secondary { color: var(--muted); }
+.small { font-size: .85em; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.w-100 { width: 100%; }
+.full-width { width: 100%; }
+.rounded { border-radius: 6px; }
+
+/* 间距（精简子集，供模板直接用；与 bootstrap 习惯对齐，不影响 tawian 组件） */
+.mt-1 { margin-top: .25rem; } .mt-2 { margin-top: .5rem; } .mt-3 { margin-top: 1rem; } .mt-4 { margin-top: 1.5rem; } .mt-5 { margin-top: 2rem; }
+.mb-1 { margin-bottom: .25rem; } .mb-2 { margin-bottom: .5rem; } .mb-3 { margin-bottom: 1rem; } .mb-4 { margin-bottom: 1.5rem; } .mb-5 { margin-bottom: 2rem; }
+.ms-1 { margin-left: .25rem; } .ms-2 { margin-left: .5rem; }
+.me-1 { margin-right: .25rem; } .me-2 { margin-right: .5rem; }
+.p-2 { padding: .5rem; } .p-3 { padding: 1rem; }
+
+/* 小按钮（tawian 无 btn-sm，这里补一层尺寸） */
+.btn-sm { padding: .2rem .6rem; font-size: .8rem; }
+.btn-link { background: none; border: 0; color: var(--link); cursor: pointer; }
+.btn-link:hover { text-decoration: underline; }
+
+/* ---- 面包屑（tawian 无此组件，自建） ---- */
+.breadcrumb { list-style: none; display: flex; flex-wrap: wrap; gap: .4rem; padding: 0; margin: 0 0 1rem; font-size: .85rem; color: var(--muted); }
+.breadcrumb li + li::before { content: "\203a"; margin-right: .4rem; color: var(--muted); }
+.breadcrumb a { color: var(--muted); }
+.breadcrumb .active { color: var(--fg); }
+
+/* ---- 分页（承接 Pagination.lib 输出的 Bootstrap .pagination 标记；库是共享的，不改动） ---- */
+.pagination { list-style: none; display: flex; gap: .3rem; padding: 0; margin: 1rem 0 0; flex-wrap: wrap; justify-content: center; }
+.page-item .page-link { display: inline-block; padding: .35rem .7rem; border: 1px solid var(--border); border-radius: 4px; color: var(--link); background: var(--bg); }
+.page-item .page-link:hover { text-decoration: none; border-color: var(--accent); }
+.page-item.active .page-link { background: var(--accent); color: #fff; border-color: var(--accent); }
+.page-item.disabled .page-link { color: var(--muted); opacity: .55; pointer-events: none; }
+/* 屏蔽 tawian-frontend 全局 `ul>li:before{content:"–"}` 注入的短横（分页项不需要）；
+   同时清掉 li 的左内边距，避免条目错位 */
+.pagination li:before { content: unset; }
+.pagination li { padding-left: 0; }
+
+/* ---- list-group 细节补充（tawian 原生 list-group 外观保留，这里只补交互色与 flush 变体） ---- */
+.list-group a:hover { text-decoration: none; }
+.list-group .active { font-weight: 600; }
+.list-group-flush { border: 0; border-radius: 0; }
+
+/* 纯 UI 列表（恢复码、错误提示等）：屏蔽 tawian-frontend 全局 `ul>li:before{content:"–"}` 注入的短横 */
+.list-plain { list-style: none; padding-left: 0; }
+.list-plain > li:before { content: unset; }
+
+/* 横向 list-group：用于「排序」「正序倒序」等工具条（用双类提升优先级，确保盖过
+   tawian-frontend 原生 .list-group 的纵向块样式与底边线分隔） */
+.list-group.list-group-horizontal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+}
+.list-group.list-group-horizontal > * {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: .25rem .65rem;
+    border: 0;
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
+    font-size: .9rem;
+}
+.list-group.list-group-horizontal > *:last-child { border-right: 0; }
+.list-group.list-group-horizontal > .active { color: var(--fg); font-weight: 600; }
+.list-group.list-group-horizontal a { color: var(--link); }
+.list-group.list-group-horizontal a.active { color: var(--accent); font-weight: 600; }
+.list-group.list-group-horizontal a:hover { text-decoration: none; }
+
+/* ---- 表单辅助文本 ---- */
+.form-text, .help-block { color: var(--muted); font-size: .82rem; margin-top: .2rem; }
+/* 进度条：原轨道 #e0e0e0 / 默认填充 #9e9e9e 硬编码，改用边框/主色变量（progress-primary 等彩色变体保留） */
+.progress-bar { background-color: var(--border); }
+.progress-bar > div { background-color: var(--accent); color: #fff; }
+/* textarea 浮动标签右侧遮罩条：原 #fff 硬编码，暗色会露白线，改用背景变量 */
+textarea.form-control + .form-label:before { background-color: var(--bg); }
+
+/* ---- 标签变体补充（tawian 原生有 tag/error/info/primary/success，补 warning 对齐 Material 琥珀） ---- */
+.tag-warning { color: #fff; background-color: #ff9800; -webkit-box-shadow: 0 -1px 0 3px #ff9800, inset 0 0 0 1px #ff9800; box-shadow: 0 -1px 0 3px #ff9800, inset 0 0 0 1px #ff9800; }
+
+/* ---- 代码 / 引用 ---- */
+code { background: var(--code-bg); padding: .1rem .3rem; border-radius: 3px; font-family: inherit; }
+pre { background: var(--code-bg); padding: .8rem; border-radius: 4px; overflow: auto; }
+pre code { background: none; padding: 0; }
+
+.post-content { overflow-wrap: anywhere; }
+.post-content img { max-width: 100%; height: auto; }
+.post-content blockquote { border-left: 3px solid var(--border); margin: 0; padding-left: 1rem; color: var(--muted); }
+.post-content table { border-collapse: collapse; }
+.post-content table th, .post-content table td { border: 1px solid var(--border); padding: .3rem .6rem; }
+
+/* =========================================================================
+   === tawian 特征微调（来自 2023 app.css，这里是薄层复刻，不覆盖原生组件） ===
+   ========================================================================= */
+
+/* 帖子消息体：左 + 底边线、纵向排列（配合原生 .form-control 底边线） */
+.listmessage.form-control {
+    padding-left: calc(1rem - 2px);
+    border-bottom: 2px solid var(--border);
+    border-left: 2px solid var(--border);
+    flex-direction: column;
+}
+/* 浮动作者标签左侧的白色遮罩条（盖住底边线，原生 .form-label 有底边线） */
+.listmessage.form-control + .form-label:before {
+    position: absolute;
+    content: '';
+    width: 2px;
+    background-color: var(--bg);
+    right: -2px;
+    top: 0;
+    bottom: 0;
+}
+/* 作者标签内的头像：左浮、1.8em 高 */
+.listuser.form-label img {
+    float: left;
+    height: 1.8em;
+    width: auto;
+    margin-right: .25em;
+}
+/* 消息时间半透明 */
+.listmessage time { opacity: .5; }
+/* 签名档 */
+.listmessage .sig { padding: .5em 0; margin-top: .5em; }
+
+/* ---- 卡片微调：原 tawian .card .card-header 硬编码 #eee/#424242，改用站点变量（亮暗自动适配） ---- */
+.card .card-header { background-color: var(--bg); color: var(--fg); border-bottom: 1px solid var(--border); font-weight: 600; }
+
+/* ---- 举报折叠框 ---- */
+.report-box > summary { list-style: none; cursor: pointer; }
+.report-box > summary::-webkit-details-marker { display: none; }
+/* 非卡片 details（举报框等）summary hover：原 #f5f5f5 硬编码，改用 code-bg 变量 */
+details:not(.card) summary:hover { background-color: var(--code-bg); box-shadow: -0.5rem -0.1rem 0 0.5rem var(--code-bg); }
+
+/* ---- 定义列表（用户资料） ---- */
+dl { margin: 0; }
+dt { font-weight: 600; color: var(--muted); margin-top: .4rem; }
+dd { margin: 0 0 .4rem; }
+
+/* =========================================================================
+   === 暗色模式（html.dark）：覆盖 tawian-frontend 的硬编码浅色 ===
+   ========================================================================= */
+html.dark body { background: var(--bg); color: var(--fg); }
+html.dark .card,
+html.dark .form-control,
+html.dark .form-label,
+html.dark .listmessage.form-control { border-color: var(--border); }
+html.dark .form-label,
+html.dark input,
+html.dark select,
+html.dark textarea { color: var(--fg); }
+html.dark .listmessage.form-control + .form-label:before { background-color: var(--bg); }
+html.dark .breadcrumb a,
+html.dark .breadcrumb .active { color: var(--fg); }
+html.dark .breadcrumb li + li::before { color: var(--muted); }
+html.dark .pagination .page-link { background: var(--bg); color: var(--link); border-color: var(--border); }
+html.dark .pagination .page-item.active .page-link { background: var(--accent); color: #fff; border-color: var(--accent); }
+html.dark .site-header,
+html.dark .site-footer { border-color: var(--border); }
