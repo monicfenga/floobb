@@ -13,6 +13,15 @@
 			value="<?= htmlspecialchars($values['name'] ?? '') ?>">
 	</div>
 	<div class="mb-3">
+		<label for="f-slug" class="form-label">slug（选填）</label>
+		<div class="input-group">
+			<span class="input-group-text"><?= APP_BASE ?>/forum/view/</span>
+			<input type="text" class="form-control" id="f-slug" name="slug" maxlength="50" pattern="[A-Za-z0-9_-]{1,50}"
+				value="<?= htmlspecialchars($values['slug'] ?? '') ?>" placeholder="留空则使用版块名">
+		</div>
+		<div class="form-text">仅英文字母、数字、横线、下划线。留空则使用版块名。</div>
+	</div>
+	<div class="mb-3">
 		<label for="f-desc" class="form-label">描述（选填）</label>
 		<textarea class="form-control" id="f-desc" name="description" rows="3" maxlength="200"><?= htmlspecialchars($values['description'] ?? '') ?></textarea>
 	</div>

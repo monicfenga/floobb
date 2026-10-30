@@ -207,7 +207,7 @@ class Router {
 		// action 名只允许字母数字下划线，防路径注入
 		if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $action)) $action = 'index';
 
-		$class = 'Controller\\' . ucfirst(strtolower($controllerName)) . 'Controller';
+		$class = ucfirst(strtolower($controllerName)) . 'Controller';
 		$method = self::method();
 
 		if (!class_exists($class)) return false;

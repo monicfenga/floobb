@@ -1,4 +1,4 @@
-<?php namespace Model;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
@@ -13,13 +13,13 @@ class User {
 	 */
 	public static function get($username) {
 		$username = (string) $username;
-		if ($username === '' || !\flatDB::DBexists('users', $username)) return null;
-		return \flatDB::getDB('users', $username);
+		if ($username === '' || !flatDB::DBexists('users', $username)) return null;
+		return flatDB::getDB('users', $username);
 	}
 
 	public static function exists($username) {
 		$username = (string) $username;
-		return $username !== '' && \flatDB::DBexists('users', $username);
+		return $username !== '' && flatDB::DBexists('users', $username);
 	}
 
 	/**
@@ -27,12 +27,12 @@ class User {
 	 */
 	public static function create(array $data) {
 		if (empty($data['username']) || self::exists($data['username'])) return false;
-		\flatDB::saveDB('users', $data['username'], $data);
+		flatDB::saveDB('users', $data['username'], $data);
 		return true;
 	}
 
 	public static function save($username, array $data) {
-		return \flatDB::saveDB('users', $username, $data);
+		return flatDB::saveDB('users', $username, $data);
 	}
 
 	/**

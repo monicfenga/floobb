@@ -1,16 +1,16 @@
-<?php namespace Controller;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
 /**
  * 认证控制器（SPEC §3.1 路由表 / §5 MVP 认证项 / §9 #10）
  *
- * - login    GET/POST /auth/login    密码登录（\Auth::login + 尝试限制 + RememberMe 可选）
+ * - login    GET/POST /auth/login    密码登录（Auth::login + 尝试限制 + RememberMe 可选）
  * - register GET/POST /auth/register Captcha + CSRF，注册即自动登录（禁邮件激活），发 recovery_codes
  * - logout   POST     /auth/logout   CSRF（原 logout.php 为 GET，重建改 POST）
  * - reset    GET/POST /auth/reset    recovery_codes 无邮件重置（Phase 3 升级 TOTP 挑战）
  *
- * 硬规则：写操作一律先 \Auth::csrfCheck()，失败 403；用户输入一律 param()。
+ * 硬规则：写操作一律先 Auth::csrfCheck()，失败 403；用户输入一律 param()。
  * 注意 param() 默认做 htmlspecialchars——密码/验证码等原始值必须第三参传 FALSE。
  */
 class AuthController {
@@ -22,19 +22,19 @@ class AuthController {
 	/* ---------------- 登录 ---------------- */
 
 	public function login() {
-		if (\Auth::isLoggedIn()) self::redirect('');
+		if (Auth::isLoggedIn()) self::redirect('');
 		self::render('auth_login', array('error' => null, 'success' => null));
 	}
 
 	public function loginPost() {
-		if (!\Auth::csrfCheck()) self::forbidden();
+		if (!Auth::csrfCheck()) self::forbidden();
 
 		$username = (string) param('username', '', FALSE);
 		$password = (string) param('password', '', FALSE);
 
-		if (\Auth::login($username, $password, $error)) {
+		if (Auth::login($username, $password, $error)) {
 			if ((string) param('remember', '', FALSE) !== '') {
-				\Auth::remember($username);
+				Auth::remember($username);
 			}
 			self::redirect('');
 		}
@@ -48,12 +48,12 @@ class AuthController {
 	/* ---------------- 注册 ---------------- */
 
 	public function register() {
-		if (\Auth::isLoggedIn()) self::redirect('');
+		if (Auth::isLoggedIn()) self::redirect('');
 		self::render('auth_register', array('error' => null, 'values' => array()));
 	}
 
 	public function registerPost() {
-		if (!\Auth::csrfCheck()) self::forbidden();
+		if (!Auth::csrfCheck()) self::forbidden();
 
 		$username = (string) param('username', '', FALSE);
 		$password = (string) param('password', '', FALSE);
@@ -69,19 +69,19 @@ class AuthController {
 		if (!$captchaOk) {
 			self::renderRegisterError('验证码错误。', $values);
 		}
-		if (!\Model\User::validName($username)) {
+		if (!User::validName($username)) {
 			self::renderRegisterError('用户名不合法：需字母开头，仅字母/数字/下划线，3-24 位。', $values);
 		}
-		if (\Model\User::exists($username)) {
+		if (User::exists($username)) {
 			self::renderRegisterError('用户名已被占用。', $values);
 		}
-		if (!\Model\User::validPassword($password)) {
+		if (!User::validPassword($password)) {
 			self::renderRegisterError('密码强度不足：至少 8 位，须同时包含字母和数字。', $values);
 		}
 		if ($password !== $confirm) {
 			self::renderRegisterError('两次输入的密码不一致。', $values);
 		}
-		if ($email !== '' && !\Model\User::validEmail($email)) {
+		if ($email !== '' && !User::validEmail($email)) {
 			self::renderRegisterError('邮箱格式不正确。', $values);
 		}
 
@@ -99,18 +99,18 @@ class AuthController {
 			'last_seen' => $now,
 			'signature' => '',
 			'avatar' => '',
-			'recovery_codes' => \Model\User::generateRecoveryCodes($plainCodes),
+			'recovery_codes' => User::generateRecoveryCodes($plainCodes),
 			'remember_selector' => '',
 			'remember_hash' => '',
 			'totp_secret' => '',
 			'totp_enabled' => false,
 		);
-		if (!\Model\User::create($user)) {
+		if (!User::create($user)) {
 			self::renderRegisterError('注册失败：用户名已被占用。', $values);
 		}
 
 		// 自动登录（不邮件激活，SPEC §9 #6/#10）
-		\Auth::login($username, $password);
+		Auth::login($username, $password);
 		self::render('auth_recovery', array('codes' => $plainCodes, 'username' => $username));
 	}
 
@@ -121,38 +121,38 @@ class AuthController {
 	/* ---------------- 登出 ---------------- */
 
 	public function logoutPost() {
-		if (!\Auth::csrfCheck()) self::forbidden();
-		\Auth::logout();
+		if (!Auth::csrfCheck()) self::forbidden();
+		Auth::logout();
 		self::redirect('');
 	}
 
 	/* ---------------- 密码重置（recovery_codes，无邮件） ---------------- */
 
 	public function reset() {
-		if (\Auth::isLoggedIn()) self::redirect('');
+		if (Auth::isLoggedIn()) self::redirect('');
 		self::render('auth_reset', array('error' => null, 'username' => ''));
 	}
 
 	public function resetPost() {
-		if (!\Auth::csrfCheck()) self::forbidden();
+		if (!Auth::csrfCheck()) self::forbidden();
 
 		$username = (string) param('username', '', FALSE);
 		$code = (string) param('code', '', FALSE);
 		$password = (string) param('password', '', FALSE);
 		$confirm = (string) param('confirm', '', FALSE);
 
-		$user = \Model\User::get($username);
+		$user = User::get($username);
 		if ($user === null) {
 			self::renderResetError('用户不存在。', $username);
 		}
 		// 先验新密码，最后才核销恢复码——避免密码没填对白烧一个一次性码
-		if (!\Model\User::validPassword($password)) {
+		if (!User::validPassword($password)) {
 			self::renderResetError('新密码强度不足：至少 8 位，须同时包含字母和数字。', $username);
 		}
 		if ($password !== $confirm) {
 			self::renderResetError('两次输入的新密码不一致。', $username);
 		}
-		if (!\Model\User::consumeRecoveryCode($user, $code)) {
+		if (!User::consumeRecoveryCode($user, $code)) {
 			self::renderResetError('恢复码无效。', $username);
 		}
 
@@ -160,7 +160,7 @@ class AuthController {
 		// 重置后作废旧 RememberMe 令牌，防旧凭据残留
 		$user['remember_selector'] = '';
 		$user['remember_hash'] = '';
-		\Model\User::save($user['username'], $user);
+		User::save($user['username'], $user);
 
 		self::render('auth_login', array(
 			'error' => null,
@@ -180,7 +180,7 @@ class AuthController {
 
 		// CSRF token 一次性：被消费（或即将渲染表单）时补发
 		if (empty($_SESSION['token'])) {
-			$token = \CSRF::generate();
+			$token = CSRF::generate();
 		}
 
 		$header['title'] = ($header['title'] ?? $conf['title'] ?? 'FlooBB');
@@ -200,7 +200,7 @@ class AuthController {
 	}
 
 	private static function redirect($path) {
-		header('Location: ' . \Router::url($path));
+		header('Location: ' . Router::url($path));
 		exit;
 	}
 }

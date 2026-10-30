@@ -1,4 +1,4 @@
-<?php namespace Controller;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
@@ -9,10 +9,10 @@ class HomeController {
 
 	public function index() {
 		global $conf, $header;
-		$forums = \Model\Forum::listAll();
+		$forums = Forum::listAll();
 		// 版块卡片附最后活跃时间（该版块最新主题的 created）
 		foreach ($forums as &$f) {
-			$f['last_active'] = \Model\Forum::lastActive((string) ($f['id'] ?? ''));
+			$f['last_active'] = Forum::lastActive((string) ($f['id'] ?? ''));
 		}
 		unset($f);
 

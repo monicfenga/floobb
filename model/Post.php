@@ -1,4 +1,4 @@
-<?php namespace Model;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
@@ -10,15 +10,15 @@ class Post {
 
 	public static function get($postId) {
 		$postId = (string) $postId;
-		if ($postId === '' || !\flatDB::DBexists('posts', $postId)) return null;
-		return \flatDB::getDB('posts', $postId);
+		if ($postId === '' || !flatDB::DBexists('posts', $postId)) return null;
+		return flatDB::getDB('posts', $postId);
 	}
 
 	public static function listByTopic($topicId) {
 		$posts = array();
-		foreach (\flatDB::listDB('posts') as $file) {
+		foreach (flatDB::listDB('posts') as $file) {
 			$id = basename($file, '.dat.json');
-			$p = \flatDB::getDB('posts', $id);
+			$p = flatDB::getDB('posts', $id);
 			if (is_array($p) && (string) ($p['topic_id'] ?? '') === (string) $topicId) {
 				$posts[] = $p;
 			}
@@ -33,20 +33,20 @@ class Post {
 	 * 创建帖子：Markdown 渲染缓存进 content_html（SPEC §9 #4，后端 Parsedown）
 	 */
 	public static function create(array $data) {
-		$id = \flatDB::newEntry();
+		$id = flatDB::newEntry();
 		$data['id'] = $id;
 		$data['content_html'] = self::render($data['content_md'] ?? '');
-		\flatDB::saveDB('posts', $id, $data);
+		flatDB::saveDB('posts', $id, $data);
 		return $id;
 	}
 
 	public static function delete($postId) {
-		return \flatDB::removeDB('posts', (string) $postId);
+		return flatDB::removeDB('posts', (string) $postId);
 	}
 
 	public static function save($postId, array $data) {
 		$data['content_html'] = self::render($data['content_md'] ?? '');
-		return \flatDB::saveDB('posts', $postId, $data);
+		return flatDB::saveDB('posts', $postId, $data);
 	}
 
 	/**
@@ -54,8 +54,8 @@ class Post {
 	 */
 	public static function countByAuthor($author) {
 		$n = 0;
-		foreach (\flatDB::listDB('posts') as $file) {
-			$p = \flatDB::getDB('posts', basename($file, '.dat.json'));
+		foreach (flatDB::listDB('posts') as $file) {
+			$p = flatDB::getDB('posts', basename($file, '.dat.json'));
 			if (is_array($p) && (string) ($p['author'] ?? '') === (string) $author) $n++;
 		}
 		return $n;
@@ -65,7 +65,7 @@ class Post {
 	 * Markdown → HTML（Parsedown Extra + safeMode，服务端消毒）
 	 */
 	public static function render($markdown) {
-		$parsedown = new \ParsedownExtra();
+		$parsedown = new ParsedownExtra();
 		$parsedown->setSafeMode(true);
 		$parsedown->setMarkupEscaped(true);
 		$parsedown->setBreaksEnabled(true);

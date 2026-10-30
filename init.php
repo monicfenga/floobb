@@ -90,13 +90,12 @@ require_once LIB_DIR . 'files.lib.php';
  * @return void
  */
 function floo_spl_autoload($class) {
-	if (strpos($class, 'Model\\') === 0) {
-		$file = PATH_ROOT . DS . 'model' . DS . substr($class, 6) . '.php';
+	// 裸类名，全项目禁 namespace：ForumController → app/forum.controller.php；Forum → model/Forum.php
+	if (substr($class, -10) === 'Controller') {
+		$file = PATH_ROOT . DS . 'app' . DS . strtolower(substr($class, 0, -10)) . '.controller.php';
 		is_file($file) and require_once $file;
-	} elseif (strpos($class, 'Controller\\') === 0) {
-		// Controller\HomeController → app/home.controller.php
-		$name = substr($class, 11, -10); // 去前缀 Model\ / 后缀 Controller
-		$file = PATH_ROOT . DS . 'app' . DS . strtolower($name) . '.controller.php';
+	} else {
+		$file = PATH_ROOT . DS . 'model' . DS . $class . '.php';
 		is_file($file) and require_once $file;
 	}
 }

@@ -1,4 +1,4 @@
-<?php namespace Controller;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
@@ -9,7 +9,7 @@ defined('FLOO') or die('potato'); // NOOOO
  * - edit   GET/POST /post/edit/{pid}  编辑（所有者或 level≥2；content_md 重写重渲染 + 记 edited）
  * - delete POST /post/delete/{pid}  删除（作者或 level≥2；计数扣减；主题空则连带删主题）
  *
- * 硬规则：写操作 \Auth::csrfCheck() 失败 403；输入一律 param()。
+ * 硬规则：写操作 Auth::csrfCheck() 失败 403；输入一律 param()。
  */
 class PostController {
 
@@ -25,19 +25,19 @@ class PostController {
 	}
 
 	public function createPost($tid = '') {
-		if (!\Auth::csrfCheck()) self::forbidden();
-		$user = \Auth::user();
+		if (!Auth::csrfCheck()) self::forbidden();
+		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
 
-		$topic = \Model\Topic::get($tid);
+		$topic = Topic::get($tid);
 		if ($topic === null) self::notFound('主题不存在。');
-		if (\Model\Topic::isLocked($topic)) self::forbidden('主题已锁定，无法回帖。');
+		if (Topic::isLocked($topic)) self::forbidden('主题已锁定，无法回帖。');
 
 		$content = (string) param('content', '', FALSE);
 		if (trim($content) === '') self::redirect('topic/view/' . rawurlencode((string) $tid));
 
 		$forumId = (string) ($topic['forum_id'] ?? '');
-		$pid = \Model\Post::create(array(
+		$pid = Post::create(array(
 			'topic_id' => (string) $tid,
 			'forum_id' => $forumId,
 			'author' => $user['username'],
@@ -47,11 +47,11 @@ class PostController {
 		));
 		// topic.post_ids 维护 + 版块 post_count+1
 		$topic['post_ids'][] = $pid;
-		\Model\Topic::save((string) $tid, $topic);
-		if ($forumId !== '') \Model\Forum::adjustCounts($forumId, 0, 1);
+		Topic::save((string) $tid, $topic);
+		if ($forumId !== '') Forum::adjustCounts($forumId, 0, 1);
 
 		// 跳到最后一页（时间正序分页，每页 10）
-		$n = count(\Model\Post::listByTopic((string) $tid));
+		$n = count(Post::listByTopic((string) $tid));
 		$lastPage = max(1, (int) ceil($n / 10));
 		self::redirect('topic/view/' . rawurlencode((string) $tid) . '?page=' . $lastPage);
 	}
@@ -59,13 +59,13 @@ class PostController {
 	/* ---------------- 编辑 ---------------- */
 
 	public function edit($pid = '') {
-		$user = \Auth::user();
+		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
-		$post = \Model\Post::get($pid);
+		$post = Post::get($pid);
 		if ($post === null) self::notFound('帖子不存在。');
 		if ($user['username'] !== ($post['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
 
-		$topic = \Model\Topic::get($post['topic_id'] ?? '');
+		$topic = Topic::get($post['topic_id'] ?? '');
 		self::render('post_edit', array(
 			'error' => null,
 			'post' => $post,
@@ -74,21 +74,21 @@ class PostController {
 	}
 
 	public function editPost($pid = '') {
-		if (!\Auth::csrfCheck()) self::forbidden();
-		$user = \Auth::user();
+		if (!Auth::csrfCheck()) self::forbidden();
+		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
-		$post = \Model\Post::get($pid);
+		$post = Post::get($pid);
 		if ($post === null) self::notFound('帖子不存在。');
 		if ($user['username'] !== ($post['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
 
 		$content = (string) param('content', '', FALSE);
 		if (trim($content) === '') {
-			self::render('post_edit', array('error' => '正文不能为空。', 'post' => $post, 'topic' => \Model\Topic::get($post['topic_id'] ?? '')));
+			self::render('post_edit', array('error' => '正文不能为空。', 'post' => $post, 'topic' => Topic::get($post['topic_id'] ?? '')));
 		}
 
 		$post['content_md'] = $content;
 		$post['edited'] = date('Y-m-d\TH:i:s');
-		\Model\Post::save((string) $pid, $post); // save() 内部重渲染 content_html
+		Post::save((string) $pid, $post); // save() 内部重渲染 content_html
 
 		self::redirect('topic/view/' . rawurlencode((string) ($post['topic_id'] ?? '')) . '#p' . rawurlencode((string) $pid));
 	}
@@ -96,19 +96,19 @@ class PostController {
 	/* ---------------- 删除 ---------------- */
 
 	public function deletePost($pid = '') {
-		if (!\Auth::csrfCheck()) self::forbidden();
-		$user = \Auth::user();
+		if (!Auth::csrfCheck()) self::forbidden();
+		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
-		$post = \Model\Post::get($pid);
+		$post = Post::get($pid);
 		if ($post === null) self::notFound('帖子不存在。');
 		if ($user['username'] !== ($post['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
 
 		$topicId = (string) ($post['topic_id'] ?? '');
 		$forumId = (string) ($post['forum_id'] ?? '');
-		\Model\Post::delete($pid);
+		Post::delete($pid);
 
 		// topic.post_ids 维护
-		$topic = \Model\Topic::get($topicId);
+		$topic = Topic::get($topicId);
 		$remaining = 0;
 		if ($topic !== null) {
 			$ids = array_values(array_filter((array) ($topic['post_ids'] ?? array()), function ($id) use ($pid) {
@@ -116,17 +116,17 @@ class PostController {
 			}));
 			$topic['post_ids'] = $ids;
 			$remaining = count($ids);
-			\Model\Topic::save($topicId, $topic);
+			Topic::save($topicId, $topic);
 		}
-		if ($forumId !== '') \Model\Forum::adjustCounts($forumId, 0, -1);
+		if ($forumId !== '') Forum::adjustCounts($forumId, 0, -1);
 
 		// 主题下已无帖子 → 连带删主题
 		if ($topic !== null && $remaining === 0) {
 			if ($forumId !== '') {
-				\Model\Forum::adjustCounts($forumId, -1, 0);
-				if (!empty($topic['sticky'])) \Model\Forum::setStickyRef($forumId, $topicId, false);
+				Forum::adjustCounts($forumId, -1, 0);
+				if (!empty($topic['sticky'])) Forum::setStickyRef($forumId, $topicId, false);
 			}
-			\Model\Topic::delete($topicId);
+			Topic::delete($topicId);
 			self::redirect('forum/view/' . rawurlencode($forumId));
 		}
 		self::redirect('topic/view/' . rawurlencode($topicId));
@@ -139,7 +139,7 @@ class PostController {
 		extract($vars);
 
 		if (empty($_SESSION['token'])) {
-			$token = \CSRF::generate();
+			$token = CSRF::generate();
 		}
 		$header['title'] = $header['title'] ?? ($conf['title'] ?? 'FlooBB');
 
@@ -156,7 +156,7 @@ class PostController {
 	}
 
 	private static function redirect($path) {
-		header('Location: ' . \Router::url($path));
+		header('Location: ' . Router::url($path));
 		exit;
 	}
 
@@ -165,7 +165,7 @@ class PostController {
 		header('Content-Type: text/html; charset=utf-8');
 		echo '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>404</title>';
 		echo '<body class="container py-5"><h1>404</h1><p>' . htmlspecialchars($msg) . '</p>';
-		echo '<p><a href="' . \Router::url() . '">返回首页</a></p></body></html>';
+		echo '<p><a href="' . Router::url() . '">返回首页</a></p></body></html>';
 		exit;
 	}
 }

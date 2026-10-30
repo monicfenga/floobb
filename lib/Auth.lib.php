@@ -49,7 +49,7 @@ class Auth {
 	 */
 	public static function user() {
 		if (empty($_SESSION['auth_user'])) return null;
-		$user = Model\User::get($_SESSION['auth_user']);
+		$user = User::get($_SESSION['auth_user']);
 		if ($user === null) {
 			self::clearSession();
 			return null;
@@ -100,7 +100,7 @@ class Auth {
 			return false;
 		}
 
-		$user = Model\User::get($username);
+		$user = User::get($username);
 		if ($user === null || !password_verify((string) $password, (string) ($user['password_hash'] ?? ''))) {
 			self::recordFail($ip);
 			$error = 'auth.failed';
@@ -132,14 +132,14 @@ class Auth {
 	 * 签发 RememberMe Cookie（登录成功后调用）
 	 */
 	public static function remember($username) {
-		$user = Model\User::get($username);
+		$user = User::get($username);
 		if ($user === null) return false;
 
 		$selector = bin2hex(random_bytes(9));
 		$validator = bin2hex(random_bytes(32));
 		$user['remember_selector'] = $selector;
 		$user['remember_hash'] = hash('sha256', $validator);
-		Model\User::save($username, $user);
+		User::save($username, $user);
 
 		$expire = time() + self::REMEMBER_DAYS * 86400;
 		setcookie(self::REMEMBER_COOKIE, $selector . ':' . $validator, [
@@ -165,7 +165,7 @@ class Auth {
 		// 按 selector 定位用户：全扫 users 目录（flat-file 量级小，可接受）
 		foreach (flatDB::listDB('users') as $file) {
 			$username = basename($file, '.dat.json');
-			$user = Model\User::get($username);
+			$user = User::get($username);
 			if ($user === null || ($user['remember_selector'] ?? '') !== $selector) continue;
 			if (hash_equals((string) ($user['remember_hash'] ?? ''), hash('sha256', $validator))) {
 				$_SESSION['auth_user'] = $username;
@@ -184,7 +184,7 @@ class Auth {
 		if ($user !== null && !empty($user['remember_selector'])) {
 			$user['remember_selector'] = '';
 			$user['remember_hash'] = '';
-			Model\User::save($user['username'], $user);
+			User::save($user['username'], $user);
 		}
 		if (!empty($_COOKIE[self::REMEMBER_COOKIE])) {
 			setcookie(self::REMEMBER_COOKIE, '', ['expires' => time() - 3600, 'path' => '/']);

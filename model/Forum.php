@@ -1,4 +1,4 @@
-<?php namespace Model;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
@@ -10,8 +10,8 @@ class Forum {
 
 	public static function get($forumId) {
 		$forumId = (string) $forumId;
-		if ($forumId === '' || !\flatDB::DBexists('forums', $forumId)) return null;
-		return \flatDB::getDB('forums', $forumId);
+		if ($forumId === '' || !flatDB::DBexists('forums', $forumId)) return null;
+		return flatDB::getDB('forums', $forumId);
 	}
 
 	public static function exists($forumId) {
@@ -23,9 +23,9 @@ class Forum {
 	 */
 	public static function listAll() {
 		$forums = array();
-		foreach (\flatDB::listDB('forums') as $file) {
+		foreach (flatDB::listDB('forums') as $file) {
 			$id = basename($file, '.dat.json');
-			$f = \flatDB::getDB('forums', $id);
+			$f = flatDB::getDB('forums', $id);
 			if (is_array($f)) $forums[] = $f;
 		}
 		usort($forums, function ($a, $b) {
@@ -35,17 +35,19 @@ class Forum {
 	}
 
 	public static function save($forumId, array $data) {
-		return \flatDB::saveDB('forums', $forumId, $data);
+		return flatDB::saveDB('forums', $forumId, $data);
 	}
 
 	public static function create(array $data) {
-		$id = \flatDB::newEntry();
+		// 版块 ID = slug（可读 URL）；主题/帖子仍用 flatDB::newEntry()
+		$id = (string) ($data['slug'] ?? '');
+		if ($id === '' || self::exists($id)) return null;
 		$data['id'] = $id;
 		$data['order'] = (int) ($data['order'] ?? count(self::listAll()));
 		$data['topic_count'] = (int) ($data['topic_count'] ?? 0);
 		$data['post_count'] = (int) ($data['post_count'] ?? 0);
 		$data['sticky_topic_ids'] = (array) ($data['sticky_topic_ids'] ?? array());
-		\flatDB::saveDB('forums', $id, $data);
+		flatDB::saveDB('forums', $id, $data);
 		return $id;
 	}
 
@@ -54,8 +56,8 @@ class Forum {
 	 */
 	public static function lastActive($forumId) {
 		$latest = '';
-		foreach (\flatDB::listDB('topics') as $file) {
-			$t = \flatDB::getDB('topics', basename($file, '.dat.json'));
+		foreach (flatDB::listDB('topics') as $file) {
+			$t = flatDB::getDB('topics', basename($file, '.dat.json'));
 			if (is_array($t) && (string) ($t['forum_id'] ?? '') === (string) $forumId) {
 				$c = (string) ($t['created'] ?? '');
 				if ($c > $latest) $latest = $c;

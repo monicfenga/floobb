@@ -1,4 +1,4 @@
-<?php namespace Controller;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
@@ -17,7 +17,7 @@ class UserController {
 	public function view($name = '') {
 		global $conf, $header;
 
-		$user = \Model\User::get($name);
+		$user = User::get($name);
 		if ($user === null) {
 			http_response_code(404);
 			$header['title'] = '用户不存在';
@@ -30,8 +30,8 @@ class UserController {
 
 		$header['title'] = (string) ($user['nickname'] ?? $user['username']);
 		$stats = array(
-			'topics' => \Model\Topic::countByAuthor($user['username']),
-			'posts' => \Model\Post::countByAuthor($user['username']),
+			'topics' => Topic::countByAuthor($user['username']),
+			'posts' => Post::countByAuthor($user['username']),
 		);
 
 		require THEME_DIR . $conf['theme'] . DS . 'header.tpl.php';
@@ -52,6 +52,6 @@ class UserController {
 		http_response_code(501);
 		echo '<!doctype html><meta charset="utf-8"><title>501</title>';
 		echo '<p>Phase 0 骨架占位：' . htmlspecialchars($msg) . '</p>';
-		echo '<p><a href="' . \Router::url() . '">返回首页</a></p>';
+		echo '<p><a href="' . Router::url() . '">返回首页</a></p>';
 	}
 }

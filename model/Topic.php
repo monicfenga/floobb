@@ -1,4 +1,4 @@
-<?php namespace Model;
+<?php
 
 defined('FLOO') or die('potato'); // NOOOO
 
@@ -10,8 +10,8 @@ class Topic {
 
 	public static function get($topicId) {
 		$topicId = (string) $topicId;
-		if ($topicId === '' || !\flatDB::DBexists('topics', $topicId)) return null;
-		return \flatDB::getDB('topics', $topicId);
+		if ($topicId === '' || !flatDB::DBexists('topics', $topicId)) return null;
+		return flatDB::getDB('topics', $topicId);
 	}
 
 	/**
@@ -19,9 +19,9 @@ class Topic {
 	 */
 	public static function listByForum($forumId) {
 		$topics = array();
-		foreach (\flatDB::listDB('topics') as $file) {
+		foreach (flatDB::listDB('topics') as $file) {
 			$id = basename($file, '.dat.json');
-			$t = \flatDB::getDB('topics', $id);
+			$t = flatDB::getDB('topics', $id);
 			if (is_array($t) && (string) ($t['forum_id'] ?? '') === (string) $forumId) {
 				$topics[] = $t;
 			}
@@ -34,7 +34,7 @@ class Topic {
 	}
 
 	public static function save($topicId, array $data) {
-		return \flatDB::saveDB('topics', $topicId, $data);
+		return flatDB::saveDB('topics', $topicId, $data);
 	}
 
 	/**
@@ -42,21 +42,21 @@ class Topic {
 	 */
 	public static function countByAuthor($author) {
 		$n = 0;
-		foreach (\flatDB::listDB('topics') as $file) {
-			$t = \flatDB::getDB('topics', basename($file, '.dat.json'));
+		foreach (flatDB::listDB('topics') as $file) {
+			$t = flatDB::getDB('topics', basename($file, '.dat.json'));
 			if (is_array($t) && (string) ($t['author'] ?? '') === (string) $author) $n++;
 		}
 		return $n;
 	}
 
 	public static function delete($topicId) {
-		return \flatDB::removeDB('topics', (string) $topicId);
+		return flatDB::removeDB('topics', (string) $topicId);
 	}
 
 	public static function create(array $data) {
-		$id = \flatDB::newEntry();
+		$id = flatDB::newEntry();
 		$data['id'] = $id;
-		\flatDB::saveDB('topics', $id, $data);
+		flatDB::saveDB('topics', $id, $data);
 		return $id;
 	}
 
