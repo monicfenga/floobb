@@ -55,6 +55,8 @@
 </div>
 <?php endif; ?>
 
+<?php require __DIR__ . DS . '_poll.tpl.php'; ?>
+
 <?php foreach ($posts as $row): $p = $row['post']; ?>
 <article class="card mb-2" id="p<?= $p['id'] ?>">
 	<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">

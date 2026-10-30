@@ -81,6 +81,40 @@ class TopicController {
 			$allForums[(string) ($f['id'] ?? '')] = (string) ($f['name'] ?? '');
 		}
 
+		// 投票数据（先投后见：未投者只给表单不给结果，模板分流）
+		$pollView = null;
+		$poll = empty($topic['poll_id']) ? null : Poll::get((string) $topic['poll_id']);
+		if ($poll !== null) {
+			$voted = $user !== null && Poll::hasVoted($poll, $user['username']);
+			$showResult = $voted || !empty($poll['closed']) || Poll::isExpired($poll);
+			$optionsTotal = 0;
+			foreach ((array) ($poll['options'] ?? array()) as $opt) {
+				$optionsTotal += (int) ($opt['votes'] ?? 0);
+			}
+			$optionsView = array();
+			foreach ((array) ($poll['options'] ?? array()) as $i => $opt) {
+				$n = (int) ($opt['votes'] ?? 0);
+				$optionsView[] = array(
+					'index' => $i,
+					'text' => (string) ($opt['text'] ?? ''),
+					'votes' => $n,
+					'pct' => $optionsTotal > 0 ? (int) round($n * 100 / $optionsTotal) : 0,
+					'checked' => $voted && in_array($i, (array) (($poll['votes'] ?? array())[$user['username']] ?? array()), true),
+				);
+			}
+			$pollView = array(
+				'poll' => $poll,
+				'show_result' => $showResult,
+				'voted' => $voted,
+				'expired' => Poll::isExpired($poll),
+				'total' => $optionsTotal,
+				'voters_total' => count((array) ($poll['votes'] ?? array())),
+				'options' => $optionsView,
+				'voters' => $showResult ? Poll::voters($poll) : array(),
+				'can_close' => $user !== null && ((string) ($topic['author'] ?? '') === (string) $user['username'] || (int) $user['level'] >= 2) && empty($poll['closed']) && !Poll::isExpired($poll),
+			);
+		}
+
 		$header['title'] = $topic['title'] . ' - ' . ($conf['title'] ?? 'FlooBB');
 		self::render('topic_view', array(
 			'topic' => $topic,
@@ -90,6 +124,7 @@ class TopicController {
 			'filter' => $filter,
 			'pageLinks' => $pageLinks,
 			'allForums' => $allForums,
+			'pollView' => $pollView,
 			'cur_page' => $page,
 			'total_pages' => $total,
 		));
@@ -116,6 +151,20 @@ class TopicController {
 		$content = (string) param('content', '', FALSE);
 		$values = array('fid' => $fid, 'title' => $title, 'content' => $content);
 
+		// 投票字段（is_vote=1 启用；textarea 一行一选项）
+		$isVote = (string) param('is_vote', '', FALSE) === '1';
+		$pollQuestion = trim((string) param('poll_question', '', FALSE));
+		$pollOptionsRaw = (string) param('poll_options', '', FALSE);
+		$pollMax = (int) param('poll_max', 1, FALSE);
+		$pollDays = (int) param('poll_days', 7, FALSE);
+		$pollMode = (string) param('poll_mode', 'single', FALSE); // single|multi
+		$values['is_vote'] = $isVote ? '1' : '';
+		$values['poll_question'] = $pollQuestion;
+		$values['poll_options'] = $pollOptionsRaw;
+		$values['poll_max'] = $pollMax;
+		$values['poll_days'] = $pollDays;
+		$values['poll_mode'] = $pollMode;
+
 		$renderError = function ($msg) use ($values) {
 			self::render('topic_create', array(
 				'error' => $msg,
@@ -127,6 +176,32 @@ class TopicController {
 		if (!Forum::exists($fid)) $renderError('请选择有效的目标版块。');
 		if ($title === '' || mb_strlen($title) > 120) $renderError('标题不能为空且不超过 120 字符。');
 		if (trim($content) === '') $renderError('正文不能为空。');
+
+		// 投票校验（建票只在发主题时一笔提交，用户决议）
+		$pollData = null;
+		if ($isVote) {
+			$options = array_values(array_unique(array_filter(array_map('trim', explode("\n", str_replace("\r", "\n", $pollOptionsRaw))), function ($s) {
+				return $s !== '';
+			})));
+			if ($pollQuestion === '') $renderError('投票问题不能为空。');
+			if (count($options) < Poll::MIN_OPTIONS || count($options) > Poll::MAX_OPTIONS) {
+				$renderError('投票选项需 2-8 个（每行一个，去重后）。');
+			}
+			if ($pollMode === 'multi') {
+				if ($pollMax < 2 || $pollMax > count($options)) $renderError('最多可选数需在 2 与选项数之间。');
+			} else {
+				$pollMax = 1;
+			}
+			if ($pollDays < 1 || $pollDays > 365) $renderError('投票截止需 1-365 天。');
+			$pollData = array(
+				'question' => $pollQuestion,
+				'options' => array_map(function ($t) {
+					return array('text' => $t, 'votes' => 0);
+				}, $options),
+				'max_choices' => $pollMax,
+				'deadline' => date('Y-m-d\TH:i:s', time() + $pollDays * 86400),
+			);
+		}
 
 		$now = date('Y-m-d\TH:i:s');
 		$tid = Topic::create(array(
@@ -141,6 +216,22 @@ class TopicController {
 			'poll_id' => null,
 			'post_ids' => array(),
 		));
+
+		// 补偿式写入（用户决议）：建 topic → 建 poll → 回写 poll_id；任一步失败删 topic 无孤儿
+		if ($pollData !== null) {
+			if (!Poll::create($tid, $pollData)) {
+				Topic::delete($tid);
+				$renderError('投票创建失败，请重试。');
+			}
+			$topic = Topic::get($tid);
+			$topic['poll_id'] = $tid;
+			if (!Topic::save($tid, $topic)) {
+				flatDB::removeDB('polls', $tid);
+				Topic::delete($tid);
+				$renderError('投票关联失败，请重试。');
+			}
+		}
+
 		$pid = Post::create(array(
 			'topic_id' => $tid,
 			'forum_id' => $fid,

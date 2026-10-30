@@ -33,6 +33,55 @@
 		<span id="previewHelp" class="form-label d-block">预览</span>
 		<div class="border rounded p-3 post-content" id="preview" aria-describedby="previewHelp" aria-live="polite"></div>
 	</div>
+
+	<?php /* 附带投票（可选；建票只在发主题时一笔提交） */ ?>
+	<div class="card mb-3">
+		<div class="card-header">
+			<div class="form-check mb-0">
+				<input class="form-check-input" type="checkbox" id="t-isvote" name="is_vote" value="1"
+					<?= ($values['is_vote'] ?? '') === '1' ? 'checked' : '' ?>
+					onchange="document.getElementById('poll-fields').hidden = !this.checked;">
+				<label class="form-check-label" for="t-isvote">附带投票</label>
+			</div>
+		</div>
+		<div class="card-body" id="poll-fields" <?= ($values['is_vote'] ?? '') === '1' ? '' : 'hidden' ?>>
+			<div class="mb-3">
+				<label for="t-poll-q" class="form-label">投票问题</label>
+				<input type="text" class="form-control" id="t-poll-q" name="poll_question" maxlength="120"
+					value="<?= htmlspecialchars($values['poll_question'] ?? '') ?>">
+			</div>
+			<div class="mb-3">
+				<label for="t-poll-opts" class="form-label">投票选项（每行一个，2-8 个，自动去重去空行）</label>
+				<textarea class="form-control" id="t-poll-opts" name="poll_options" rows="4"><?= htmlspecialchars($values['poll_options'] ?? '') ?></textarea>
+			</div>
+			<div class="row g-3">
+				<div class="col-sm-4">
+					<label class="form-label d-block">类型</label>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="poll_mode" id="t-poll-single" value="single"
+							<?= ($values['poll_mode'] ?? 'single') !== 'multi' ? 'checked' : '' ?>>
+						<label class="form-check-label" for="t-poll-single">单选</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="poll_mode" id="t-poll-multi" value="multi"
+							<?= ($values['poll_mode'] ?? '') === 'multi' ? 'checked' : '' ?>>
+						<label class="form-check-label" for="t-poll-multi">多选</label>
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<label for="t-poll-max" class="form-label">最多可选（多选时）</label>
+					<input type="number" class="form-control" id="t-poll-max" name="poll_max" min="2" max="8"
+						value="<?= (int) ($values['poll_max'] ?? 2) ?>">
+				</div>
+				<div class="col-sm-4">
+					<label for="t-poll-days" class="form-label">投票截止（天数，1-365）</label>
+					<input type="number" class="form-control" id="t-poll-days" name="poll_days" min="1" max="365"
+						value="<?= (int) ($values['poll_days'] ?? 7) ?>">
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<button type="submit" class="btn btn-primary">发布主题</button>
 </form>
 
