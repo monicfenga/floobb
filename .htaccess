@@ -10,3 +10,8 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?r=$1 [QSA,L]
 
 </IfModule>
+
+# 安装向导模板是 PHP 源码，禁止被当静态文本直接下载
+<FilesMatch "\.file$">
+	Require all denied
+</FilesMatch>

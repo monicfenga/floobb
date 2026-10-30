@@ -1,0 +1,125 @@
+<?php
+/**
+ * 安装向导模板【由 init.php 守卫在 config 缺失时自动复制为根目录 install.php】
+ *
+ * - 自包含直访脚本：不经 index.php/init.php（config 不存在时 init 会 302 到本文件生成物）
+ * - 写 data/config/config.dat.json + 首个管理员（level=3，SPEC §4）
+ * - 管理员 recovery_codes 只存哈希，明文仅成功页展示一次（无邮件，SPEC §9 #10）
+ * - 自锁：config 存在即拒绝运行；init.php 每次请求会自毁根目录 install.php
+ * - 本模板文件以 .file 结尾防直访执行；.htaccess 已对 *.file 拒绝外部下载
+ */
+define('FLOO', TRUE);
+
+const DS = DIRECTORY_SEPARATOR;
+const PATH_ROOT = __DIR__;
+const DATA_DIR = PATH_ROOT . DS . 'data' . DS;
+if (!defined('DEBUG_MODE')) define('DEBUG_MODE', TRUE); // 与 init.php 开发期保持一致
+
+require_once PATH_ROOT . DS . 'lib' . DS . 'Flatdb.lib.php';
+require_once PATH_ROOT . DS . 'lib' . DS . 'CSRF.lib.php';
+require_once PATH_ROOT . DS . 'model' . DS . 'User.php';
+
+if (!session_id()) session_start();
+
+$error = null;
+$done = false;
+$codes = array();
+$admin = '';
+
+// 已安装：拒绝重复安装
+$installed = \flatDB::DBexists('config', 'config');
+
+if (!$installed && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+	if (!\CSRF::check((string) ($_POST['token'] ?? ''))) {
+		http_response_code(403);
+		exit('403 Forbidden: CSRF token 无效或缺失。');
+	}
+
+	$admin = trim((string) ($_POST['username'] ?? ''));
+	$password = (string) ($_POST['password'] ?? '');
+	$confirm = (string) ($_POST['confirm'] ?? '');
+	$email = trim((string) ($_POST['email'] ?? ''));
+	$title = trim((string) ($_POST['title'] ?? '')) ?: 'FlooBB';
+
+	if (!\Model\User::validName($admin)) {
+		$error = '管理员用户名不合法：字母开头，仅字母/数字/下划线，3-24 位。';
+	} elseif (\Model\User::exists($admin)) {
+		$error = '用户名已被占用。';
+	} elseif (!\Model\User::validPassword($password)) {
+		$error = '密码强度不足：至少 8 位，须同时包含字母和数字。';
+	} elseif ($password !== $confirm) {
+		$error = '两次输入的密码不一致。';
+	} else {
+		$now = date('Y-m-d\TH:i:s');
+		\flatDB::saveDB('config', 'config', array(
+			'title' => $title,
+			'description' => '',
+			'lang' => 'zh-CN',
+			'theme' => 'bootstrap',
+			'footer_text' => '',
+		));
+		$plainCodes = array();
+		\Model\User::create(array(
+			'id' => bin2hex(random_bytes(6)),
+			'username' => $admin,
+			'nickname' => $admin, // 昵称默认=用户名（SPEC §9 #12）
+			'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+			'email' => $email,
+			'level' => 3, // 首个管理员（SPEC §4）
+			'registered' => $now,
+			'last_seen' => $now,
+			'signature' => '',
+			'avatar' => '',
+			'recovery_codes' => \Model\User::generateRecoveryCodes($plainCodes),
+			'remember_selector' => '',
+			'remember_hash' => '',
+			'totp_secret' => '',
+			'totp_enabled' => false,
+		));
+		$codes = $plainCodes;
+		$done = true;
+	}
+}
+
+$token = $_SESSION['token'] ?? \CSRF::generate();
+?><!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>安装 FlooBB</title>
+<style>
+body { font: 16px/1.6 system-ui, sans-serif; max-width: 32rem; margin: 3rem auto; padding: 0 1rem; color: #1a1a1a; }
+input { width: 100%; box-sizing: border-box; padding: .5rem; margin: .25rem 0 1rem; border: 1px solid #bbb; border-radius: 4px; }
+button { padding: .5rem 1.5rem; }
+.alert { padding: .75rem 1rem; border-radius: 4px; margin-bottom: 1rem; }
+.err { background: #fdecea; color: #8b1d12; }
+.ok { background: #e6f4ea; color: #0d5c2f; }
+code { background: #f2f2f2; padding: .1rem .3rem; }
+</style>
+</head>
+<body>
+<h1>安装 FlooBB</h1>
+<?php if ($installed): ?>
+<div class="alert err">论坛已安装。如需重装请手动删除 data/config/config.dat.json（会清空数据，慎做）。本文件随后会被自动删除。</div>
+<?php elseif ($done): ?>
+<div class="alert ok">安装完成！管理员 <strong><?= htmlspecialchars($admin) ?></strong> 已创建，<a href="./">前往登录</a>。</div>
+<h2>账户恢复码（仅显示一次，请立即保存）</h2>
+<p>忘记密码时的唯一自助重置手段（本站不发邮件），每个一次性：</p>
+<ul>
+<?php foreach ($codes as $c): ?><li><code><?= htmlspecialchars($c) ?></code></li><?php endforeach; ?>
+</ul>
+<?php else: ?>
+<?php if ($error): ?><div class="alert err"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+<form method="post" action="install.php">
+	<input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+	<label>站点标题<br><input type="text" name="title" value="FlooBB" required></label>
+	<label>管理员用户名<br><input type="text" name="username" required autofocus autocomplete="username"></label>
+	<label>管理员邮箱（选填）<br><input type="email" name="email" autocomplete="email"></label>
+	<label>密码（≥8 位，含字母和数字）<br><input type="password" name="password" required autocomplete="new-password"></label>
+	<label>确认密码<br><input type="password" name="confirm" required autocomplete="new-password"></label>
+	<button type="submit">安装</button>
+</form>
+<?php endif; ?>
+</body>
+</html>

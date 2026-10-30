@@ -120,6 +120,12 @@ if (file_exists(DATA_DIR . 'key.php')) include(DATA_DIR . 'key.php');
  *---------------------------------------------------------------
  */
 if (!flatDB::DBexists('config', 'config')) {
+	// 从模板（重新）生成安装向导再跳转：install.php 属临时生成文件，装完自毁，
+	// 重装 = 删 config 后访问任意页即可自动重建（Phase 0 原思路，新栈内容）
+	if (!is_file(PATH_ROOT . DS . 'install.php')) {
+		$tpl = @file_get_contents(LIB_DIR . 'install.file');
+		if ($tpl !== false) @file_put_contents(PATH_ROOT . DS . 'install.php', $tpl);
+	}
 	header('Location: ' . APP_BASE . '/install.php');
 	exit;
 } else {

@@ -15,6 +15,7 @@
 - **无构建步骤**：Bootstrap 5 / HTMX / Alpine / marked.js / DOMPurify / Google Code Prettify 全走 CDN 或本地 vendored；禁止 Node / Vite / Python 构建链，禁止 SPA 框架。
 - model 层 = **关联数组 + 静态仓储函数**（`Model\Topic::get()` 返回数组），禁止 OOP 实体类。
 - 路由 = 显式三位置契约 `[控制器, 动作(缺省 index), ...参数]`，PATH_INFO 传输 + `?r=` 回退；page / sort / filter 等修饰符一律 query string，不进路径。
+- **站内 URL 一律走 `Router::url()` / `APP_BASE` 绝对路径（模板 href/src/action、控制器 redirect、库输出的资源 URL 都算）；禁止相对路径与手写 `/xxx` 根路径**。子文件夹部署（/floobb/）下相对路径会被伪静态 URL 吞段、手写根路径会丢 /floobb 前缀——该坑已出现三次（导航、验证码图片、及同类风险），验收必查。
 - **禁止服务器发邮件**：激活 / 验证码 / 重置一律不做邮件（用 recovery_codes；TOTP 是 Phase 3）。
 - 本地开发只走 Laragon：`http://127.0.0.1/floobb/`（Apache :80 已在跑）。**禁止自起 python / node / 裸 php.exe 临时服务器**。
 - 命令按 pwsh 写；Windows 10 环境。
