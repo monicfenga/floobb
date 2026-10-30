@@ -60,8 +60,9 @@ class TopicController {
 			$postsView[] = array(
 				'post' => $p,
 				'author_nickname' => $author['nickname'] ?? ($p['author'] ?? ''),
-				'author_avatar' => (string) ($author['avatar'] ?? ''),
-				'author_bio' => (string) ($author['bio'] ?? ''),
+			'author_avatar' => (string) ($author['avatar'] ?? ''),
+			'author_bio' => (string) ($author['bio'] ?? ''),
+			'author_sig' => (string) ($author['sig'] ?? ''),
 				'can_edit' => $isOwner || ($user !== null && $user['level'] >= 2),
 				'can_delete' => $isOwner || ($user !== null && $user['level'] >= 2),
 			);
