@@ -1,5 +1,5 @@
 <?php
-include("common.php");
+//include("common.php");
 include_once("class.Poll.php");
 
 $topic = new Topic(file_get_contents("db/Topics/" . $_GET['topicId'] . "/topic.dat"));

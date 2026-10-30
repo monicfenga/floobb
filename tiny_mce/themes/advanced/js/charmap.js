@@ -1,7 +1,7 @@
 tinyMCEPopup.requireLangPack();
 
 var charmap = [
-	['&nbsp;',    '&#160;',  true, 'no-break space'],
+	[' ',    '&#160;',  true, 'no-break space'],
 	['&amp;',     '&#38;',   true, 'ampersand'],
 	['&quot;',    '&#34;',   true, 'quotation mark'],
 // finance
@@ -288,7 +288,7 @@ function renderCharMapHTML() {
 	if (cols % charsPerRow > 0) {
 		var padd = charsPerRow - (cols % charsPerRow);
 		for (var i=0; i<padd-1; i++)
-			html += '<td width="' + tdWidth + '" height="' + tdHeight + '" class="charmap">&nbsp;</td>';
+			html += '<td width="' + tdWidth + '" height="' + tdHeight + '" class="charmap"> </td>';
 	}
 
 	html += '</tr></table>';

@@ -1,0 +1,76 @@
+[30-May-2023 06:15:29 UTC] PHP Warning:  require_once(H:\laragon\www\floobb\lib\Flatdb.lib.php): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 72
+[30-May-2023 06:15:29 UTC] PHP Fatal error:  require_once(): Failed opening required 'H:\laragon\www\floobb\lib\Flatdb.lib.php' (include_path='.;H:/laragon/etc/php/pear') in H:\laragon\www\floobb\init.php on line 72
+[30-May-2023 06:16:31 UTC] PHP Warning:  require_once(H:\laragon\www\floobb\lib\Flatdb.lib.php): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 70
+[30-May-2023 06:16:31 UTC] PHP Fatal error:  require_once(): Failed opening required 'H:\laragon\www\floobb\lib\Flatdb.lib.php' (include_path='.;H:/laragon/etc/php/pear') in H:\laragon\www\floobb\init.php on line 70
+[30-May-2023 06:16:47 UTC] PHP Warning:  require_once(H:\laragon\www\floobb\lib\Flatdb.lib.php): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 71
+[30-May-2023 06:16:47 UTC] PHP Fatal error:  require_once(): Failed opening required 'H:\laragon\www\floobb\lib\Flatdb.lib.php' (include_path='.;H:/laragon/etc/php/pear') in H:\laragon\www\floobb\init.php on line 71
+[30-May-2023 06:40:13 UTC] PHP Fatal error:  Uncaught Error: Class 'flatDB' not found in H:\laragon\www\floobb\init.php:66
+Stack trace:
+#0 H:\laragon\www\floobb\index.php(8): require_once()
+#1 {main}
+  thrown in H:\laragon\www\floobb\init.php on line 66
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:39 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:39 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:40:40 UTC] PHP Warning:  file_get_contents(H:\laragon\www\floobb\lib\install.file): failed to open stream: No such file or directory in H:\laragon\www\floobb\init.php on line 88
+[30-May-2023 06:40:40 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:41:05 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:41:17 UTC] PHP Notice:  session_start(): A session had already been started - ignoring in H:\laragon\www\floobb\common.php on line 14
+[30-May-2023 06:43:15 UTC] PHP Notice:  Undefined variable: conf in H:\laragon\www\floobb\index.php on line 11
+[30-May-2023 06:43:33 UTC] PHP Notice:  Undefined variable: conf in H:\laragon\www\floobb\index.php on line 11
+[30-May-2023 06:44:09 UTC] PHP Notice:  Undefined variable: conf in H:\laragon\www\floobb\index.php on line 11
+[30-May-2023 06:44:53 UTC] PHP Warning:  require(.\theme\Bootstrap\homepage.tpl.php): failed to open stream: No such file or directory in H:\laragon\www\floobb\index.php on line 19
+[30-May-2023 06:44:53 UTC] PHP Fatal error:  require(): Failed opening required '.\theme\Bootstrap\homepage.tpl.php' (include_path='.;H:/laragon/etc/php/pear') in H:\laragon\www\floobb\index.php on line 19
+[30-May-2023 06:44:59 UTC] PHP Warning:  require(.\theme\Bootstrap\homepage.tpl.php): failed to open stream: No such file or directory in H:\laragon\www\floobb\index.php on line 17
+[30-May-2023 06:44:59 UTC] PHP Fatal error:  require(): Failed opening required '.\theme\Bootstrap\homepage.tpl.php' (include_path='.;H:/laragon/etc/php/pear') in H:\laragon\www\floobb\index.php on line 17
+[30-May-2023 06:48:56 UTC] PHP Warning:  require(.\theme\Bootstrap\homepage.tpl.php): failed to open stream: No such file or directory in H:\laragon\www\floobb\index.php on line 17
+[30-May-2023 06:48:56 UTC] PHP Fatal error:  require(): Failed opening required '.\theme\Bootstrap\homepage.tpl.php' (include_path='.;H:/laragon/etc/php/pear') in H:\laragon\www\floobb\index.php on line 17
+[30-May-2023 06:48:57 UTC] PHP Warning:  require(.\theme\Bootstrap\homepage.tpl.php): failed to open stream: No such file or directory in H:\laragon\www\floobb\index.php on line 17
+[30-May-2023 06:48:57 UTC] PHP Fatal error:  require(): Failed opening required '.\theme\Bootstrap\homepage.tpl.php' (include_path='.;H:/laragon/etc/php/pear') in H:\laragon\www\floobb\index.php on line 17
+[30-May-2023 06:49:10 UTC] PHP Notice:  Undefined variable: TITLE in H:\laragon\www\floobb\theme\tawian\header.tpl.php on line 4
+[30-May-2023 06:49:13 UTC] PHP Notice:  Undefined variable: TITLE in H:\laragon\www\floobb\theme\tawian\header.tpl.php on line 4
+[30-May-2023 06:52:15 UTC] PHP Warning:  A non-numeric value encountered in H:\laragon\www\floobb\theme\tawian\header.tpl.php on line 4
+[30-May-2023 06:52:15 UTC] PHP Warning:  A non-numeric value encountered in H:\laragon\www\floobb\theme\tawian\header.tpl.php on line 4
+[30-Oct-2026 01:14:41 UTC] PHP Deprecated:  Constant E_STRICT is deprecated in M:\laragon\www\floobb\init.php on line 49
+[30-Oct-2026 01:15:37 UTC] PHP Deprecated:  Constant E_STRICT is deprecated in M:\laragon\www\floobb\init.php on line 49
+[30-Oct-2026 01:17:11 UTC] PHP Deprecated:  Constant E_STRICT is deprecated in M:\laragon\www\floobb\init.php on line 49
+[30-Oct-2026 01:17:11 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function outHtml1() in M:\laragon\www\floobb\index.php:114
+Stack trace:
+#0 {main}
+  thrown in M:\laragon\www\floobb\index.php on line 114
+[30-Oct-2026 01:27:23 UTC] PHP Deprecated:  Constant E_STRICT is deprecated in M:\laragon\www\floobb\init.php on line 49

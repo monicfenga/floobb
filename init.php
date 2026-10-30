@@ -1,0 +1,108 @@
+<?php defined('FLOO') or die('potato'); // NOOOO
+
+/*
+ *---------------------------------------------------------------
+ * 定义常量
+ *---------------------------------------------------------------
+ */
+# 文件夹斜杠
+const DS = DIRECTORY_SEPARATOR;
+# 根位置
+const BASEPATH = '.';
+const PATH_ROOT = __DIR__;
+# 版本
+const VERSION = '1.3.0';
+# 时间戳格式，必须为true
+const TIMESTAMP = TRUE;
+# 需要过滤的关键词
+const CONTENT_FILTER = '';
+# 日志分隔符
+const LOG_SEP = ' | ';
+# 登录允许的最大尝试次数
+const MAX_LOGIN_ATTEMPT = 3;
+# 启用IP黑名单（是否对 IP 地址进行阻止），必须为true
+const BLOCK_IP = TRUE;
+# 预计阻止时间（分钟）
+const BLOCK_TIMEOUT = 120;
+# 字符集默认值
+const CHARSET = 'UTF-8';
+# 不同的文件夹路径
+const UPLOADS_DIR = PATH_ROOT . DS . 'uploads' . DS;
+const DATA_DIR = PATH_ROOT . DS . 'data' . DS;
+const DATA_PLUGIN = DATA_DIR . 'plugin' . DS;
+const BAN_DIR = PATH_ROOT . DS . 'data' . DS . 'ban' . DS;
+const BAN_FILE = BAN_DIR . DS . 'blocklist.txt';
+const LANG_DIR = PATH_ROOT . DS . 'lang' . DS;
+const LIB_DIR = PATH_ROOT . DS . 'lib' . DS;
+const PLUGIN_DIR = PATH_ROOT . DS . 'plugin' . DS;
+const THEME_DIR = BASEPATH . DS . 'theme' . DS;
+# JSON 美化输出
+if (!defined('JSON_PRETTY_PRINT')) define('JSON_PRETTY_PRINT', 128);
+
+/**
+ * @var bool DEBUG_MODE 调试模式
+ */
+const DEBUG_MODE = true;
+if (DEBUG_MODE) {
+    ini_set('error_log', PATH_ROOT . DS . 'error.log');
+    if (DEBUG_MODE === true) {
+        error_reporting(E_ALL | E_STRICT | E_NOTICE);
+        ini_set('display_errors', true);
+        ini_set('display_startup_errors', true);
+        ini_set("track_errors", 1);
+        ini_set('html_errors', 1);
+        set_time_limit(10);
+    } else if (DEBUG_MODE === false) {
+        error_reporting(0);
+        ini_set('display_errors', false);
+        ini_set('display_startup_errors', false);
+        set_time_limit(60);
+    }
+}
+# Multibyte string extension loaded.
+mb_internal_encoding(CHARSET);
+mb_http_output(CHARSET);
+/*
+ *---------------------------------------------------------------
+ * 载入必要库
+ *---------------------------------------------------------------
+ */
+require_once LIB_DIR . 'Flatdb.lib.php';
+require_once LIB_DIR . 'Utils.lib.php';
+require_once LIB_DIR . 'CSRF.lib.php';
+/*
+ *---------------------------------------------------------------
+ * 椒盐
+ *---------------------------------------------------------------
+ */
+if (file_exists(DATA_DIR . 'key.php')) include(DATA_DIR . 'key.php');
+
+/*
+ *---------------------------------------------------------------
+ * 最后准备
+ *---------------------------------------------------------------
+ */
+if (!flatDB::DBexists('config', 'config')) {
+	# Make & Load Install File
+    
+	$install = fopen('install.php', 'w');
+	fwrite($install, file_get_contents(LIB_DIR . 'install.file'));
+	fclose($install);
+    header('Location: ' . BASEPATH . DS . 'install.php');
+    
+} else {
+    $conf = flatDB::getDB('config', 'config');
+}
+
+if (is_file('install.php')){unlink('install.php');}
+
+if (!session_id()) session_start();
+$token = CSRF::generate();
+
+$header = array(
+	'title'=>$conf['title'],
+	'subtitle'=>'',
+	'mobile_title'=>'',
+	'keywords'=>'', // 搜索引擎自行分析 keywords, 自己指定没用 / Search engine automatic analysis of key words, so keep it empty.
+	'description'=>strip_tags($conf['description']),
+);

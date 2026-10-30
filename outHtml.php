@@ -59,7 +59,7 @@
 	function outHtml3()
 	{
 		echo implode(array(
-			'<footer id="copyright" class="site-footer">flooBB 1.2.0</footer>',
+			'<footer id="copyright" class="site-footer">flooBB ' . VERSION . '</footer>',
 			'</main>',
 		'</body>',
 		'</html>',
