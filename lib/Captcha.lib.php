@@ -16,7 +16,9 @@ class Captcha
 	 * 输出验证码输入框 HTML（含图片与刷新按钮）
 	 */
 	public static function createCaptcha($w=200, $h=38, $bgr=128, $bgg=128, $bgb=128, $cr=0, $cg=0, $cb=0, $size=20, $angle=0){
-		$src = BASEPATH . DS . 'lib' . DS . 'captcha' . DS . 'img.php'
+		// 必须用 APP_BASE 绝对路径：伪静态页 /floobb/auth/register 上写相对路径
+		// 会被浏览器解析成 /floobb/auth/lib/captcha/img.php → 404
+		$src = APP_BASE . '/lib/captcha/img.php'
 			. '?captcha=w-' . (int)$w . '+h-' . (int)$h
 			. '+bgr-' . (int)$bgr . '+bgg-' . (int)$bgg . '+bgb-' . (int)$bgb
 			. '+cr-' . (int)$cr . '+cg-' . (int)$cg . '+cb-' . (int)$cb
