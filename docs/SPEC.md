@@ -264,10 +264,20 @@ data/
   "outbox": [ /* 同上 */ ] }
 ```
 
-**polls/<topicId>.dat.json**
+**polls/<topicId>.dat.json**（文件名 = tid；topics.poll_id = tid 或 null；建票只在发主题时一笔提交）
 ```json
-{ "question":"...", "options":[{"text":"","votes":0}], "voters":["user"], "closed":false }
+{
+  "question": "...",
+  "options": [{"text": "", "votes": 0}],
+  "votes": {"username": [0, 2]},
+  "max_choices": 1,
+  "deadline": "2026-11-06T00:00:00",
+  "closed": false,
+  "closed_by": ""
+}
 ```
+
+> ⚠️ 批次 3 实装变更（SPEC 文本本段即同步处）：`voters:["user"]` 已废弃，改为 **`votes: { username: [optionIndex,...] }`**（谁投了哪些选项下标；单选=单元素；选项票数按 votes 展开维护 options[i].votes，写路径单入口 `Poll::vote()`）。`max_choices`=1 即单选，>1 多选（投票时选项数≤max_choices，不允许改票）。`deadline` 过期视为自动关闭（只读展示，文件字段不动）；`closed` 由主题作者或 level≥2 手动关闭。投票与回帖独立：锁定主题照常可投。投票人展示用 `nickname ?? username`。
 
 **reports/<reportId>.dat.json**
 ```json
