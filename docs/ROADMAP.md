@@ -37,7 +37,15 @@
 - 选项输入：textarea 一行一个（tagger.js 评估后弃用）；投票参数接收：裸 $_POST + 白名单过滤
 - 旧版参考路径：`M:\laragon\www\floobb-master`（repo 里旧文件已删）
 
-### B3-4 举报 + 版主队列（⬜）
+### B3-4 举报 + 版主队列（✅ 已验收 31/31 curl PASS，待统一 commit）— 已定死的决策（不用再讨论）
+- 拆两子块：4a 举报队列（post/topic）+ 4b 封禁体系（type=user + banned_until，⬜ 待做）
+- 处理动作只有删除 / 忽略两种；不做 lock；重复举报追加不拦；队列分待处理/已处理 tab（level≥2）
+- 举报入口 = 楼层/主题头内联 details 折叠表单（零 JS）；reason 白名单 spam|abuse|illegal|other
+- 删除目标复用既有删除路径（topic 连带 posts+计数+置顶引用+poll；post 走 Topic::save+Forum::adjustCounts）
+- 处理后私信通知（发件人=操作版主）：delete 通知双方、dismiss 只通知举报者；口径不同（举报者=感谢反馈，被举报者=违反规范被移除+可回复申诉）
+- 实体：data/reports/<id>.dat.json = {type, target_id, reporter, reason, detail, created, status:open|resolved|dismissed, resolved_by, resolution:deleted|no_action}
+
+### B3-4b 封禁体系（⬜ 4a 验收后做）
 - 范围：`ReportController`（举报 post/user/topic，防自举报/重复）+ `ModController`（举报队列 level≥2，resolve=删帖/封禁、dismiss）。
 - 锁定决策：SPEC §9 #11；数据模型 `data/reports/<id>.dat.json`（§4）。
 - 开工指令：`KICKOFF-B3-4.md`；验收：举报→入队→版主处理/忽略；自举报拒、重复拒、缺 CSRF→403。
