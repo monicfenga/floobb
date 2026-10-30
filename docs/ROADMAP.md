@@ -55,16 +55,14 @@
 - 封禁/解封均私信通知当事用户（版主署名，含原因与时长）
 - 举报 resolution 词汇表：deleted / no_action / banned（SPEC §4）
 
-### B3-5 Search（⬜ 第一回合先出四问方案）
+### B3-5 Search（✅ 第一回合先出四问方案）
 - 范围：`ReportController`（举报 post/user/topic，防自举报/重复）+ `ModController`（举报队列 level≥2，resolve=删帖/封禁、dismiss）。
 - 锁定决策：SPEC §9 #11；数据模型 `data/reports/<id>.dat.json`（§4）。
 - 开工指令：`KICKOFF-B3-4.md`；验收：举报→入队→版主处理/忽略；自举报拒、重复拒、缺 CSRF→403。
 
-### B3-5 搜索（⬜）
-- **特殊流程**：第一回合必须先产出《搜索四问方案》（检索范围 / 匹配方式 / 排序相关性 / 分页限额）交用户确认，再编码。
-- 范围：`SearchController::query`（GET `/search?q=&scope=&page=`），flat-file 全量扫描 + 简易匹配，复用 Pagination。
-- 锁定决策：SPEC §3.1 `/search` 段、§5 MVP 搜索项；**关键词走 query string，路径不含关键字**。
-- 开工指令：`KICKOFF-B3-5.md`。
+### B3-5 搜索（✅ 已验收，2026-10-30）
+- 已定死的决策：范围 topics(title)+posts(content_md 最新 1000 帖)+users(username+nickname)；**LIKE %% 风格整词子串匹配（stripos），无分词无 AND**；不建 data/index/；护栏=posts 池截 1000 帖、空查询不扫库（性能标准：3 秒内即合格，实测 <110ms）
+- 实测坑：Router 缺省 action=index，`/search` 需 `SearchController::index()` 转发到 query()——**SPEC §3.1「首段直达非 index 方法」的路由都要注意此坑**
 
 ### Phase 2 SNS 动态时间线（⬜）
 - 范围：`ActivityController::timeline`（GET `/activity`）+ `model/Activity.php` + 系统事件自动写入（注册/发主题/回帖时 `Activity::record()`）+ 可选直接发动态。
@@ -77,6 +75,13 @@
 - 锁定决策：SPEC §6 邮件禁令、§9 #10（TOTP 升级重置）、users 已预留 `totp_secret`/`totp_enabled`。
 - **第一回合先定 TOTP 库引入方式**（vendor 单文件 RFC 6238 实现 vs 自实现），确认后再写。
 - 开工指令：`KICKOFF-PHASE3.md`。
+
+### Phase 4 管理后台（backlog，2026-10-30 记录；旧版 floobb-a-little-bit-newer 三页对照后定的范围）
+- **做**（两个真缺口）：
+  - 站点设置：GET/POST `/admin/board`（level≥3）——站名/描述/每页主题数/每页帖子数 → 落 `data/conf.json`，各控制器读 conf 替换硬编码（当前版块 20/PM 10 是硬编码）；旧版参考 `editBoardSettings.php`（其「表情重算」是 tiny_mce 专属，不做）
+  - 用户管理：GET/POST `/admin/users`（level≥3）——全用户表格内联改 level + 封禁勾选批量提交；**写路径必须复用 `User::setBan`**（4b 单入口）；防呆适配：只能设 level < 自己的、不能动 level≥自己的人；顺带补上「改 level 无 UI」的 4b 遗留；旧版参考 `userAdmin.php`
+- **不做**：独立建票页（旧版 `addPoll.php?forumId=`）——建票已绑定发主题流（B3-3 决议：poll_id=topic、一笔提交），单独建票会产生无主题孤儿投票，除非用户明示推翻该决议
+- 开工时点：Phase 1 收工后任意空隙；tawian 主题（另一 AI 施工中）与本块无文件交集
 
 ---
 
