@@ -129,7 +129,9 @@ if (!flatDB::DBexists('config', 'config')) {
 if (is_file('install.php')){unlink('install.php');}
 
 if (!session_id()) session_start();
-$token = CSRF::generate();
+// token 只在缺失时生成：POST 校验的是上一页渲染的 token，
+// 若每次请求都重新生成则 $_SESSION['token'] 永远对不上（CSRF::check 成功后 unset，下次请求再生成）
+$token = $_SESSION['token'] ?? CSRF::generate();
 Auth::resume();
 
 /**

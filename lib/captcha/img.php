@@ -4,6 +4,8 @@
  */
 define('FLOO', TRUE);
 defined('FLOO') or die('potato'); // NOOOO
+// 直访脚本不经 init.php，本地开发期与 init.php 的 DEBUG_MODE 保持一致
+if (!defined('DEBUG_MODE')) define('DEBUG_MODE', TRUE);
 
 /**
  * 验证码图片【吸纳自 WebPress/libs/captcha/img.php，适配 floobb】
@@ -40,6 +42,8 @@ function floob_create_captcha($w=200, $h=38, $bgr=128, $bgg=128, $bgb=128, $cr=0
 
 	header('Content-Type: image/png');
 	header('Cache-Control: no-store, no-cache, must-revalidate');
+	// 仅 DEBUG_MODE：curl 等无头验收需要拿到验证码明文，生产不加
+	if (DEBUG_MODE) header('X-Captcha-Code: ' . $captcha_code);
 
 	$image = imagecreatetruecolor($w, $h);
 

@@ -23,8 +23,18 @@ html, body { font-family: "Noto Sans SC", system-ui, sans-serif; }
 		<div class="collapse navbar-collapse" id="mainNav">
 			<ul class="navbar-nav ms-auto">
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url() ?>">首页</a></li>
+				<?php if (Auth::isLoggedIn()): $navUser = Auth::user(); ?>
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/view/' . urlencode((string) $navUser['username'])) ?>"><?= htmlspecialchars((string) $navUser['username']) ?></a></li>
+				<li class="nav-item">
+					<form method="post" action="<?= Router::url('auth/logout') ?>" class="d-inline">
+						<?= Auth::csrfField() ?>
+						<button class="btn btn-link nav-link p-0 lh-lg" type="submit">登出</button>
+					</form>
+				</li>
+				<?php else: ?>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('auth/login') ?>">登录</a></li>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('auth/register') ?>">注册</a></li>
+				<?php endif; ?>
 			</ul>
 		</div>
 	</nav>

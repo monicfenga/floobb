@@ -39,20 +39,21 @@ class CSRF
      */
     public static function check($token)
     {
-        if (DEBUG_MODE) {
-            // 调试模式暂不需要检查CSRF
-            return true;
+        // 注：DEBUG_MODE 不旁路——CSRF 是安全基线，验收要求缺失 token 的写操作必须 403
+        if (!isset($_SESSION['token']) || !is_string($token) || $token === '') {
+            $_SESSION['ErrToken'] = 1;
+            return false;
         }
-        if (isset($_SESSION['token']) && $token === $_SESSION['token']) {
-            $ex = explode('|', base64_decode($token));
-            if ($ex[0] !== md5($_SERVER['REMOTE_ADDR'])) {
+        if (hash_equals($_SESSION['token'], $token)) {
+            $ex = explode('|', (string) base64_decode($token));
+            if (($ex[0] ?? '') !== md5($_SERVER['REMOTE_ADDR'])) {
                 return false;
             }
-            unset($_SESSION['token']);
+            unset($_SESSION['token']); // 一次性
             return true;
         }
 		$_SESSION['ErrToken'] = 1;
         return false;
-    } 
+    }
            
 }
