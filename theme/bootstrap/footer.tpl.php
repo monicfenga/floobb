@@ -6,7 +6,7 @@ $showDebug = DEBUG_MODE && Auth::level() >= 3;
 ?>
 </main>
 <footer class="border-top mt-5 py-4 text-center">
-	<div><?= htmlspecialchars($conf['footer_text'] ? $conf['footer_text'] . ' &middot; ' : '') ?> 
+	<div><?= htmlspecialchars($conf['footer_text'] ? $conf['footer_text'] . ' · ' : '') ?> 
 		Powered by <a href="https://github.com/monicfenga/floobb" rel="noopener">FlooBB</a> (GPLv3+)
 	</div>
 	<?php if ($showDebug): ?>
