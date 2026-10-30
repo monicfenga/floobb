@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO ?>
+<?php defined('FLOO') or die('FlooBB'); ?>
 <h1 class="h3 mb-4">版块列表</h1>
 
 <?php if (Auth::level() >= 3): ?>

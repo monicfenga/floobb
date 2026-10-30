@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO ?>
+<?php defined('FLOO') or die('FlooBB'); ?>
 <div class="row justify-content-center">
 	<div class="col-12 col-md-6 col-lg-5">
 		<h1 class="h3 mb-4">登录</h1>

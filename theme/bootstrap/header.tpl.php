@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO ?>
+<?php defined('FLOO') or die('FlooBB'); ?>
 <!doctype html>
 <html lang="<?= htmlspecialchars($conf['lang'] ?? 'zh-CN') ?>">
 <head>

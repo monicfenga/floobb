@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO ?>
+<?php defined('FLOO') or die('FlooBB'); ?>
 </main>
 <footer class="border-top mt-5 py-4 text-center text-body-secondary">
 	<div class="container">
