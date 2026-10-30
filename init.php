@@ -114,19 +114,19 @@ if (file_exists(DATA_DIR . 'key.php')) include(DATA_DIR . 'key.php');
  * 最后准备
  *---------------------------------------------------------------
  */
+/*
+ *---------------------------------------------------------------
+ * 安装守卫（Phase 1）：config 不存在 → 跳转安装向导
+ *---------------------------------------------------------------
+ */
 if (!flatDB::DBexists('config', 'config')) {
-	# Make & Load Install File
-    
-	$install = fopen('install.php', 'w');
-	fwrite($install, file_get_contents(LIB_DIR . 'install.file'));
-	fclose($install);
-    header('Location: ' . BASEPATH . DS . 'install.php');
-    
+	header('Location: ' . APP_BASE . '/install.php');
+	exit;
 } else {
     $conf = flatDB::getDB('config', 'config');
+	// 已安装则安装向导自毁，防重复安装覆盖数据
+	if (is_file(PATH_ROOT . DS . 'install.php')) { @unlink(PATH_ROOT . DS . 'install.php'); }
 }
-
-if (is_file('install.php')){unlink('install.php');}
 
 if (!session_id()) session_start();
 // token 只在缺失时生成：POST 校验的是上一页渲染的 token，

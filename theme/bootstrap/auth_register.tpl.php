@@ -21,7 +21,6 @@
 				<label class="form-label" for="email">邮箱（选填）</label>
 				<input class="form-control" type="email" id="email" name="email"
 					value="<?= htmlspecialchars($values['email'] ?? '') ?>" autocomplete="email">
-				<div class="form-text">本站不发验证邮件，仅作展示用途。</div>
 			</div>
 			<div class="mb-3">
 				<label class="form-label" for="password">密码</label>
