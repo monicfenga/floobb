@@ -166,7 +166,7 @@ class flatDB {
 	 * @return string
 	 */
 	public static function newEntry() {
-		return date('Y-m-dHis') . substr(uniqid(), -5);
+		return date('Y-m-d_H-i-s_') . substr(uniqid(), -5);
 	}
 
 }
