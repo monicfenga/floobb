@@ -3,7 +3,7 @@
 /**
  * 举报仓储【model 层 = 关联数组 + 静态仓储函数，SPEC §3.3】
  * 存储：data/reports/<reportId>.dat.json，一举报一文件（SPEC §4）
- * type 限 post|topic（user 举报在 4b 封禁体系批次做）；status: open|resolved|dismissed
+ * type 限 post|topic|user（B3-4b 加 user，处理动作=封禁）；status: open|resolved|dismissed
  */
 class Report {
 
@@ -13,19 +13,22 @@ class Report {
 	}
 
 	/**
-	 * 创建举报。type 白名单 post|topic；target 必须真实存在
+	 * 创建举报。type 白名单 post|topic|user；target 必须真实存在；不许举报自己
 	 * @return string|null 成功返回新举报 id；失败返回 null
 	 */
 	public static function create($type, $targetId, $reporter, $reason, $detail) {
 		$type = (string) $type;
-		if (!in_array($type, array('post', 'topic'), true)) return null;
+		if (!in_array($type, array('post', 'topic', 'user'), true)) return null;
 		if (!in_array($reason, array_keys(self::reasons()), true)) return null;
+		if ((string) $targetId === (string) $reporter) return null;
 
 		// 目标存在性校验（顺带拿摘要供队列展示）
 		if ($type === 'post') {
 			$target = Post::get((string) $targetId);
-		} else {
+		} elseif ($type === 'topic') {
 			$target = Topic::get((string) $targetId);
+		} else {
+			$target = User::get((string) $targetId);
 		}
 		if ($target === null) return null;
 
@@ -75,18 +78,18 @@ class Report {
 
 	/**
 	 * 处理举报（单写路径维护状态）。
-	 * @param string $action delete|dismiss
+	 * @param string $action delete|dismiss|ban（ban 供 user 举报，B3-4b）
 	 * @return bool
 	 */
 	public static function handle($id, $modUsername, $action) {
 		$r = self::get($id);
 		if ($r === null) return false;
-		if (!in_array($action, array('delete', 'dismiss'), true)) return false;
+		if (!in_array($action, array('delete', 'dismiss', 'ban'), true)) return false;
 		if ((string) $r['status'] !== 'open') return false;
 
-		$r['status'] = $action === 'delete' ? 'resolved' : 'dismissed';
+		$r['status'] = $action === 'dismiss' ? 'dismissed' : 'resolved';
+		$r['resolution'] = $action; // deleted / no_action / banned
 		$r['resolved_by'] = (string) $modUsername;
-		$r['resolution'] = $action === 'delete' ? 'deleted' : 'no_action';
 		return flatDB::saveDB('reports', $id, $r);
 	}
 }

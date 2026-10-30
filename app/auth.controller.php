@@ -38,8 +38,18 @@ class AuthController {
 			}
 			self::redirect('');
 		}
+		// 封禁用户提示解封时间（B3-4b）
+		$banMsg = null;
+		if ($error === 'auth.user_banned') {
+			$u = User::get($username);
+			$until = $u !== null ? (string) ($u['banned_until'] ?? '') : '';
+			$untilText = $until === User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', strtotime($until));
+			$reason = $u !== null ? (string) ($u['banned_reason'] ?? '') : '';
+			$banMsg = '该账号已被封禁（至 ' . $untilText . '）' . ($reason !== '' ? '，原因：' . $reason : '') . '。';
+		}
 		self::render('auth_login', array(
-			'error' => $error === 'auth.banned' ? '失败次数过多，IP 已被临时封锁，请稍后再试。' : '用户名或密码错误。',
+			'error' => $error === 'auth.banned' ? '失败次数过多，IP 已被临时封锁，请稍后再试。'
+				: ($banMsg !== null ? $banMsg : '用户名或密码错误。'),
 			'success' => null,
 			'username' => $username,
 		));

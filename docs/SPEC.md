@@ -206,11 +206,16 @@ data/
   "last_seen": "2026-10-30T09:00:00",
   "signature": "",
   "avatar": "",
+  "bio": "",                   // 一句话介绍（知乎风，B3-1 决议；楼层/用户页展示）
+  "banned_until": "",          // B3-4b：ISO 时间戳；空=未封禁；"9999-12-31T23:59:59"=永久（User::BAN_FOREVER）
+  "banned_by": "",             // 操作版主用户名
+  "banned_reason": "",         // 封禁原因（展示用）
   "recovery_codes": [],        // Phase 1 密码重置用，注册时生成、哈希存储、一次性
   "totp_secret": "",           // Phase 3 TOTP（加密存储；空 = 未启用）
   "totp_enabled": false
 }
 ```
+> **封禁语义（B3-4b）**：level 不动，封禁是独立状态。登录（Auth::login）/会话（Auth::user 每请求校验，命中即踢下线+作废 remember）/remember 恢复（Auth::resume 跳过）三处拦截；封禁中的用户等同游客可浏览。写入口唯一：`User::setBan()`（user/ban 路由与举报队列 ban 处理共用）。防护：不能封自己、不能封 level≥自己的人。
 
 **forums/<forumId>.dat.json**
 ```json

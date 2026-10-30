@@ -148,6 +148,78 @@ class UserController {
 		self::redirect('user/settings?saved=1');
 	}
 
+	/* ---------------- 封禁（B3-4b；版主/管理员，level≥2） ---------------- */
+
+	/**
+	 * POST /user/ban/{username}
+	 * duration: 1d|7d|30d|permanent|custom|0(解封)；custom 时读 until 字段（ISO 时间戳）
+	 * 防护：不能封自己；不能封 level ≥ 自己的人
+	 */
+	public function banPost($name = '') {
+		if (!Auth::csrfCheck()) self::forbidden();
+		$mod = Auth::user();
+		if ($mod === null) self::redirect('auth/login');
+		if ((int) $mod['level'] < 2) self::forbidden();
+
+		$target = User::get($name);
+		if ($target === null) {
+			http_response_code(404);
+			header('Content-Type: text/plain; charset=utf-8');
+			exit('404: 用户不存在。');
+		}
+		if ((string) $target['username'] === (string) $mod['username']) self::forbidden();
+		if ((int) $target['level'] >= (int) $mod['level']) self::forbidden();
+
+		list($until, $untilText) = self::resolveDuration(
+			(string) param('duration', '', FALSE),
+			(string) param('until', '', FALSE)
+		);
+		if ($until === false) {
+			http_response_code(422);
+			header('Content-Type: text/plain; charset=utf-8');
+			exit('422: 封禁时长参数无效（custom 需合法的 ISO 时间戳，且晚于当前时间）。');
+		}
+
+		$reason = trim(strip_tags((string) param('reason', '', FALSE)));
+		$username = (string) $target['username'];
+		$wasBanned = User::isBanned($target);
+		if (!User::setBan($username, $until, (string) $mod['username'], $reason)) self::forbidden();
+
+		// 私信通知当事用户（版主署名；解封也通知）
+		$modName = (string) ($mod['nickname'] ?? $mod['username']);
+		if ($until === '') {
+			PM::send((string) $mod['username'], $username, '你的账号已解封',
+				"你的账号已被版主 {$modName} 解封，欢迎回来。请遵守社区规范。");
+		} elseif (!$wasBanned) {
+			PM::send((string) $mod['username'], $username, '你的账号已被封禁',
+				"你的账号已被版主 {$modName} 封禁至 {$untilText}。"
+				. ($reason !== '' ? "原因：{$reason}。" : '')
+				. '如有疑问请回复本私信联系版主。');
+		}
+
+		self::redirect('user/view/' . rawurlencode($username));
+	}
+
+	/**
+	 * duration 档位 → (until ISO | '' 解封)；无效返回 [false, false]
+	 * 供 user/ban 与举报队列 ban 处理共用
+	 */
+	public static function resolveDuration($duration, $customUntil = '') {
+		$now = time();
+		switch ((string) $duration) {
+			case '0': return array('', '（已解封）');
+			case '1d': return array(date('Y-m-d\TH:i:s', $now + 86400), '1 天后');
+			case '7d': return array(date('Y-m-d\TH:i:s', $now + 7 * 86400), '7 天后');
+			case '30d': return array(date('Y-m-d\TH:i:s', $now + 30 * 86400), '30 天后');
+			case 'permanent': return array(User::BAN_FOREVER, '永久');
+			case 'custom':
+				$u = trim((string) $customUntil);
+				if ($u === '' || $u <= date('Y-m-d\TH:i:s') || strtotime($u) === false) return array(false, false);
+				return array($u, $u);
+		}
+		return array(false, false);
+	}
+
 	/* ---------------- 视图与响应辅助 ---------------- */
 
 	private static function render($tpl, array $vars = array()) {

@@ -43,9 +43,18 @@
 - 举报入口 = 楼层/主题头内联 details 折叠表单（零 JS）；reason 白名单 spam|abuse|illegal|other
 - 删除目标复用既有删除路径（topic 连带 posts+计数+置顶引用+poll；post 走 Topic::save+Forum::adjustCounts）
 - 处理后私信通知（发件人=操作版主）：delete 通知双方、dismiss 只通知举报者；口径不同（举报者=感谢反馈，被举报者=违反规范被移除+可回复申诉）
-- 实体：data/reports/<id>.dat.json = {type, target_id, reporter, reason, detail, created, status:open|resolved|dismissed, resolved_by, resolution:deleted|no_action}
+- 实体：data/reports/<id>.dat.json = {type, target_id, reporter, reason, detail, created, status:open|resolved|dismissed, resolved_by, resolution:deleted|no_action|banned}
 
-### B3-4b 封禁体系（⬜ 4a 验收后做）
+### B3-4b 封禁体系（✅ 已验收 30/30 curl PASS，待统一 commit）— 已定死的决策（不用再讨论）
+- users 加 banned_until/banned_by/banned_reason（SPEC §4 已同步）；永久=9999-12-31T23:59:59（User::BAN_FOREVER）
+- level 不动，封禁独立状态；三处拦截：Auth::login 拒登（提示解封时间）/ Auth::user 每请求踢下线+作废 remember / Auth::resume 跳过；封禁用户等同游客可浏览
+- 写入口唯一 User::setBan；duration 档位 1d|7d|30d|permanent|custom(ISO)|0 解封（UserController::resolveDuration 共用）
+- 防护：不能封自己、不能封 level≥自己（版主封不了版主，管理员可封所有人）
+- user 举报：user_view「举报此用户」按钮；队列 user 行处理=封禁（时长下拉）/忽略；自举报拒
+- 封禁/解封均私信通知当事用户（版主署名，含原因与时长）
+- 举报 resolution 词汇表：deleted / no_action / banned（SPEC §4）
+
+### B3-5 Search（⬜ 第一回合先出四问方案）
 - 范围：`ReportController`（举报 post/user/topic，防自举报/重复）+ `ModController`（举报队列 level≥2，resolve=删帖/封禁、dismiss）。
 - 锁定决策：SPEC §9 #11；数据模型 `data/reports/<id>.dat.json`（§4）。
 - 开工指令：`KICKOFF-B3-4.md`；验收：举报→入队→版主处理/忽略；自举报拒、重复拒、缺 CSRF→403。

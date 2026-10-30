@@ -54,6 +54,12 @@ class Auth {
 			self::clearSession();
 			return null;
 		}
+		// 封禁拦截（B3-4b）：已登录用户被封 → 踢下线 + 作废 remember
+		if (User::isBanned($user)) {
+			self::forgetRemember();
+			self::clearSession();
+			return null;
+		}
 		return $user;
 	}
 
@@ -104,6 +110,12 @@ class Auth {
 		if ($user === null || !password_verify((string) $password, (string) ($user['password_hash'] ?? ''))) {
 			self::recordFail($ip);
 			$error = 'auth.failed';
+			return false;
+		}
+
+		// 封禁拦截（B3-4b）：密码正确但用户在封禁期 → 拒登并提示解封时间
+		if (User::isBanned($user)) {
+			$error = 'auth.user_banned';
 			return false;
 		}
 
@@ -167,7 +179,8 @@ class Auth {
 			$username = basename($file, '.dat.json');
 			$user = User::get($username);
 			if ($user === null || ($user['remember_selector'] ?? '') !== $selector) continue;
-			if (hash_equals((string) ($user['remember_hash'] ?? ''), hash('sha256', $validator))) {
+			// 封禁用户不作 remember 恢复（B3-4b）
+			if (!User::isBanned($user) && hash_equals((string) ($user['remember_hash'] ?? ''), hash('sha256', $validator))) {
 				$_SESSION['auth_user'] = $username;
 			}
 			return;

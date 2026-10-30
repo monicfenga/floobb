@@ -71,6 +71,32 @@ class User {
 			&& !preg_match('/[\x00-\x1F\x7F]/', $bio);
 	}
 
+	/* ---------------- 封禁（B3-4b；level 不动，封禁是独立状态） ---------------- */
+
+	const BAN_FOREVER = '9999-12-31T23:59:59';
+
+	/**
+	 * 用户是否处于封禁中（banned_until 非空且 > now）
+	 */
+	public static function isBanned(array $user) {
+		$until = (string) ($user['banned_until'] ?? '');
+		return $until !== '' && $until > date('Y-m-d\TH:i:s');
+	}
+
+	/**
+	 * 封禁/解封唯一写入口（user/ban 路由与举报队列处理共用）。
+	 * @param string|null $until ISO 时间戳；null/空 = 解封；User::BAN_FOREVER = 永久
+	 * @return bool
+	 */
+	public static function setBan($username, $until, $by, $reason = '') {
+		$user = self::get($username);
+		if ($user === null) return false;
+		$user['banned_until'] = ($until === null || $until === '') ? '' : (string) $until;
+		$user['banned_by'] = $user['banned_until'] === '' ? '' : (string) $by;
+		$user['banned_reason'] = $user['banned_until'] === '' ? '' : (string) $reason;
+		return self::save((string) $username, $user);
+	}
+
 	/* ---------------- recovery_codes（SPEC §9 #10：无邮件重置，哈希存储、一次性） ---------------- */
 
 	const RECOVERY_COUNT = 6;

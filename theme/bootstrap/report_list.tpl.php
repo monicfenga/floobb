@@ -38,17 +38,31 @@
 			<?php if ((string) ($r['detail'] ?? '') !== ''): ?>· 说明：<?= htmlspecialchars((string) $r['detail']) ?><?php endif; ?>
 		</p>
 		<?php if ($tab === 'open'): ?>
-		<form method="post" action="<?= Router::url('report/handle/' . rawurlencode((string) ($r['id'] ?? ''))) ?>" class="d-flex gap-2">
+		<form method="post" action="<?= Router::url('report/handle/' . rawurlencode((string) ($r['id'] ?? ''))) ?>" class="d-flex gap-2 flex-wrap align-items-center">
 			<?= Auth::csrfField() ?>
+			<?php if ((string) ($r['type'] ?? '') === 'user'): ?>
+			<select class="form-select form-select-sm" name="duration" aria-label="封禁时长" required style="width:auto;">
+				<option value="1d">封禁 1 天</option>
+				<option value="7d">封禁 7 天</option>
+				<option value="30d">封禁 30 天</option>
+				<option value="permanent">永久封禁</option>
+			</select>
+			<button type="submit" name="action" value="ban" class="btn btn-sm btn-danger"
+				onclick="return confirm('确定按所选时长封禁该用户？将私信通知其封禁时长。');">封禁</button>
+			<button type="submit" name="action" value="dismiss" class="btn btn-sm btn-outline-secondary"
+				onclick="return confirm('确定忽略该举报？将私信告知举报者。');">忽略</button>
+			<?php else: ?>
 			<button type="submit" name="action" value="delete" class="btn btn-sm btn-danger"
 				onclick="return confirm('确定删除该目标？将同时私信通知举报者与被举报者。');">删除</button>
 			<button type="submit" name="action" value="dismiss" class="btn btn-sm btn-outline-secondary"
 				onclick="return confirm('确定忽略该举报？将私信告知举报者。');">忽略</button>
+			<?php endif; ?>
 		</form>
 		<?php else: ?>
 		<p class="small mb-0">
-			<span class="badge <?= (string) ($r['status'] ?? '') === 'resolved' ? 'text-bg-danger' : 'text-bg-light' ?>">
-				<?= (string) ($r['status'] ?? '') === 'resolved' ? '已删除' : '已忽略' ?>
+			<?php $resolution = (string) ($r['resolution'] ?? ''); ?>
+			<span class="badge <?= $resolution === 'deleted' ? 'text-bg-danger' : ($resolution === 'banned' ? 'text-bg-dark' : 'text-bg-light') ?>">
+				<?= $resolution === 'deleted' ? '已删除' : ($resolution === 'banned' ? '已封禁' : '已忽略') ?>
 			</span>
 			处理人：<?= htmlspecialchars($row['resolved_by_name']) ?>
 		</p>

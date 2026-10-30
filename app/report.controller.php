@@ -57,10 +57,11 @@ class ReportController {
 		if (!Auth::isLoggedIn()) self::redirect('auth/login');
 		if (Auth::level() < 2) self::forbidden();
 
-		$action = (string) param('action', '', FALSE);
+		$action = (string) param('action', '', FALSE); // delete|dismiss|ban（user 专用）
 		$r = Report::get($id);
 		if ($r === null) self::notFound('举报不存在。');
-		if (!in_array($action, array('delete', 'dismiss'), true)) self::forbidden();
+		if (!in_array($action, array('delete', 'dismiss', 'ban'), true)) self::forbidden();
+		if ($action === 'ban' && (string) $r['type'] !== 'user') self::forbidden();
 		if ((string) $r['status'] !== 'open') self::redirect('report/list');
 
 		$mod = Auth::user()['username'];
@@ -72,6 +73,30 @@ class ReportController {
 			} else {
 				$targetAuthor = (string) (Topic::get((string) $r['target_id'])['author'] ?? '');
 			}
+		}
+		// ban 分支：调 User::setBan 单入口（与 user/ban 路由同一写路径）；权限规则一致
+		$banApplied = false;
+		if ($action === 'ban') {
+			$targetUser = User::get((string) $r['target_id']);
+			$me = Auth::user();
+			if ($targetUser === null) self::notFound('被举报用户不存在。');
+			if ((string) $targetUser['username'] === (string) $me['username']) self::forbidden();
+			if ((int) $targetUser['level'] >= (int) $me['level']) self::forbidden();
+			list($until, $untilText) = UserController::resolveDuration(
+				(string) param('duration', '', FALSE),
+				(string) param('until', '', FALSE)
+			);
+			if ($until === false) {
+				http_response_code(422);
+				header('Content-Type: text/plain; charset=utf-8');
+				exit('422: 封禁时长参数无效。');
+			}
+			if (!User::setBan((string) $r['target_id'], $until, $mod, (string) ($r['reason'] ?? ''))) self::forbidden();
+			$banApplied = true;
+			// 私信通知被封用户（版主署名）
+			$meName = (string) ($me['nickname'] ?? $me['username']);
+			PM::send($mod, (string) $r['target_id'], '你的账号已被封禁',
+				"你的账号已被版主 {$meName} 封禁至 {$untilText}（经用户举报核实）。如有疑问请回复本私信联系版主。");
 		}
 		$deleted = false;
 		if ($action === 'delete') {
@@ -128,22 +153,24 @@ class ReportController {
 	 * 私信通知（操作版主当发件人；口径不同）
 	 */
 	private static function notify(array $r, $mod, $action, $targetAuthor) {
-		$typeText = (string) $r['type'] === 'post' ? '回帖' : '主题';
+		$typeText = (string) $r['type'] === 'post' ? '回帖' : ((string) $r['type'] === 'user' ? '用户' : '主题');
 		$modU = User::get($mod);
 		$modName = $modU !== null ? (string) ($modU['nickname'] ?? $mod) : $mod;
 
-		// 给举报者
+		// 给举报者（ban/delete/dismiss 都通知）
 		$repU = User::get((string) $r['reporter']);
 		if ($repU !== null) {
 			if ($action === 'delete') {
 				$body = "你举报的内容（{$typeText}）经核实已被删除。感谢你对社区秩序的贡献。";
+			} elseif ($action === 'ban') {
+				$body = "你举报的用户经核实已被封禁。感谢你对社区秩序的贡献。";
 			} else {
 				$body = "你举报的内容（{$typeText}）经核实暂未做处理，感谢反馈，我们会持续关注。";
 			}
 			PM::send($mod, (string) $r['reporter'], '你的举报已处理完毕', $body);
 		}
 
-		// 给被举报者（仅删除时通知；dismiss 不打扰）
+		// 给被举报者（仅删除时通知；dismiss/ban 不再单独打扰——ban 已在 handlePost 发封禁通知）
 		if ($action === 'delete' && $targetAuthor !== '' && $targetAuthor !== $mod && User::get($targetAuthor) !== null) {
 			PM::send($mod, $targetAuthor, "你的{$typeText}已被移除", "你的{$typeText}因违反社区规范经用户举报后被版主移除。如有疑问请回复本私信联系版主 {$modName}。");
 		}
@@ -173,6 +200,15 @@ class ReportController {
 				$row['link'] = Router::url('topic/view/' . rawurlencode($tid));
 			} else {
 				$row['summary'] = '（目标已删除）';
+			}
+		} elseif ($type === 'user') {
+			$u = User::get($tid);
+			if ($u !== null) {
+				$row['summary'] = '用户 ' . (string) ($u['nickname'] ?? $tid)
+					. (User::isBanned($u) ? '（当前已被封禁）' : '');
+				$row['link'] = Router::url('user/view/' . rawurlencode($tid));
+			} else {
+				$row['summary'] = '（用户已不存在）';
 			}
 		}
 		$rb = (string) ($r['resolved_by'] ?? '');
