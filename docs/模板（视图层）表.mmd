@@ -1,0 +1,74 @@
+---
+title: 模板（视图层）表
+---
+
+graph LR
+    subgraph THEME["theme/{conf['theme']}/（bootstrap 或 tawian，文件名约定一致）"]
+        header_tpl["header.tpl.php（全局头：<br/>$header 标题 / $token CSRF 隐藏域 / 导航 / assets）"]
+        footer_tpl["footer.tpl.php（全局尾：脚本 / 页脚）"]
+        homepage_tpl["homepage.tpl.php"]
+        forum_view_tpl["forum_view.tpl.php"]
+        forum_add_tpl["forum_add.tpl.php"]
+        topic_view_tpl["topic_view.tpl.php"]
+        topic_actions_tpl["_topic_actions.tpl.php（局部片段）"]
+        topic_create_tpl["topic_create.tpl.php"]
+        post_edit_tpl["post_edit.tpl.php"]
+        user_view_tpl["user_view.tpl.php"]
+        user_settings_tpl["user_settings.tpl.php"]
+        auth_login_tpl["auth_login.tpl.php"]
+        auth_register_tpl["auth_register.tpl.php"]
+        auth_recovery_tpl["auth_recovery.tpl.php"]
+        auth_reset_tpl["auth_reset.tpl.php"]
+    end
+
+    start["起点（控制器 render() / 直接 require 三件套）"]
+    start --> homepage_tpl
+    start --> forum_view_tpl
+    start --> forum_add_tpl
+    start --> topic_view_tpl
+    start --> topic_create_tpl
+    start --> post_edit_tpl
+    start --> user_view_tpl
+    start --> user_settings_tpl
+    start --> auth_login_tpl
+    start --> auth_register_tpl
+    start --> auth_recovery_tpl
+    start --> auth_reset_tpl
+
+    %% 每个页面模板 = 页面自身 + header + footer（render() 依次 require）
+    homepage_tpl -- render/require --> header_tpl
+    homepage_tpl -- render/require --> footer_tpl
+    forum_view_tpl -- render/require --> header_tpl
+    forum_view_tpl -- render/require --> footer_tpl
+    forum_add_tpl -- render/require --> header_tpl
+    forum_add_tpl -- render/require --> footer_tpl
+    topic_view_tpl -- render/require --> header_tpl
+    topic_view_tpl -- render/require --> footer_tpl
+    topic_create_tpl -- render/require --> header_tpl
+    topic_create_tpl -- render/require --> footer_tpl
+    post_edit_tpl -- render/require --> header_tpl
+    post_edit_tpl -- render/require --> footer_tpl
+    user_view_tpl -- require（user::view 直接三件套） --> header_tpl
+    user_view_tpl -- require --> footer_tpl
+    user_settings_tpl -- render/require --> header_tpl
+    user_settings_tpl -- render/require --> footer_tpl
+    auth_login_tpl -- render/require --> header_tpl
+    auth_login_tpl -- render/require --> footer_tpl
+    auth_register_tpl -- render/require --> header_tpl
+    auth_register_tpl -- render/require --> footer_tpl
+    auth_recovery_tpl -- render/require --> header_tpl
+    auth_recovery_tpl -- render/require --> footer_tpl
+    auth_reset_tpl -- render/require --> header_tpl
+    auth_reset_tpl -- render/require --> footer_tpl
+
+    %% 局部片段
+    topic_view_tpl -- include --> topic_actions_tpl
+
+    subgraph S_note[特殊说明]
+        note_render["render() 私有辅助方法：extract($vars) 注入变量 →<br/>header → {tpl}.tpl.php → footer → exit"]
+        note_no_plugin["与 Xiuno 不同：无 _include()/slot 模板继承/插件覆盖机制，<br/>无 .inc.htm 中间层，结构是扁平的 页面模板+头尾"]
+        note_theme["$conf['theme'] 决定主题目录；<br/>控制器传变量，模板内 htmlspecialchars 转义输出"]
+    end
+    header_tpl -.-> note_render
+    footer_tpl -.-> note_no_plugin
+    start -.-> note_theme

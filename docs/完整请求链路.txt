@@ -1,0 +1,29 @@
+浏览器 GET /floobb/user/view/Geticer
+   │
+   ├─ 1. index.php（唯一入口）
+   │     require init.php
+   │
+   ├─ 2. init.php（引导：干完所有"开机"活）
+   │     定义常量（THEME_DIR、UPLOADS_DIR…）
+   │     加载 lib/ 下的库（flatDB、Router、Auth、CSRF…）
+   │     注册自动加载（第 99 行 floo_spl_autoload）：
+   │        XxxController → app/xxx.controller.php
+   │        其他类名     → model/Xxx.php
+   │     读 config、session_start()、CSRF token、Auth::resume()（自动登录）
+   │     准备全局 $conf / $header / $token
+   │
+   ├─ 3. 回到 index.php 第 16-20 行：分发
+   │     $seg = Router::segments()   → ['user','view','Geticer']
+   │     $controller = 'user'
+   │     Router::dispatch('user')
+   │        ├─ $action = 'view'（第 2 段）
+   │        ├─ $args   = ['Geticer']（第 3 段起）
+   │        └─ 实例化 UserController → 调 view('Geticer')
+   │
+   ├─ 4. app/user.controller.php::view()（你打开的这个文件）
+   │     User::get('Geticer')          ← model/User.php（flatDB 文件存储）
+   │     组装 $stats / $recentTopics / $recentPosts
+   │
+   └─ 5. 渲染（第 53-55 行）：
+         header.tpl.php → user_view.tpl.php → footer.tpl.php
+         exit 结束

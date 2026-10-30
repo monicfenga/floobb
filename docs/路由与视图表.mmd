@@ -1,0 +1,94 @@
+---
+title: 路由与视图表
+---
+
+graph LR
+    start["起点（三位置契约：/控制器/动作/参数）"]
+
+    subgraph CTRL[控制器层 app/]
+        subgraph CTRL_home["home.controller.php"]
+            URL_home["/ （→ HomeController::index）"]
+        end
+        subgraph CTRL_forum["forum.controller.php"]
+            URL_forum_view["/forum/view/{fid}?page=&sort= → ForumController::view"]
+            URL_forum_add["/forum/add（GET→add / POST→addPost）"]
+            URL_forum_index["/forum（→ index，重定向首页）"]
+        end
+        subgraph CTRL_topic["topic.controller.php"]
+            URL_topic_view["/topic/view/{tid}?page=&sort=&filter= → TopicController::view"]
+            URL_topic_create["/topic/create[/{fid}]（GET→create / POST→createPost）"]
+            URL_topic_lock["/topic/lock/{tid}（POST→lockPost）"]
+            URL_topic_sticky["/topic/sticky/{tid}（POST→stickyPost）"]
+            URL_topic_move["/topic/move/{tid}（POST→movePost）"]
+            URL_topic_delete["/topic/delete/{tid}（POST→deletePost）"]
+        end
+        subgraph CTRL_post["post.controller.php"]
+            URL_post_create["/post/create/{tid}（POST→createPost）"]
+            URL_post_edit["/post/edit/{pid}（GET→edit / POST→editPost）"]
+            URL_post_delete["/post/delete/{pid}（POST→deletePost）"]
+        end
+        subgraph CTRL_user["user.controller.php"]
+            URL_user_view["/user/view/{name} → UserController::view"]
+            URL_user_settings["/user/settings（GET→settings / POST→settingsPost）"]
+            URL_user_index["/user（→ index，占位 501）"]
+        end
+        subgraph CTRL_auth["auth.controller.php"]
+            URL_auth_login["/auth/login（GET→login / POST→loginPost）"]
+            URL_auth_register["/auth/register（GET→register / POST→registerPost）"]
+            URL_auth_logout["/auth/logout（POST→logoutPost）"]
+            URL_auth_reset["/auth/reset（GET→reset / POST→resetPost）"]
+        end
+    end
+
+    subgraph VIEW[视图层 theme/{conf.theme}/]
+        VIEW_homepage["homepage.tpl.php"]
+        VIEW_forum_view["forum_view.tpl.php"]
+        VIEW_forum_add["forum_add.tpl.php"]
+        VIEW_topic_view["topic_view.tpl.php"]
+        VIEW_topic_create["topic_create.tpl.php"]
+        VIEW_post_edit["post_edit.tpl.php"]
+        VIEW_user_view["user_view.tpl.php"]
+        VIEW_user_settings["user_settings.tpl.php"]
+        VIEW_auth_login["auth_login.tpl.php"]
+        VIEW_auth_register["auth_register.tpl.php"]
+        VIEW_auth_recovery["auth_recovery.tpl.php"]
+        VIEW_auth_reset["auth_reset.tpl.php"]
+        VIEW_REDIRECT["（无视图：302 重定向或 403 纯文本）"]
+    end
+
+    %% 起点到控制器
+    start -- "'' / index" --> URL_home
+    start -- "forum" --> URL_forum_index
+    start -- "topic" --> URL_topic_view
+    start -- "post" --> URL_post_create
+    start -- "user" --> URL_user_view
+    start -- "auth" --> URL_auth_login
+
+    %% 动作 → 视图映射
+    URL_home --> VIEW_homepage
+    URL_forum_view --> VIEW_forum_view
+    URL_forum_add --> VIEW_forum_add
+    URL_forum_index --> VIEW_REDIRECT
+    URL_topic_view --> VIEW_topic_view
+    URL_topic_create --> VIEW_topic_create
+    URL_topic_lock --> VIEW_REDIRECT
+    URL_topic_sticky --> VIEW_REDIRECT
+    URL_topic_move --> VIEW_REDIRECT
+    URL_topic_delete --> VIEW_REDIRECT
+    URL_post_create --> VIEW_REDIRECT
+    URL_post_edit --> VIEW_post_edit
+    URL_post_delete --> VIEW_REDIRECT
+    URL_user_view --> VIEW_user_view
+    URL_user_settings --> VIEW_user_settings
+    URL_user_index --> VIEW_REDIRECT
+    URL_auth_login --> VIEW_auth_login
+    URL_auth_register --> VIEW_auth_register
+    URL_auth_logout --> VIEW_REDIRECT
+    URL_auth_reset --> VIEW_auth_reset
+
+    %% 注册成功展示恢复码
+    URL_auth_register -. "注册成功后" .-> VIEW_auth_recovery
+
+    %% 分发规则备注
+    NOTE[["分发规则：POST 请求优先调用 {action}Post()；<br/>page/sort/filter 走 query string，不进路径；<br/>类或方法不存在 → index.php 输出 404"]]
+    start -.-> NOTE

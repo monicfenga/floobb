@@ -1,0 +1,41 @@
+---
+title: 请求从开始到结束的完整路径
+---
+
+sequenceDiagram
+    participant User as "用户"
+    participant index_php as "index.php"
+    participant init_php as "init.php（引导）"
+    participant Router as "Router.lib.php"
+    participant Controller as "Controller 层（app/*.controller.php）"
+    participant Model as "Model 层（model/*.php）"
+    participant FlatDB as "flatDB（data/ 文件存储）"
+    participant View as "View 层（theme/{主题}/*.tpl.php）"
+
+    Note over User,View: 【初始化阶段】
+    User->>index_php: 发送请求 /{控制器}/{动作}/{参数}
+    index_php->>init_php: require init.php
+    init_php->>init_php: 定义常量（PATH_ROOT/THEME_DIR/APP_BASE…）
+    init_php->>init_php: 加载 lib/ 库（flatDB/Router/CSRF/Auth/Parsedown/Pagination/Captcha/files）
+    init_php->>init_php: 注册自动加载：<br/>XxxController → app/xxx.controller.php<br/>其他类 → model/Xxx.php
+    init_php->>FlatDB: 安装守卫：config 不存在则跳转 install.php
+    init_php->>FlatDB: 读入 $conf（站点配置）
+    init_php->>init_php: session_start() + CSRF $token（缺失时生成）
+    init_php->>init_php: Auth::resume() 恢复登录态（含 RememberMe）
+    init_php->>init_php: 注册 header_register_callback（输出 Server-Timing 头）
+    init_php-->>index_php: 引导完成，回到 index.php
+
+    Note over index_php,View: 【业务逻辑阶段】
+    index_php->>Router: Router::segments() 解析路径
+    Router-->>index_php: 段数组如 ['user','view','Geticer']（PATH_INFO → ?r= → 空=首页）
+    index_php->>index_php: 取第 1 段为控制器名并做合法性校验（默认 home）
+    index_php->>Router: Router::dispatch('user')
+    Router->>Router: action = 第 2 段（缺省 index）；args = 第 3 段起
+    Router->>Controller: 实例化 UserController<br/>POST 且存在 viewPost() 则调 viewPost()，否则调 view('Geticer')
+    Controller-->>Controller: 前置判断（Auth::csrfCheck / Auth::user 登录检查 / 数据存在性 404）
+    Controller->>Model: 调用静态仓储方法（User::get / Topic::listByForum / Post::listByTopic…）
+    Model->>FlatDB: 读写 data/ 下对应"表"文件（$FLATDB_TOTAL_QUERY_NUM 计数）
+    FlatDB-->>Model: 返回数据
+    Model-->>Controller: 装填数据（无 format 层，转义留给模板）
+    Controller->>View: 渲染三件套：header.tpl.php + {页面}.tpl.php + footer.tpl.php<br/>（render() 方法 extract 注入变量；或直接 require）
+    View-->>User: 输出 HTML（响应头带 Server-Timing：DB 操作数 + 总耗时）
