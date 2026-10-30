@@ -22,6 +22,36 @@ $showDebug = DEBUG_MODE && Auth::level() >= 3;
 	<?php endif; ?>
 </footer>
 <script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/bootstrap.bundle.min.js') ?>"></script>
+<script id="theme_js">
+(function () {
+	'use strict';
+	var KEY = 'floobb-theme';
+	// 尽早应用已存储的主题，减少闪白
+	var saved = null;
+	try { saved = localStorage.getItem(KEY); } catch (e) {}
+	var theme = saved === 'dark' || saved === 'light'
+		? saved
+		: (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+	document.documentElement.setAttribute('data-bs-theme', theme);
+
+	function updateIcon() {
+		var icon = document.getElementById('themeToggleIcon');
+		if (icon) icon.textContent = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? '☀️' : '🌙';
+	}
+	updateIcon();
+
+	document.addEventListener('DOMContentLoaded', function () {
+		var btn = document.getElementById('themeToggle');
+		if (!btn) return;
+		btn.addEventListener('click', function () {
+			var next = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+			document.documentElement.setAttribute('data-bs-theme', next);
+			try { localStorage.setItem(KEY, next); } catch (e) {}
+			updateIcon();
+		});
+	});
+})();
+</script>
 <script id="usagedd_js">
     function usagedd_update_ttfb() {
         // performance.timing 已废弃（Chrome 取值异常）→ 用 Navigation Timing L2，退回 performance.now()

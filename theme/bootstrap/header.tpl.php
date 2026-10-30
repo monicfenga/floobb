@@ -37,6 +37,11 @@
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('auth/login') ?>">登录</a></li>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('auth/register') ?>">注册</a></li>
 				<?php endif; ?>
+				<li class="nav-item">
+					<button class="btn btn-link nav-link p-0 lh-lg" type="button" id="themeToggle" aria-label="切换深浅色模式">
+						<span id="themeToggleIcon">🌙</span>
+					</button>
+				</li>
 			</ul>
 		</div>
 	</nav>
