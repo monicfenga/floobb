@@ -67,18 +67,22 @@ class ForumController {
 		if ($forum === null) self::notFound('版块不存在。');
 
 		// 排序走 query string（SPEC §3.1：非结构性修饰符不进路径）
+		// latest=最新发帖 / replied=最新回帖 / posts=最多回帖 / views=最多查看
 		$sort = (string) Router::query('sort', 'latest');
-		if (!in_array($sort, array('latest', 'oldest'), true)) $sort = 'latest';
+		if (!in_array($sort, array('latest', 'replied', 'posts', 'views'), true)) $sort = 'latest';
 
 		// 置顶区独立展示，普通区分页
 		$stickyTopics = array();
 		$normalTopics = array();
-		foreach (Topic::listByForum($fid) as $t) {
+		foreach (Topic::listByForum($fid, $sort) as $t) {
 			if (!empty($t['sticky'])) $stickyTopics[] = $t;
 			else $normalTopics[] = $t;
 		}
-		// listByForum 普通区默认 created 降序（latest）；oldest 反转
-		if ($sort === 'oldest') $normalTopics = array_reverse($normalTopics);
+		// 移动表单的版块下拉
+		$allForums = array();
+		foreach (Forum::listAll() as $f) {
+			$allForums[(string) ($f['id'] ?? '')] = (string) ($f['name'] ?? '');
+		}
 
 		$per = 10;
 		$total = Paginate::countPage($normalTopics, $per);
@@ -95,6 +99,7 @@ class ForumController {
 			'topics' => $pageTopics,
 			'sort' => $sort,
 			'pageLinks' => $pageLinks,
+			'allForums' => $allForums,
 			'totalTopics' => count($stickyTopics) + count($normalTopics),
 		));
 	}

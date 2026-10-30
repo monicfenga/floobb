@@ -27,6 +27,8 @@ class TopicController {
 
 		$topic = Topic::get($tid);
 		if ($topic === null) self::notFound('主题不存在。');
+		Topic::incrViews($tid); // 浏览计数（每次 GET +1）
+		$topic = Topic::get($tid); // 取回最新计数
 		$forum = Forum::get($topic['forum_id'] ?? '');
 
 		// query string 修饰符：sort=latest/oldest（默认 oldest=时间正序）；filter=author 只看楼主
@@ -123,6 +125,8 @@ class TopicController {
 			'title' => $title,
 			'author' => $user['username'],
 			'created' => $now,
+			'last_reply_at' => $now,
+			'views' => 0,
 			'sticky' => false,
 			'locked' => false,
 			'poll_id' => null,

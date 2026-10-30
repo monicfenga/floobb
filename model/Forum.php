@@ -59,7 +59,8 @@ class Forum {
 		foreach (flatDB::listDB('topics') as $file) {
 			$t = flatDB::getDB('topics', basename($file, '.dat.json'));
 			if (is_array($t) && (string) ($t['forum_id'] ?? '') === (string) $forumId) {
-				$c = (string) ($t['created'] ?? '');
+				// 回帖活跃优先，退回发帖时间
+				$c = (string) ($t['last_reply_at'] ?? '') !== '' ? (string) $t['last_reply_at'] : (string) ($t['created'] ?? '');
 				if ($c > $latest) $latest = $c;
 			}
 		}

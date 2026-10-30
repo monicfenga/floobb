@@ -32,3 +32,22 @@
 	<?php endforeach; ?>
 </div>
 <?php endif; ?>
+
+<?php if (!empty($latestTopics)): ?>
+<h2 class="h5 mt-4 mb-2">最新主题</h2>
+<ul class="list-group">
+	<?php foreach ($latestTopics as $row): $t = $row['topic']; ?>
+	<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+		<div>
+			<?php if (!empty($t['sticky'])): ?><span class="badge text-bg-warning me-1">置顶</span><?php endif; ?>
+			<?php if (!empty($t['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
+			<a href="<?= Router::url('topic/view/' . rawurlencode((string) $t['id'])) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
+			<small class="text-body-secondary ms-2">
+				<?php if ($row['forum_name'] !== ''): ?><a class="text-decoration-none" href="<?= Router::url('forum/view/' . rawurlencode($row['forum_id'])) ?>"><?= htmlspecialchars($row['forum_name']) ?></a> · <?php endif; ?>
+				<?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', strtotime((string) (($t['last_reply_at'] ?? '') !== '' ? $t['last_reply_at'] : ($t['created'] ?? '')))) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖
+			</small>
+		</div>
+	</li>
+	<?php endforeach; ?>
+</ul>
+<?php endif; ?>

@@ -15,9 +15,10 @@ class Topic {
 	}
 
 	/**
-	 * 版块下的主题（置顶在前，其余按 created 降序）
+	 * 版块下的主题（不含置顶排序逻辑，排序按 $sort）：
+	 * latest=最新发帖 created / replied=最新回帖 last_reply_at / posts=最多回帖 / views=最多查看
 	 */
-	public static function listByForum($forumId) {
+	public static function listByForum($forumId, $sort = 'latest') {
 		$topics = array();
 		foreach (flatDB::listDB('topics') as $file) {
 			$id = basename($file, '.dat.json');
@@ -26,11 +27,52 @@ class Topic {
 				$topics[] = $t;
 			}
 		}
-		usort($topics, function ($a, $b) {
-			$sticky = ((int) ($b['sticky'] ?? false)) <=> ((int) ($a['sticky'] ?? false));
-			return $sticky !== 0 ? $sticky : strcmp((string) ($b['created'] ?? ''), (string) ($a['created'] ?? ''));
+		return self::sortBy($topics, $sort);
+	}
+
+	/**
+	 * 排序键统一入口：稳定性依赖 created 兜底
+	 */
+	public static function sortBy(array $topics, $sort = 'latest') {
+		$lastActivity = function (array $t) {
+			return (string) ($t['last_reply_at'] ?? '') !== '' ? (string) $t['last_reply_at'] : (string) ($t['created'] ?? '');
+		};
+		usort($topics, function ($a, $b) use ($sort, $lastActivity) {
+			$createdDesc = strcmp($lastActivity($b), $lastActivity($a)); // 兜底：时间降序
+			switch ($sort) {
+				case 'replied': return $createdDesc;
+				case 'posts':   return (count((array) ($b['post_ids'] ?? array())) <=> count((array) ($a['post_ids'] ?? array()))) ?: $createdDesc;
+				case 'views':   return ((int) ($b['views'] ?? 0) <=> (int) ($a['views'] ?? 0)) ?: $createdDesc;
+				default:        return strcmp((string) ($b['created'] ?? ''), (string) ($a['created'] ?? ''));
+			}
 		});
 		return $topics;
+	}
+
+	/**
+	 * 全站最新主题（首页用；按最后活跃降序，置顶在前）
+	 */
+	public static function listLatest($limit = 10) {
+		$topics = array();
+		foreach (flatDB::listDB('topics') as $file) {
+			$t = flatDB::getDB('topics', basename($file, '.dat.json'));
+			if (is_array($t)) $topics[] = $t;
+		}
+		$topics = self::sortBy($topics, 'replied');
+		usort($topics, function ($a, $b) {
+			return ((int) ($b['sticky'] ?? false)) <=> ((int) ($a['sticky'] ?? false));
+		});
+		return array_slice($topics, 0, (int) $limit);
+	}
+
+	/**
+	 * 浏览计数 +1（主题详情页每次 GET 调用）
+	 */
+	public static function incrViews($topicId) {
+		$t = self::get($topicId);
+		if ($t === null) return;
+		$t['views'] = (int) ($t['views'] ?? 0) + 1;
+		self::save((string) $topicId, $t);
 	}
 
 	public static function save($topicId, array $data) {

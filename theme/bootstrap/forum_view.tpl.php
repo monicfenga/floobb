@@ -20,12 +20,11 @@
 </p>
 
 <ul class="nav nav-pills mb-2" aria-label="排序">
-	<li class="nav-item">
-		<a class="nav-link <?= $sort === 'latest' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . rawurlencode((string) ($forum['id'] ?? ''))) ?>?sort=latest">最新</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link <?= $sort === 'oldest' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . rawurlencode((string) ($forum['id'] ?? ''))) ?>?sort=oldest">最早</a>
-	</li>
+	<?php $fidEsc = rawurlencode((string) ($forum['id'] ?? '')); ?>
+	<li class="nav-item"><a class="nav-link <?= $sort === 'latest' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . $fidEsc) ?>?sort=latest">最新发帖</a></li>
+	<li class="nav-item"><a class="nav-link <?= $sort === 'replied' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . $fidEsc) ?>?sort=replied">最新回帖</a></li>
+	<li class="nav-item"><a class="nav-link <?= $sort === 'posts' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . $fidEsc) ?>?sort=posts">最多回帖</a></li>
+	<li class="nav-item"><a class="nav-link <?= $sort === 'views' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . $fidEsc) ?>?sort=views">最多查看</a></li>
 </ul>
 
 <?php if (!empty($stickyTopics)): ?>
@@ -55,7 +54,7 @@
 		<div>
 			<?php if (!empty($t['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
 			<a href="<?= Router::url('topic/view/' . rawurlencode((string) $t['id'])) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
-			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', strtotime((string) ($t['created'] ?? ''))) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖</small>
+			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', strtotime((string) ($t['created'] ?? ''))) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖 · <?= (int) ($t['views'] ?? 0) ?> 查看</small>
 		</div>
 		<?php require THEME_DIR . $conf['theme'] . DS . '_topic_actions.tpl.php'; ?>
 	</li>

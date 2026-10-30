@@ -6,12 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= htmlspecialchars($header['title'] ?? $conf['title']) ?></title>
 <meta name="description" content="<?= htmlspecialchars($header['description'] ?? '') ?>">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.0.19/400.css" rel="stylesheet">
-<style>
-:root { font-size: 100%; } /* 16px = 1rem，SPEC §7 */
-html, body { font-family: "Noto Sans SC", system-ui, sans-serif; }
-</style>
+<link href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/bootstrap.min.css') ?>" rel="stylesheet">
+<link href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/style.css') ?>" rel="stylesheet">
 </head>
 <body>
 <header class="bg-body-tertiary border-bottom mb-4">

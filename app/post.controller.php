@@ -45,8 +45,9 @@ class PostController {
 			'edited' => null,
 			'content_md' => $content,
 		));
-		// topic.post_ids 维护 + 版块 post_count+1
+		// topic.post_ids 维护 + last_reply_at + 版块 post_count+1
 		$topic['post_ids'][] = $pid;
+		$topic['last_reply_at'] = date('Y-m-d\TH:i:s');
 		Topic::save((string) $tid, $topic);
 		if ($forumId !== '') Forum::adjustCounts($forumId, 0, 1);
 
