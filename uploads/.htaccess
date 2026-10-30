@@ -1,5 +1,14 @@
 # 上传目录禁止执行任何脚本（纵深防御：即使伪装成图片的 PHP 落盘也不可执行）
-php_flag engine off
+# mod_php 环境下直接关闭 PHP 引擎；mod_fcgid 下无 php_flag，改用 SetHandler none 取消 fcgid 处理器
+<IfModule mod_php7.c>
+	php_flag engine off
+</IfModule>
+<IfModule mod_php.c>
+	php_flag engine off
+</IfModule>
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|php8|phar|pht)$">
+	SetHandler none
+</FilesMatch>
 Options -ExecCGI -Indexes
 
 <FilesMatch "\.(php|phtml|php3|php4|php5|php7|php8|phar|pht|pl|py|cgi|asp|aspx|sh|htaccess)$">
