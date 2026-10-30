@@ -1,6 +1,6 @@
 <?php
 
-defined('FLOO') or die('potato'); // NOOOO
+defined('FLOO') or die('FlooBB');
 
 /**
  * 首页控制器：GET / → 版块列表

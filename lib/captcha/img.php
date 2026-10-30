@@ -3,7 +3,7 @@
  * 直访脚本：不经 index.php（.htaccess !-f 放行），自带 FLOO 常量
  */
 define('FLOO', TRUE);
-defined('FLOO') or die('potato'); // NOOOO
+defined('FLOO') or die('FlooBB');
 // 直访脚本不经 init.php，本地开发期与 init.php 的 DEBUG_MODE 保持一致
 if (!defined('DEBUG_MODE')) define('DEBUG_MODE', TRUE);
 

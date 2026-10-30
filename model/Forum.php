@@ -1,6 +1,6 @@
 <?php
 
-defined('FLOO') or die('potato'); // NOOOO
+defined('FLOO') or die('FlooBB');
 
 /**
  * 版块仓储【model 层 = 关联数组 + 静态仓储函数，SPEC §3.3】

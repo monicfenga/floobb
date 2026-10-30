@@ -1,6 +1,6 @@
 <?php
 
-defined('FLOO') or die('potato'); // NOOOO
+defined('FLOO') or die('FlooBB');
 
 /**
  * 私信控制器（SPEC §3.1 /pm/inbox，扩展 outbox/compose/send/view/delete）

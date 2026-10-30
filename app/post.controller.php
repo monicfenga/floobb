@@ -1,6 +1,6 @@
 <?php
 
-defined('FLOO') or die('potato'); // NOOOO
+defined('FLOO') or die('FlooBB');
 
 /**
  * 帖子控制器（SPEC §3.1 路由表 / §5 MVP）
