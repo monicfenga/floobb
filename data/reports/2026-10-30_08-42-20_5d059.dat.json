@@ -1,0 +1,12 @@
+{
+    "id": "2026-10-30_08-42-20_5d059",
+    "type": "post",
+    "target_id": "2026-10-30_08-42-20_14c00",
+    "reporter": "repr164219",
+    "reason": "spam",
+    "detail": "垃圾内容测试",
+    "created": "2026-10-30T08:42:20",
+    "status": "dismissed",
+    "resolved_by": "rootadmin",
+    "resolution": "no_action"
+}

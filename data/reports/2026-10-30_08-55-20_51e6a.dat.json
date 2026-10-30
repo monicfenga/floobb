@@ -1,0 +1,12 @@
+{
+    "id": "2026-10-30_08-55-20_51e6a",
+    "type": "user",
+    "target_id": "banv165518",
+    "reporter": "banp165518",
+    "reason": "abuse",
+    "detail": "封禁测试",
+    "created": "2026-10-30T08:55:20",
+    "status": "resolved",
+    "resolved_by": "rootadmin",
+    "resolution": "banned"
+}

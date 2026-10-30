@@ -1,0 +1,10 @@
+{
+    "name": "技术讨论",
+    "slug": "tech",
+    "description": "FlooBB 开发、PHP、flatDB 相关话题。",
+    "order": 0,
+    "topic_count": 9,
+    "post_count": 11,
+    "sticky_topic_ids": [],
+    "id": "tech"
+}

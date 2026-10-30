@@ -1,0 +1,27 @@
+{
+    "id": "ecbdd693e526",
+    "username": "banr165407",
+    "nickname": "banr165407",
+    "password_hash": "$2y$12$TvIZyFmdlLdNXJyrlwEW6u1gXkoRQydFL1GdtQIyotVNitZV.XngS",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T08:54:07",
+    "last_seen": "2026-10-30T08:54:07",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "e988693815ca4f5171975ae5e692b9cb209414895877a7c90344cb5dde9ce1b8",
+        "9b7b0dabc59229e5275d2f2c577dd2646abab67cc2b0716e6ef6e4c87fa32932",
+        "7a4a9f9a3d140bdce6be40eb83e7d2e280ba5b5aba3c3081fdce1bf377eaa2f3",
+        "f0db5743dd5dc706cc1fe8f09c6171898ec68849bab483433bca82a3063307e2",
+        "e2149e8dd2b929d24f7ea3d4b5d8289c6ff9c7ad2f4455ce6bb0ffa64ca495bc",
+        "35ea1755788ee073f36307067fa683c0977871229cec77f9269f342ab8a819cd"
+    ],
+    "remember_selector": "40960377d57077f973",
+    "remember_hash": "b09af066ac9c233cb0ce9519c22d7856a0b403ce8ffcf136ace60ef21666dbb1",
+    "totp_secret": "",
+    "totp_enabled": false,
+    "banned_until": "2026-10-31T08:54:08",
+    "banned_by": "rootadmin",
+    "banned_reason": ""
+}

@@ -1,0 +1,14 @@
+{
+    "inbox": [],
+    "outbox": [
+        {
+            "id": "2026-10-30_07-55-30_6f81d",
+            "from": "GeticerWebPress",
+            "to": "rootadmin",
+            "subject": "hello from the other side",
+            "body": "Hello from the other side\r\n\r\nI must've called a thousand times to tell you\r\n\r\nI'm sorry for everything that I've done\r\n\r\nBut when I call you never seem to be home",
+            "time": "2026-10-30T07:55:30",
+            "read": false
+        }
+    ]
+}

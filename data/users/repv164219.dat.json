@@ -1,0 +1,24 @@
+{
+    "id": "aeed49baaf0d",
+    "username": "repv164219",
+    "nickname": "repv164219",
+    "password_hash": "$2y$12$1guvIusfZX7jFEY.VcRZk.cpDTidk2zqzzJcG97ZEq7C1oJRlbfI6",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T08:42:19",
+    "last_seen": "2026-10-30T08:42:19",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "281206ee2b875643123ae4662a6c5aa862356f66bf191e49bc349d062b76956b",
+        "74810052fe99d43b8424a329da1f69c010071d3bdc87446ac8b670532a5dec2f",
+        "f471d0da5b32daf456b2718ce24dbff696ac4f5c4262f871a4b1cbf01545e9f7",
+        "d1186d1cc0703d67426c50bd44fa4baeaa5ae5d5a245a04c866dff148e2ee558",
+        "4f6cb5374a052bb2acd36904cd601279a217eecf7c0f36ad64e3d6b1158f4858",
+        "f3eca9f9657dce6b7d2aab65b97adb2e2885d195be46050d1c8a4cb285ad420c"
+    ],
+    "remember_selector": "",
+    "remember_hash": "",
+    "totp_secret": "",
+    "totp_enabled": false
+}

@@ -1,0 +1,24 @@
+{
+    "id": "5692a1f2ac96",
+    "username": "pmb155317",
+    "nickname": "pmb155317",
+    "password_hash": "$2y$12$hs72s1q9iEns3Ok6Pgo0CuPv0NXMfsXbqJXnLGdbZ6bVMbYyw8feW",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T07:53:18",
+    "last_seen": "2026-10-30T07:53:18",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "9e49ed1b387e961135233205db46c15c94b5f17fffa8b7268b64697544becf33",
+        "705097272ee3229564c2f51b32b1a59cb1b8c1884dfae5f1fce8b50304025c2c",
+        "ce22866b2bf0c724e4fa3ff7ed2db1d74afd3d4a72399c8cb2149bea82f63dc9",
+        "0ec648502d391df2b4a784e7adbb8f499ba88978d7846089b80359d0a74a720d",
+        "e63f10504f004df97e4219819aa0cff79c0a9d5fc7c0ea3aa94f1a9a4fc51819",
+        "7f55875b4798a52d1d4f1a55884cea33894909bd5c6cd35ebd0bc218e6429fb9"
+    ],
+    "remember_selector": "",
+    "remember_hash": "",
+    "totp_secret": "",
+    "totp_enabled": false
+}

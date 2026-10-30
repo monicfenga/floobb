@@ -1,0 +1,24 @@
+{
+    "id": "d23ec55ae02d",
+    "username": "banp165448",
+    "nickname": "banp165448",
+    "password_hash": "$2y$12$XSdTtPibafWVnURu15vqhehr9JlVIm/45QxGbmwSwVYAsLEtgTQ2C",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T08:54:50",
+    "last_seen": "2026-10-30T08:54:50",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "92b1b8a7e8a89f91013f9861ebab99a66e4520c0ed6f505048a3dc8c6be79f9f",
+        "88ec62382e48f6f66fba398e99214f6f93df9b95ef9db3ac533fe022bbd91a4d",
+        "d5147892b06c26aab8b6dca5613cc4c43d6a2437560125606e0f722f91165e58",
+        "2cbdbddc5c523c9e93b0c7baf9e8bc3146a64bb0bd5229c2e2a1cf920fed4e02",
+        "8a22abeae99031f864e1f72de08bbbba131a16f3a89e0b57964be38950f1f3c3",
+        "2108c87ddfac3ef0c9bdd76595a25c1559cbe789c28ffeff7e851fc26d649b8c"
+    ],
+    "remember_selector": "",
+    "remember_hash": "",
+    "totp_secret": "",
+    "totp_enabled": false
+}

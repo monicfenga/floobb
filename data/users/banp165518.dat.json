@@ -1,0 +1,24 @@
+{
+    "id": "30e275745f3b",
+    "username": "banp165518",
+    "nickname": "banp165518",
+    "password_hash": "$2y$12$2KN4hS.gJspVXiysxUtKOOebES.7DQ7JkWCNhW2ptkFKxe0L7kX2y",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T08:55:20",
+    "last_seen": "2026-10-30T08:55:20",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "64bcd2a878242f9aae3891d3bc08bc17928bfc3cf09e4773a03173805b441970",
+        "122c1366c2cff2f7b87f6fe094a1bda0923bc9d7b7cec7245d5816bfb82fb551",
+        "af590ff415f328300d6db66575d1b67f2544c9c3a7d1bc6f6c75236cfa75bf69",
+        "74031e1254baca73e7f0bd01c6c5c9b1a157e455a15503aa008dc8be7ff728bd",
+        "f7763b5e752980c98fc710e34ea56b460497f544028cda57f15a10d4cd527b75",
+        "bc2c227fe801fe6173388ebf7ac5842b20e72748dd56951a7e97dbb30bd5abdb"
+    ],
+    "remember_selector": "",
+    "remember_hash": "",
+    "totp_secret": "",
+    "totp_enabled": false
+}

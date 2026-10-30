@@ -1,0 +1,10 @@
+{
+    "topic_id": "2026-10-30061634f40a3",
+    "forum_id": "tech",
+    "author": "rootadmin",
+    "created": "2026-10-30T06:16:36",
+    "edited": null,
+    "content_md": "计数一致性目前走 Forum::adjustCounts 单入口，负向不穿 0，先跑着看。",
+    "id": "2026-10-300616360613d",
+    "content_html": "<p>计数一致性目前走 Forum::adjustCounts 单入口，负向不穿 0，先跑着看。</p>"
+}

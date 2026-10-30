@@ -1,0 +1,27 @@
+{
+    "id": "2cd2b69d9a88",
+    "username": "banv165407",
+    "nickname": "banv165407",
+    "password_hash": "$2y$12$D3BCMcTFuZNwQMt9t.Q48uCg3mVIRPVqmV3MKDxslQxMtoRsC15N2",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T08:54:07",
+    "last_seen": "2026-10-30T08:54:07",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "45e1f75770d07699c163a842a988833283e63a995d9b4f6181b0e09bf093f95f",
+        "54bca24f62d3b78893346a256885164c7ed340f61e07bbb6ccfafe04b1f2eeb2",
+        "34851cf150c0796733cbe9eea2a8ca2aafa1dff540bc2364168a1b17ea4029c9",
+        "f74e8f0162a2779e88e2abc8145c394b06ae808f2403e7069ac142fff493147d",
+        "f1dc77284cf7b8dcf467721a5b1c20f85176c7a45610ceb44d04a758f42e76a9",
+        "34c3fdcf87258dfc62ad22506006f42c455bfe5de62cee18d5ddee09955cdc07"
+    ],
+    "remember_selector": "",
+    "remember_hash": "",
+    "totp_secret": "",
+    "totp_enabled": false,
+    "banned_until": "",
+    "banned_by": "",
+    "banned_reason": ""
+}

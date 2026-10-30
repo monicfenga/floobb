@@ -1,0 +1,22 @@
+{
+    "question": "你最喜欢哪些功能？",
+    "options": [
+        {
+            "text": "功能甲",
+            "votes": 0
+        },
+        {
+            "text": "功能乙",
+            "votes": 0
+        },
+        {
+            "text": "功能丙",
+            "votes": 0
+        }
+    ],
+    "votes": {},
+    "max_choices": 2,
+    "deadline": "2026-11-29T08:18:35",
+    "closed": false,
+    "closed_by": ""
+}

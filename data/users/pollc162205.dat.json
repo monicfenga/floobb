@@ -1,0 +1,24 @@
+{
+    "id": "3c45c137f788",
+    "username": "pollc162205",
+    "nickname": "pollc162205",
+    "password_hash": "$2y$12$neoALBgPhryPHdTQJWrSPOBy2SaQLWLg8xKKYVg5K7fejRrtlRcVG",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T08:22:06",
+    "last_seen": "2026-10-30T08:22:06",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "df29ac9baeeb8694ce3a51fae9556d241a90ff9fdd8a974e91c970d98eda5e05",
+        "d3428f55f383f4a2e5aff3979ae6a7b383586011b93376a37fc6a9c766f26365",
+        "30ae23b740c3f20631583618c01e9015ad89eedcc7250a8524d9c350e529fe5f",
+        "878d205700e4ab3bf6d425ebb7d947244aed3a0547e4faddabd3c7af1491f7e6",
+        "ed7837ecfb4c48162a89a506b89c2dfc122fc6810f36e29ed1cdb835a61f3394",
+        "8c60dbaaba138fdba6fac649b4862c26b74071b31b4b92b7f85da16bb98ceadc"
+    ],
+    "remember_selector": "",
+    "remember_hash": "",
+    "totp_secret": "",
+    "totp_enabled": false
+}

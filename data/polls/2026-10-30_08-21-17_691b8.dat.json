@@ -1,0 +1,18 @@
+{
+    "question": "q",
+    "options": [
+        {
+            "text": "甲",
+            "votes": 0
+        },
+        {
+            "text": "乙",
+            "votes": 0
+        }
+    ],
+    "votes": {},
+    "max_choices": 1,
+    "deadline": "2026-11-06T08:21:17",
+    "closed": false,
+    "closed_by": ""
+}

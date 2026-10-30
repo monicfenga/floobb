@@ -1,0 +1,27 @@
+{
+    "id": "bca4dca34f48",
+    "username": "banv165448",
+    "nickname": "banv165448",
+    "password_hash": "$2y$12$jjt9nmYDQC73Wu3wtp/zbuSSQsRRGNg91Bp0i8rRl5DxglojyYeUy",
+    "email": "",
+    "level": 1,
+    "registered": "2026-10-30T08:54:48",
+    "last_seen": "2026-10-30T08:54:48",
+    "signature": "",
+    "avatar": "",
+    "recovery_codes": [
+        "0980a3d56bef069b3aeab5b3ecb165926f977cb8ce7aa25385679b0af1a5235f",
+        "5f95dc9c881d2acca3902f1f4813c5adf2b88263d67b81fa4f31ae4b42dde9dc",
+        "c9bff2678447d770fdec09179f5c30e584a0b9d148d478869d5c5fefaad1d4ae",
+        "98e57ddcd6daa5448d6834c2179b0fcf1dd5a0ee82fb57a3b0bf6263b303b0be",
+        "22b3387c735ae75fbbf7af32e9de413fbf25d6a779c46a26ef55d2ed18136e86",
+        "2bc5ecb4f116199f5af59822c9cb3ac9a1f8924942cf9da7fff1961794311b80"
+    ],
+    "remember_selector": "",
+    "remember_hash": "",
+    "totp_secret": "",
+    "totp_enabled": false,
+    "banned_until": "",
+    "banned_by": "",
+    "banned_reason": ""
+}
