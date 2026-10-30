@@ -176,6 +176,8 @@ index.php                 ← 入口：init + 解析 param(0/1/2) + 分发到控
 ## 4. 数据模型（JSON flat-file）
 
 > 旧 `db/*.dat` 行格式全部废弃，**不做迁移**：以 Flatdb JSON 全新安装，旧数据不保留（如需可手工处理）。
+>
+> **newEntry() ID 格式（勿再正则踩坑）**：`Flatdb.lib.php` 的 `newEntry()` 输出 = `date('Y-m-d_H-i-s_') . substr(uniqid(), -5)`，即 `2026-10-30_07-52-23_6eef4` 这种形态——**含下划线、日期与时分秒段用 `-` 分隔**，字符集 `[0-9a-zA-Z_-]`。任何抓取/正则匹配 ID 一律用 `[A-Za-z0-9_\-]+`，禁止假设纯字母数字或纯连字符（已两次因此验收假失败）。适用实体：topics / posts / pms / reports / polls。
 
 ```
 data/
