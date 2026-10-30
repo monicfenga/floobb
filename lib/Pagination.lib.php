@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 
 /**
  * 分页【吸纳自 WebPress/libs/Pagination.lib.php（Paginate）】

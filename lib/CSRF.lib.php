@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 
 /**
  * CSRF令牌类，其主要目的是为了检查提交表单的来源是否是同一站点，以避免跨站点请求伪造攻击（CSRF）。

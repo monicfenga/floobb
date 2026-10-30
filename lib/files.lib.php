@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 
 /**
  * 上传/附件【吸纳自 WebPress/libs/files.lib.php（Files），按确认映射精简重写】

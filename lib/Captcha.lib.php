@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 
 /**
  * 验证码【吸纳自 WebPress/libs/Captcha.lib.php（Captcha）】

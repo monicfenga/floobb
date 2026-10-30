@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 /** @var array $user 用户关联数组 @var array $stats 主题/帖子计数 @var array $recentTopics @var array $recentPosts */
 $nickname = (string) ($user['nickname'] ?? $user['username']);
 $username = (string) $user['username'];
@@ -15,6 +15,11 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 
 <?php if ((string) ($user['bio'] ?? '') !== ''): ?>
 <p class="text-body-secondary mb-3"><?= htmlspecialchars((string) $user['bio']) ?></p>
+<?php endif; ?>
+
+<?php $viewer = Auth::user(); ?>
+<?php if ($viewer !== null && $viewer['username'] !== $username): ?>
+<p class="mb-3"><a class="btn btn-sm btn-outline-primary" href="<?= Router::url('pm/compose') ?>?to=<?= rawurlencode($username) ?>">发私信</a></p>
 <?php endif; ?>
 
 <div class="card mb-4">

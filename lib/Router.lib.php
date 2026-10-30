@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 
 /**
  * 路由层【核心】——原 common.php 的 param()/xn_url_parse 迁入于此。

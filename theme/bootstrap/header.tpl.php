@@ -22,6 +22,8 @@
 				<?php if (Auth::isLoggedIn()): $navUser = Auth::user(); ?>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/view/' . urlencode((string) $navUser['username'])) ?>"><?= htmlspecialchars((string) ($navUser['nickname'] ?? $navUser['username'])) ?></a></li>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/settings') ?>">设置</a></li>
+				<?php $pmUnread = PM::unreadCount((string) $navUser['username']); ?>
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('pm/inbox') ?>">私信<?php if ($pmUnread > 0): ?><span class="badge text-bg-danger ms-1"><?= $pmUnread ?></span><?php endif; ?></a></li>
 				<li class="nav-item">
 					<form method="post" action="<?= Router::url('auth/logout') ?>" class="d-inline">
 						<?= Auth::csrfField() ?>

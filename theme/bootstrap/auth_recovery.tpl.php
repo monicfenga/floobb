@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 /** @var array $codes 明文恢复码，仅此一次展示 @var string $username */
 ?>
 <div class="row justify-content-center">

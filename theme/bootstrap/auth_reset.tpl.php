@@ -1,4 +1,4 @@
-<?php defined('FLOO') or die('potato'); // NOOOO
+<?php defined('FLOO') or die('FlooBB'); 
 /** @var string|null $error @var string $username */
 ?>
 <div class="row justify-content-center">
