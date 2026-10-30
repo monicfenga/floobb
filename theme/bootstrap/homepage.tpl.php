@@ -20,9 +20,12 @@
 				</h2>
 				<p class="card-text text-body-secondary"><?= htmlspecialchars($forum['description'] ?? '') ?></p>
 			</div>
-			<div class="card-footer text-body-secondary d-flex gap-3">
+			<div class="card-footer text-body-secondary d-flex gap-3 flex-wrap">
 				<span>主题 <?= (int) ($forum['topic_count'] ?? 0) ?></span>
 				<span>帖子 <?= (int) ($forum['post_count'] ?? 0) ?></span>
+				<?php if (!empty($forum['last_active'])): ?>
+				<span>最后活跃 <?= date('Y-m-d H:i', strtotime((string) $forum['last_active'])) ?></span>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>

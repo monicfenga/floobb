@@ -40,6 +40,10 @@ class Post {
 		return $id;
 	}
 
+	public static function delete($postId) {
+		return \flatDB::removeDB('posts', (string) $postId);
+	}
+
 	public static function save($postId, array $data) {
 		$data['content_html'] = self::render($data['content_md'] ?? '');
 		return \flatDB::saveDB('posts', $postId, $data);
@@ -65,6 +69,8 @@ class Post {
 		$parsedown->setSafeMode(true);
 		$parsedown->setMarkupEscaped(true);
 		$parsedown->setBreaksEnabled(true);
-		return $parsedown->text((string) $markdown);
+		$html = $parsedown->text((string) $markdown);
+		// 代码块挂 Prettify class（SPEC §7：pre.prettyprint 自动高亮）
+		return str_replace('<pre>', '<pre class="prettyprint">', $html);
 	}
 }

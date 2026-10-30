@@ -42,7 +42,53 @@ class Forum {
 		$id = \flatDB::newEntry();
 		$data['id'] = $id;
 		$data['order'] = (int) ($data['order'] ?? count(self::listAll()));
+		$data['topic_count'] = (int) ($data['topic_count'] ?? 0);
+		$data['post_count'] = (int) ($data['post_count'] ?? 0);
+		$data['sticky_topic_ids'] = (array) ($data['sticky_topic_ids'] ?? array());
 		\flatDB::saveDB('forums', $id, $data);
 		return $id;
+	}
+
+	/**
+	 * 版块最后活跃时间（该版块下最新主题的 created；无主题返回 ''）
+	 */
+	public static function lastActive($forumId) {
+		$latest = '';
+		foreach (\flatDB::listDB('topics') as $file) {
+			$t = \flatDB::getDB('topics', basename($file, '.dat.json'));
+			if (is_array($t) && (string) ($t['forum_id'] ?? '') === (string) $forumId) {
+				$c = (string) ($t['created'] ?? '');
+				if ($c > $latest) $latest = $c;
+			}
+		}
+		return $latest;
+	}
+
+	/**
+	 * 计数一致性：建/删主题与帖子同步增减（delta 可为负，负向不穿 0）
+	 */
+	public static function adjustCounts($forumId, $topicsDelta, $postsDelta) {
+		$f = self::get($forumId);
+		if ($f === null) return;
+		$f['topic_count'] = max(0, (int) ($f['topic_count'] ?? 0) + (int) $topicsDelta);
+		$f['post_count'] = max(0, (int) ($f['post_count'] ?? 0) + (int) $postsDelta);
+		self::save($forumId, $f);
+	}
+
+	/**
+	 * 维护 forums.sticky_topic_ids（SPEC §4）：置顶/取消置顶时同步
+	 */
+	public static function setStickyRef($forumId, $topicId, $on) {
+		$f = self::get($forumId);
+		if ($f === null) return;
+		$ids = array_values((array) ($f['sticky_topic_ids'] ?? array()));
+		$idx = array_search((string) $topicId, $ids, true);
+		if ($on && $idx === false) {
+			$ids[] = (string) $topicId;
+		} elseif (!$on && $idx !== false) {
+			unset($ids[$idx]);
+		}
+		$f['sticky_topic_ids'] = array_values($ids);
+		self::save($forumId, $f);
 	}
 }

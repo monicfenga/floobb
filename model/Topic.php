@@ -49,6 +49,10 @@ class Topic {
 		return $n;
 	}
 
+	public static function delete($topicId) {
+		return \flatDB::removeDB('topics', (string) $topicId);
+	}
+
 	public static function create(array $data) {
 		$id = \flatDB::newEntry();
 		$data['id'] = $id;

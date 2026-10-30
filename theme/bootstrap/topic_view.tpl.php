@@ -1,0 +1,101 @@
+<?php defined('FLOO') or die('FlooBB'); ?>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
+		<?php if ($forum !== null): ?>
+		<li class="breadcrumb-item"><a href="<?= Router::url('forum/view/' . rawurlencode((string) ($forum['id'] ?? ''))) ?>"><?= htmlspecialchars($forum['name'] ?? '') ?></a></li>
+		<?php endif; ?>
+		<li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($topic['title'] ?? '') ?></li>
+	</ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-1">
+	<h1 class="h4 mb-0">
+		<?php if (!empty($topic['sticky'])): ?><span class="badge text-bg-warning me-1">置顶</span><?php endif; ?>
+		<?php if (!empty($topic['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
+		<?= htmlspecialchars($topic['title'] ?? '') ?>
+	</h1>
+	<div class="d-flex gap-1 align-items-center">
+		<ul class="nav nav-pills" aria-label="帖子排序与筛选">
+			<li class="nav-item"><a class="nav-link py-1 <?= $sort === 'oldest' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' . rawurlencode((string) ($topic['id'] ?? ''))) ?><?= $filter === 'author' ? '?filter=author' : '' ?>">正序</a></li>
+			<li class="nav-item"><a class="nav-link py-1 <?= $sort === 'latest' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' . rawurlencode((string) ($topic['id'] ?? ''))) ?>?sort=latest<?= $filter === 'author' ? '&filter=author' : '' ?>">倒序</a></li>
+			<li class="nav-item"><a class="nav-link py-1 <?= $filter === 'author' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' . rawurlencode((string) ($topic['id'] ?? ''))) ?>?filter=author<?= $sort === 'latest' ? '&sort=latest' : '' ?>">只看楼主</a></li>
+		</ul>
+	</div>
+</div>
+<p class="text-body-secondary small">
+	楼主 <a href="<?= Router::url('user/view/' . rawurlencode((string) ($topic['author'] ?? ''))) ?>"><?= htmlspecialchars($topic['author'] ?? '') ?></a>
+	· <?= date('Y-m-d H:i', strtotime((string) ($topic['created'] ?? ''))) ?>
+	· <?= count((array) ($topic['post_ids'] ?? array())) ?> 帖
+</p>
+
+<?php if (Auth::level() >= 2): ?>
+<div class="btn-group btn-group-sm mb-3" role="group" aria-label="管理操作">
+	<form method="post" action="<?= Router::url('topic/lock/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline">
+		<?= Auth::csrfField() ?>
+		<button type="submit" class="btn btn-outline-secondary"><?= empty($topic['locked']) ? '锁定' : '解锁' ?></button>
+	</form>
+	<form method="post" action="<?= Router::url('topic/sticky/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline">
+		<?= Auth::csrfField() ?>
+		<button type="submit" class="btn btn-outline-secondary"><?= empty($topic['sticky']) ? '置顶' : '取消置顶' ?></button>
+	</form>
+	<form method="post" action="<?= Router::url('topic/move/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline input-group input-group-sm" style="width: 12rem;">
+		<?= Auth::csrfField() ?>
+		<input type="text" name="fid" class="form-control" placeholder="目标版块ID" aria-label="目标版块ID" required>
+		<button type="submit" class="btn btn-outline-secondary">移动</button>
+	</form>
+	<form method="post" action="<?= Router::url('topic/delete/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline" onsubmit="return confirm('确定删除该主题及其全部帖子？');">
+		<?= Auth::csrfField() ?>
+		<button type="submit" class="btn btn-outline-danger">删除主题</button>
+	</form>
+</div>
+<?php endif; ?>
+
+<?php foreach ($posts as $row): $p = $row['post']; ?>
+<article class="card mb-2" id="p<?= htmlspecialchars((string) ($p['id'] ?? '')) ?>">
+	<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+		<a href="<?= Router::url('user/view/' . rawurlencode((string) ($p['author'] ?? ''))) ?>"><?= htmlspecialchars($row['author_nickname']) ?></a>
+		<small class="text-body-secondary">
+			#<?= htmlspecialchars((string) ($p['id'] ?? '')) ?>
+			· <?= date('Y-m-d H:i', strtotime((string) ($p['created'] ?? ''))) ?>
+			<?php if (!empty($p['edited'])): ?>· 已编辑（<?= date('m-d H:i', strtotime((string) $p['edited'])) ?>）<?php endif; ?>
+		</small>
+	</div>
+	<div class="card-body post-content"><?= $p['content_html'] ?? '' ?></div>
+	<?php if ($row['can_edit'] || $row['can_delete']): ?>
+	<div class="card-footer bg-transparent d-flex gap-2 py-1">
+		<?php if ($row['can_edit']): ?>
+		<a class="btn btn-sm btn-link text-decoration-none px-0" href="<?= Router::url('post/edit/' . rawurlencode((string) ($p['id'] ?? ''))) ?>">编辑</a>
+		<?php endif; ?>
+		<?php if ($row['can_delete']): ?>
+		<form method="post" action="<?= Router::url('post/delete/' . rawurlencode((string) ($p['id'] ?? ''))) ?>" onsubmit="return confirm('确定删除该帖子？');">
+			<?= Auth::csrfField() ?>
+			<button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none px-0">删除</button>
+		</form>
+		<?php endif; ?>
+	</div>
+	<?php endif; ?>
+</article>
+<?php endforeach; ?>
+
+<?= $pageLinks ?>
+
+<?php if (!empty($topic['locked'])): ?>
+<div class="alert alert-secondary" role="status">主题已锁定，无法回帖。</div>
+<?php elseif (Auth::isLoggedIn()): ?>
+<h2 class="h6 mt-4">回复</h2>
+<form method="post" action="<?= Router::url('post/create/' . rawurlencode((string) ($topic['id'] ?? ''))) ?>">
+	<?= Auth::csrfField() ?>
+	<div class="mb-2">
+		<label for="reply-content" class="form-label visually-hidden">回帖内容（Markdown）</label>
+		<textarea class="form-control" id="reply-content" name="content" rows="4" required placeholder="Markdown 回帖…"></textarea>
+	</div>
+	<button type="submit" class="btn btn-primary">回帖</button>
+</form>
+<?php else: ?>
+<div class="alert alert-info" role="status"><a href="<?= Router::url('auth/login') ?>">登录</a> 后回帖。</div>
+<?php endif; ?>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.css">
+<script src="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded', function () { if (window.PR) PR.prettyPrint(); });</script>
