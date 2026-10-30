@@ -196,6 +196,7 @@ data/
 {
   "id": "20231030abc12",
   "username": "Geticer",
+  "nickname": "Geticer",       // 显示用昵称，可随时改；username 为登录标识，注册后不可变（§9 #12）
   "password_hash": "<password_hash() 输出>",
   "email": "",
   "level": 3,
@@ -309,7 +310,7 @@ data/
 - [ ] 搜索 `/search`：关键词/范围/分页全部走 query string（`?q=` / `?scope=` / `?page=`）；flat-file 下做全文扫描 + 简单分词匹配，范围可选 topics/posts/users
 - [ ] 举报与版主队列：ReportController（举报帖子/用户/主题，防自举报/重复）+ ModController 举报队列（resolve=删帖/封禁、dismiss，level≥2）
 - [ ] 个人资料页 `/user/{name}`（查看他人）
-- [ ] 个人设置 `/user/settings`：签名/头像（files.lib.php）/邮箱/改密（需验旧密码）
+- [ ] 个人设置 `/user/settings`：**昵称**（任意改，即改即生效）/签名/头像（files.lib.php）/邮箱/改密（需验旧密码）
 - [ ] 全局统计 + 在线列表
 
 ### Phase 2（缝合 TinySocial 思路）
@@ -376,6 +377,7 @@ data/
 | 9 | 数据模型模式 | **关联数组 + 仓储函数层**（§3.3）：数据形态为关联数组（Flatdb `json_decode` 原生返回），`model/` 以命名空间静态函数组织读写与判断（如 `Model\Topic::get()` / `::isLocked()`），**不引入 OOP 实例实体**（`new Topic` + `toArray` 属冗余样板，违背「少样板」原则）。表单 HTML 直接写在主题模板，由主题 CSS 决定形态。 |
 | 10 | 重置密码 | **不邮件**（防原站 IP 泄露绕过 CDN）：Phase 1 用注册时生成的 **recovery_codes**（哈希存储、一次性）；Phase 3 升级为 **TOTP 挑战**（authenticator 证明本人即重置）。管理员可强制重置（level≥3）。 |
 | 11 | 举报 / 版主队列 | 新增 **ReportController**（举报 post/user/topic，防自举报/重复）+ **ModController** 举报队列（resolve=删帖/封禁、dismiss，level≥2）；纳入 Phase 1 MVP。 |
+| 12 | 用户名 vs 昵称 | **拆分**：`username` = 登录标识 / 文件名 / 唯一键，注册后**不可变**；`nickname` = 显示用昵称，用户可随时在 `/user/settings` 修改（默认初始化为 username）。所有界面展示一律用 `nickname`；提及"显示名"处（导航/帖子作者/时间线等）都取 nickname。 |
 
 ---
 
