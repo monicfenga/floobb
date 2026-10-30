@@ -73,6 +73,12 @@ class TopicController {
 		$loc = $base . (empty($qs) ? '?' : '?' . http_build_query($qs) . '&') . 'page=';
 		$pageLinks = Paginate::pageLink($page, $total, $loc);
 
+		// 移动表单的版块下拉（主题页管理区）
+		$allForums = array();
+		foreach (Forum::listAll() as $f) {
+			$allForums[(string) ($f['id'] ?? '')] = (string) ($f['name'] ?? '');
+		}
+
 		$header['title'] = $topic['title'] . ' - ' . ($conf['title'] ?? 'FlooBB');
 		self::render('topic_view', array(
 			'topic' => $topic,
@@ -81,6 +87,7 @@ class TopicController {
 			'sort' => $sort,
 			'filter' => $filter,
 			'pageLinks' => $pageLinks,
+			'allForums' => $allForums,
 			'cur_page' => $page,
 			'total_pages' => $total,
 		));

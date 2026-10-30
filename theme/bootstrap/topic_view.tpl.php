@@ -39,9 +39,13 @@
 		<?= Auth::csrfField() ?>
 		<button type="submit" class="btn btn-outline-secondary"><?= empty($topic['sticky']) ? '置顶' : '取消置顶' ?></button>
 	</form>
-	<form method="post" action="<?= Router::url('topic/move/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline input-group input-group-sm" style="width: 12rem;">
+	<form method="post" action="<?= Router::url('topic/move/' . rawurlencode((string) $topic['id'])) ?>" class="input-group input-group-sm" style="width: 13rem;">
 		<?= Auth::csrfField() ?>
-		<input type="text" name="fid" class="form-control" placeholder="目标版块ID" aria-label="目标版块ID" required>
+		<select name="fid" class="form-select" aria-label="移动到版块" required>
+			<?php foreach (($allForums ?? array()) as $fId => $fName): ?>
+			<option value="<?= htmlspecialchars($fId) ?>" <?= $fId === (string) ($topic['forum_id'] ?? '') ? 'selected' : '' ?>><?= htmlspecialchars($fName) ?></option>
+			<?php endforeach; ?>
+		</select>
 		<button type="submit" class="btn btn-outline-secondary">移动</button>
 	</form>
 	<form method="post" action="<?= Router::url('topic/delete/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline" onsubmit="return confirm('确定删除该主题及其全部帖子？');">
