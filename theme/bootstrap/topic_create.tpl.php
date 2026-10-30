@@ -51,7 +51,7 @@
 					value="<?= htmlspecialchars($values['poll_question'] ?? '') ?>">
 			</div>
 			<div class="mb-3">
-				<label for="t-poll-opts" class="form-label">投票选项（每行一个，2-8 个，自动去重去空行）</label>
+				<label for="t-poll-opts" class="form-label">投票选项（每行一个，忽略空行和重复选项）</label>
 				<textarea class="form-control" id="t-poll-opts" name="poll_options" rows="4"><?= htmlspecialchars($values['poll_options'] ?? '') ?></textarea>
 			</div>
 			<div class="row g-3">
@@ -69,12 +69,13 @@
 					</div>
 				</div>
 				<div class="col-sm-4">
-					<label for="t-poll-max" class="form-label">最多可选（多选时）</label>
+					<label for="t-poll-max" class="form-label">最多可选</label>
 					<input type="number" class="form-control" id="t-poll-max" name="poll_max" min="2" max="8"
 						value="<?= (int) ($values['poll_max'] ?? 2) ?>">
+						<span class="form-text">若投票类型为多选时，本项生效</span>
 				</div>
 				<div class="col-sm-4">
-					<label for="t-poll-days" class="form-label">投票截止（天数，1-365）</label>
+					<label for="t-poll-days" class="form-label">投票将在几天后结束（从今天算起，1-365 天）</label>
 					<input type="number" class="form-control" id="t-poll-days" name="poll_days" min="1" max="365"
 						value="<?= (int) ($values['poll_days'] ?? 7) ?>">
 				</div>
