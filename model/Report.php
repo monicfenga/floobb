@@ -69,7 +69,7 @@ class Report {
 			else $done[] = $r;
 		}
 		$cmp = function ($a, $b) {
-			return ((int) ($b['created'] ?? 0)) <=> ((int) ($a['created'] ?? 0));
+			return (($b['created'] ?? 0) <=> ($a['created'] ?? 0));
 		};
 		usort($open, $cmp);
 		usort($done, $cmp);

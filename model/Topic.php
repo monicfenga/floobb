@@ -35,16 +35,16 @@ class Topic {
 	 */
 	public static function sortBy(array $topics, $sort = 'latest') {
 		$lastActivity = function (array $t) {
-			return (int) (($t['last_reply_at'] ?? 0) ?: ($t['created'] ?? 0));
+			return ($t['last_reply_at'] ?? 0) ?: ($t['created'] ?? 0);
 		};
 		usort($topics, function ($a, $b) use ($sort, $lastActivity) {
-			$createdDesc = ((int) ($b['created'] ?? 0)) <=> ((int) ($a['created'] ?? 0)); // 兜底：时间降序
+			$createdDesc = ($b['created'] ?? 0) <=> ($a['created'] ?? 0); // 兜底：时间降序
 			$activityDesc = $lastActivity($b) <=> $lastActivity($a); // 最近活动降序
 			switch ($sort) {
 				case 'latest':  return $createdDesc;
 				case 'replied': return $activityDesc ?: $createdDesc;
 				case 'posts':   return (count((array) ($b['post_ids'] ?? array())) <=> count((array) ($a['post_ids'] ?? array()))) ?: $createdDesc;
-				case 'views':   return ((int) ($b['views'] ?? 0) <=> (int) ($a['views'] ?? 0)) ?: $createdDesc;
+				case 'views':   return (($b['views'] ?? 0) <=> ($a['views'] ?? 0)) ?: $createdDesc;
 				default:        return $createdDesc;
 			}
 		});
@@ -62,7 +62,7 @@ class Topic {
 		}
 		$topics = self::sortBy($topics, 'replied');
 		usort($topics, function ($a, $b) {
-			return ((int) ($b['sticky'] ?? false)) <=> ((int) ($a['sticky'] ?? false));
+			return ($b['sticky'] ?? false) <=> ($a['sticky'] ?? false);
 		});
 		return array_slice($topics, 0, (int) $limit);
 	}
@@ -73,7 +73,7 @@ class Topic {
 	public static function incrViews($topicId) {
 		$t = self::get($topicId);
 		if ($t === null) return;
-		$t['views'] = (int) ($t['views'] ?? 0) + 1;
+		$t['views'] = ($t['views'] ?? 0) + 1;
 		self::save((string) $topicId, $t);
 	}
 
@@ -129,6 +129,6 @@ class Topic {
 
 	public static function canEdit(array $topic, $user) {
 		if ($user === null) return false;
-		return $user['username'] === ($topic['author'] ?? '') || (int) $user['level'] >= 3;
+		return $user['username'] === ($topic['author'] ?? '') || $user['level'] >= 3;
 	}
 }

@@ -62,8 +62,8 @@ class TopicController {
 				'author_nickname' => $author['nickname'] ?? ($p['author'] ?? ''),
 				'author_avatar' => (string) ($author['avatar'] ?? ''),
 				'author_bio' => (string) ($author['bio'] ?? ''),
-				'can_edit' => $isOwner || ($user !== null && (int) $user['level'] >= 2),
-				'can_delete' => $isOwner || ($user !== null && (int) $user['level'] >= 2),
+				'can_edit' => $isOwner || ($user !== null && $user['level'] >= 2),
+				'can_delete' => $isOwner || ($user !== null && $user['level'] >= 2),
 			);
 		}
 
@@ -111,7 +111,7 @@ class TopicController {
 				'voters_total' => count((array) ($poll['votes'] ?? array())),
 				'options' => $optionsView,
 				'voters' => $showResult ? Poll::voters($poll) : array(),
-				'can_close' => $user !== null && ((string) ($topic['author'] ?? '') === (string) $user['username'] || (int) $user['level'] >= 2) && empty($poll['closed']) && !Poll::isExpired($poll),
+				'can_close' => $user !== null && ((string) ($topic['author'] ?? '') === (string) $user['username'] || $user['level'] >= 2) && empty($poll['closed']) && !Poll::isExpired($poll),
 			);
 		}
 
@@ -315,7 +315,7 @@ class TopicController {
 		if ($user === null) self::redirect('auth/login');
 		$topic = Topic::get($tid);
 		if ($topic === null) self::notFound('主题不存在。');
-		if ($user['username'] !== ($topic['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
+		if ($user['username'] !== ($topic['author'] ?? '') && $user['level'] < 2) self::forbidden();
 
 		$forumId = (string) ($topic['forum_id'] ?? '');
 		$posts = Post::listByTopic($tid);

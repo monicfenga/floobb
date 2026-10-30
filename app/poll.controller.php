@@ -48,7 +48,7 @@ class PollController {
 		if ($topic === null) self::notFound('主题不存在。');
 		// 关闭权限：主题作者 或 level≥2（用户决议）
 		$isAuthor = (string) ($topic['author'] ?? '') === (string) $user['username'];
-		if (!$isAuthor && (int) $user['level'] < 2) self::forbidden();
+		if (!$isAuthor && $user['level'] < 2) self::forbidden();
 
 		Poll::close($tid, $user['username']);
 		self::redirect('topic/view/' . rawurlencode((string) $tid));

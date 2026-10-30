@@ -31,7 +31,7 @@ $unreadOnly = ($side === 'inbox');
 			<small class="text-body-secondary ms-1">
 				<?= $unreadOnly ? '来自' : '发给' ?>
 				<a href="<?= Router::url('user/view/' . rawurlencode($peer)) ?>"><?= htmlspecialchars($peerNames[$peer] ?? $peer) ?></a>
-				· <?= date('m-d H:i', (int) ($m['time'] ?? 0)) ?>
+				· <?= date('m-d H:i', $m['time'] ?? 0) ?>
 			</small>
 			<?php if ($unreadOnly && empty($m['read'])): ?><span class="badge text-bg-primary ms-1">未读</span><?php endif; ?>
 		</div>

@@ -159,7 +159,7 @@ class UserController {
 		if (!Auth::csrfCheck()) self::forbidden();
 		$mod = Auth::user();
 		if ($mod === null) self::redirect('auth/login');
-		if ((int) $mod['level'] < 2) self::forbidden();
+		if ($mod['level'] < 2) self::forbidden();
 
 		$target = User::get($name);
 		if ($target === null) {
@@ -168,7 +168,7 @@ class UserController {
 			exit('404: 用户不存在。');
 		}
 		if ((string) $target['username'] === (string) $mod['username']) self::forbidden();
-		if ((int) $target['level'] >= (int) $mod['level']) self::forbidden();
+		if ($target['level'] >= $mod['level']) self::forbidden();
 
 		list($until, $untilText) = self::resolveDuration(
 			param('duration', ''),

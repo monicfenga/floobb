@@ -2,14 +2,14 @@
 /** @var array|null $pollView 组装好的投票视图数据（topic.controller view()）*/
 if (empty($pollView)) return;
 $poll = $pollView['poll'];
-$isMulti = (int) ($poll['max_choices'] ?? 1) > 1;
+$isMulti = ($poll['max_choices'] ?? 1) > 1;
 ?>
 <div class="card mb-4 poll-card">
 	<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
 		<strong><?= htmlspecialchars((string) ($poll['question'] ?? '')) ?></strong>
 		<span class="text-body-secondary small">
-			<?= $isMulti ? '多选（最多 ' . (int) $poll['max_choices'] . ' 项）' : '单选' ?>
-			· 截止 <?= date('Y-m-d H:i', (int) ($poll['deadline'] ?? 0)) ?>
+			<?= $isMulti ? '多选（最多 ' . $poll['max_choices'] . ' 项）' : '单选' ?>
+			· 截止 <?= date('Y-m-d H:i', $poll['deadline'] ?? 0) ?>
 			<?php if (!empty($poll['closed'])): ?>· 已关闭<?php elseif ($pollView['expired']): ?>· 已过期<?php endif; ?>
 		</span>
 	</div>
@@ -23,12 +23,12 @@ $isMulti = (int) ($poll['max_choices'] ?? 1) > 1;
 			<?php foreach ($pollView['options'] as $opt): ?>
 			<div class="form-check">
 				<input class="form-check-input" type="<?= $isMulti ? 'checkbox' : 'radio' ?>"
-					name="choices[]" id="poll-opt-<?= (int) $opt['index'] ?>" value="<?= (int) $opt['index'] ?>">
-				<label class="form-check-label" for="poll-opt-<?= (int) $opt['index'] ?>"><?= htmlspecialchars($opt['text']) ?></label>
+					name="choices[]" id="poll-opt-<?= $opt['index'] ?>" value="<?= $opt['index'] ?>">
+				<label class="form-check-label" for="poll-opt-<?= $opt['index'] ?>"><?= htmlspecialchars($opt['text']) ?></label>
 			</div>
 			<?php endforeach; ?>
 			<button type="submit" class="btn btn-primary btn-sm mt-2">投票</button>
-			<?php if ($isMulti): ?><div class="form-text">可选 <?= (int) $poll['max_choices'] ?> 项。</div><?php endif; ?>
+			<?php if ($isMulti): ?><div class="form-text">可选 <?= $poll['max_choices'] ?> 项。</div><?php endif; ?>
 		</form>
 		<?php else: ?>
 		<p class="text-body-secondary mb-0">请先 <a href="<?= Router::url('auth/login') ?>">登录</a> 后参与投票（投票后可见结果）。</p>

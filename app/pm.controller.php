@@ -38,7 +38,7 @@ class PMController {
 		$items = $box[$side];
 		// 新的在前
 		usort($items, function ($a, $b) {
-			return ((int) ($b['time'] ?? 0)) <=> ((int) ($a['time'] ?? 0));
+			return (($b['time'] ?? 0) <=> ($a['time'] ?? 0));
 		});
 
 		$per = 10;

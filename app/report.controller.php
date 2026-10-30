@@ -81,7 +81,7 @@ class ReportController {
 			$me = Auth::user();
 			if ($targetUser === null) self::notFound('被举报用户不存在。');
 			if ((string) $targetUser['username'] === (string) $me['username']) self::forbidden();
-			if ((int) $targetUser['level'] >= (int) $me['level']) self::forbidden();
+			if ($targetUser['level'] >= $me['level']) self::forbidden();
 			list($until, $untilText) = UserController::resolveDuration(
 			param('duration', ''),
 			param('until', '')

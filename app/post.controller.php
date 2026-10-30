@@ -64,7 +64,7 @@ class PostController {
 		if ($user === null) self::redirect('auth/login');
 		$post = Post::get($pid);
 		if ($post === null) self::notFound('帖子不存在。');
-		if ($user['username'] !== ($post['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
+		if ($user['username'] !== ($post['author'] ?? '') && $user['level'] < 2) self::forbidden();
 
 		$topic = Topic::get($post['topic_id'] ?? '');
 		self::render('post_edit', array(
@@ -80,7 +80,7 @@ class PostController {
 		if ($user === null) self::redirect('auth/login');
 		$post = Post::get($pid);
 		if ($post === null) self::notFound('帖子不存在。');
-		if ($user['username'] !== ($post['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
+		if ($user['username'] !== ($post['author'] ?? '') && $user['level'] < 2) self::forbidden();
 
 		$content = param('content', '');
 		if (trim($content) === '') {
@@ -102,7 +102,7 @@ class PostController {
 		if ($user === null) self::redirect('auth/login');
 		$post = Post::get($pid);
 		if ($post === null) self::notFound('帖子不存在。');
-		if ($user['username'] !== ($post['author'] ?? '') && (int) $user['level'] < 2) self::forbidden();
+		if ($user['username'] !== ($post['author'] ?? '') && $user['level'] < 2) self::forbidden();
 
 		$topicId = (string) ($post['topic_id'] ?? '');
 		$forumId = (string) ($post['forum_id'] ?? '');

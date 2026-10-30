@@ -31,7 +31,7 @@
 				<span class="text-body-secondary"><?= htmlspecialchars($row['summary']) ?></span>
 				<?php endif; ?>
 			</div>
-			<small class="text-body-secondary"><?= date('m-d H:i', (int) ($r['created'] ?? 0)) ?></small>
+			<small class="text-body-secondary"><?= date('m-d H:i', $r['created'] ?? 0) ?></small>
 		</div>
 		<p class="small text-body-secondary mb-1">
 			举报人：<a href="<?= Router::url('user/view/' . rawurlencode((string) ($r['reporter'] ?? ''))) ?>"><?= htmlspecialchars((string) ($r['reporter'] ?? '')) ?></a>

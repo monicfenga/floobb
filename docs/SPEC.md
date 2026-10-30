@@ -454,10 +454,14 @@ $sort = Router::query('sort', 'latest');
 
 ### 11.4 时间字段规约
 - **所有数据实体里的时间字段一律 unix 时间戳 int**（`time()` 落盘：registered/last_seen/banned_until/created/last_reply_at/edited/time/deadline…），**禁 ISO 字符串入库**。
-- 理由：时间是机器生成的内部字段，永远不进用户输入语境，int 无格式歧义（比较/排序直接 `<=>`，不存在 `strcmp` 对 `'9999-…'` 的格式依赖）、无 strtotime 解析失败/时区坑；展示层才 `date('Y-m-d H:i', (int) $x)` 格式化。
+- 理由：时间是机器生成的内部字段，永远不进用户输入语境，int 无格式歧义（比较/排序直接 `<=>`，不存在 `strcmp` 对 `'9999-…'` 的格式依赖）、无 strtotime 解析失败/时区坑；展示层才 `date('Y-m-d H:i', $x)` 格式化。
 - 永久封禁 = `User::BAN_FOREVER`（PHP_INT_MAX）；未封禁 = `0`。
 - 唯一例外：flatDB::newEntry() 的 **ID 内嵌日期串**（`Y-m-d_H-i-s_`）不是数据字段，保持原样（id 是字符串键）。
 - 2026-10-30 已全量迁移：ISO → int（迁移前 git 快照 bef10eb 可回滚）。
+
+### 11.5 类型纪律：机器字段信任单写路径
+- 数据实体中的机器生成字段（时间戳/views/level/order/votes/max_choices 等）**类型由单写路径保证，读取处禁止再 `(int)`/`(string)` 强转**——`?? 默认值` 给出兜底即可。到处补强转 = 不信任自己的写路径，是和 `(string) param()` 同源的噪声。
+- 强转/清洗只允许出现在**真正的边界**：用户原始输入（`$_POST['choices']` 元素）、`param()` 返回后的校验（validXxx）、以及模板展示层的 `htmlspecialchars()`（字符串出口统一转义）。
 
 ---
 

@@ -36,7 +36,7 @@
 			<span class="badge text-bg-warning me-1">置顶</span>
 			<?php if (!empty($t['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
 			<a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
-			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', (int) ($t['created'] ?? 0)) ?></small>
+			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', $t['created'] ?? 0) ?></small>
 		</div>
 		<?php require THEME_DIR . $conf['theme'] . DS . '_topic_actions.tpl.php'; ?>
 	</li>
@@ -54,7 +54,7 @@
 		<div>
 			<?php if (!empty($t['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
 			<a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
-			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', (int) ($t['created'] ?? 0)) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖 · <?= (int) ($t['views'] ?? 0) ?> 查看</small>
+			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', $t['created'] ?? 0) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖 · <?= $t['views'] ?? 0 ?> 查看</small>
 		</div>
 		<?php require THEME_DIR . $conf['theme'] . DS . '_topic_actions.tpl.php'; ?>
 	</li>

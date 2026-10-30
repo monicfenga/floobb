@@ -32,8 +32,8 @@ class Poll {
 			'question' => (string) ($data['question'] ?? ''),
 			'options' => $data['options'], // [{text, votes:0}]
 			'votes' => new stdClass(),     // {}: 谁投了哪些选项下标（空对象落 JSON）
-			'max_choices' => max(1, (int) ($data['max_choices'] ?? 1)),
-			'deadline' => (string) ($data['deadline'] ?? ''),
+			'max_choices' => max(1, $data['max_choices'] ?? 1),
+			'deadline' => $data['deadline'] ?? 0,
 			'closed' => false,
 			'closed_by' => '',
 		);
@@ -58,7 +58,7 @@ class Poll {
 			if ($c < 0 || $c >= $n) return 'poll.option.invalid';
 		}
 		if (empty($choices)) return 'poll.option.empty';
-		if (count($choices) > (int) ($poll['max_choices'] ?? 1)) return 'poll.toomany';
+		if (count($choices) > ($poll['max_choices'] ?? 1)) return 'poll.toomany';
 
 		// 记 votes + 选项票数（同一写路径维护一致性）
 		$votes[(string) $username] = $choices;
@@ -84,7 +84,7 @@ class Poll {
 	 * 是否已过期（deadline 非空且已过 → 视为自动关闭，只读展示）
 	 */
 	public static function isExpired(array $poll) {
-		$dl = (int) ($poll['deadline'] ?? 0);
+		$dl = $poll['deadline'] ?? 0;
 		return $dl > 0 && $dl < time();
 		}
 

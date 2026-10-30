@@ -25,7 +25,7 @@
 </div>
 <p class="text-body-secondary small">
 	楼主 <a href="<?= Router::url('user/view/' . rawurlencode((string) ($topic['author'] ?? ''))) ?>"><?= htmlspecialchars($topic['author'] ?? '') ?></a>
-	· <?= date('Y-m-d H:i', (int) ($topic['created'] ?? 0)) ?>
+	· <?= date('Y-m-d H:i', $topic['created'] ?? 0) ?>
 	· <?= count((array) ($topic['post_ids'] ?? array())) ?> 帖
 </p>
 
@@ -75,8 +75,8 @@
 		</span>
 		<small class="text-body-secondary">
 			<a href="#p<?= $p['id'] ?>">#<?= substr($p['id'], -5) ?></a>
-			· <?= date('Y-m-d H:i', (int) ($p['created'] ?? 0)) ?>
-			<?php if (!empty($p['edited'])): ?>· 已编辑（<?= date('m-d H:i', (int) $p['edited']) ?>）<?php endif; ?>
+			· <?= date('Y-m-d H:i', $p['created'] ?? 0) ?>
+			<?php if (!empty($p['edited'])): ?>· 已编辑（<?= date('m-d H:i', $p['edited']) ?>）<?php endif; ?>
 		</small>
 	</div>
 	<div class="card-body post-content"><?= $p['content_html'] ?? '' ?></div>

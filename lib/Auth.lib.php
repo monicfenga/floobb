@@ -79,7 +79,7 @@ class Auth {
 	 */
 	public static function level() {
 		$user = self::user();
-		return $user === null ? 0 : (int) ($user['level'] ?? 1);
+		return $user === null ? 0 : ($user['level'] ?? 1);
 	}
 
 	/**

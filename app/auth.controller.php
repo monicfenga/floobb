@@ -42,7 +42,7 @@ class AuthController {
 		$banMsg = null;
 		if ($error === 'auth.user_banned') {
 			$u = User::get($username);
-			$until = $u !== null ? (int) ($u['banned_until'] ?? 0) : 0;
+			$until = $u !== null ? ($u['banned_until'] ?? 0) : 0;
 			$untilText = $until >= User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', $until);
 			$reason = $u !== null ? (string) ($u['banned_reason'] ?? '') : '';
 			$banMsg = '该账号已被封禁（至 ' . $untilText . '）' . ($reason !== '' ? '，原因：' . $reason : '') . '。';

@@ -11,8 +11,8 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 		alt="<?= htmlspecialchars($nickname) ?> 的头像">
 	<?php endif; ?>
 	<h1 class="h3 mb-0"><?= htmlspecialchars($nickname) ?></h1>
-<?php if (User::isBanned($user)): $bForever = (int) $user['banned_until'] >= User::BAN_FOREVER; ?>
-<span class="badge text-bg-danger">已封禁<?= $bForever ? '（永久）' : '至 ' . date('Y-m-d H:i', (int) $user['banned_until']) ?></span>
+<?php if (User::isBanned($user)): $bForever = $user['banned_until'] >= User::BAN_FOREVER; ?>
+<span class="badge text-bg-danger">已封禁<?= $bForever ? '（永久）' : '至 ' . date('Y-m-d H:i', $user['banned_until']) ?></span>
 <?php endif; ?>
 </div>
 
@@ -35,11 +35,11 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 			<dt class="col-sm-3">用户名</dt>
 			<dd class="col-sm-9"><code><?= htmlspecialchars($username) ?></code></dd>
 			<dt class="col-sm-3">身份</dt>
-			<dd class="col-sm-9"><?= htmlspecialchars($levelNames[(int) ($user['level'] ?? 1)] ?? '注册用户') ?>（level <?= (int) ($user['level'] ?? 1) ?>）</dd>
+			<dd class="col-sm-9"><?= htmlspecialchars($levelNames[$user['level'] ?? 1] ?? '注册用户') ?>（level <?= $user['level'] ?? 1 ?>）</dd>
 			<dt class="col-sm-3">注册时间</dt>
-			<dd class="col-sm-9"><?= date('Y-m-d H:i', (int) ($user['registered'] ?? 0)) ?></dd>
+			<dd class="col-sm-9"><?= date('Y-m-d H:i', $user['registered'] ?? 0) ?></dd>
 			<dt class="col-sm-3">最近活跃</dt>
-			<dd class="col-sm-9"><?= date('Y-m-d H:i', (int) ($user['last_seen'] ?? 0)) ?></dd>
+			<dd class="col-sm-9"><?= date('Y-m-d H:i', $user['last_seen'] ?? 0) ?></dd>
 			<dt class="col-sm-3">发帖统计</dt>
 			<dd class="col-sm-9">主题 <?= (int) $stats['topics'] ?> · 帖子 <?= (int) $stats['posts'] ?></dd>
 			<?php if ((string) ($user['signature'] ?? '') !== ''): ?>
@@ -49,7 +49,7 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 			<?php if (User::isBanned($user)): ?>
 			<dt class="col-sm-3">封禁状态</dt>
 			<dd class="col-sm-9 text-danger">
-				封禁至 <?= (int) $user['banned_until'] >= User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', (int) $user['banned_until']) ?>
+				封禁至 <?= $user['banned_until'] >= User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', $user['banned_until']) ?>
 				<?php if ((string) ($user['banned_by'] ?? '') !== ''): ?>· 操作：<?= htmlspecialchars((string) $user['banned_by']) ?><?php endif; ?>
 				<?php if ((string) ($user['banned_reason'] ?? '') !== ''): ?>· 原因：<?= htmlspecialchars((string) $user['banned_reason']) ?><?php endif; ?>
 			</dd>
@@ -58,12 +58,12 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 	</div>
 </div>
 
-<?php if ($viewer !== null && (int) ($viewer['level'] ?? 1) >= 2 && $viewer['username'] !== $username): ?>
+<?php if ($viewer !== null && ($viewer['level'] ?? 1) >= 2 && $viewer['username'] !== $username): ?>
 <div class="card mb-4 border-warning">
 	<div class="card-header bg-warning-subtle">管理：封禁/解封</div>
 	<div class="card-body">
 		<?php if (User::isBanned($user)): ?>
-		<p class="small text-body-secondary">当前封禁至 <?= (int) $user['banned_until'] >= User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', (int) $user['banned_until']) ?>。</p>
+		<p class="small text-body-secondary">当前封禁至 <?= $user['banned_until'] >= User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', $user['banned_until']) ?>。</p>
 		<form method="post" action="<?= Router::url('user/ban/' . rawurlencode($username)) ?>" class="d-flex gap-2">
 			<?= Auth::csrfField() ?>
 			<input type="hidden" name="duration" value="0">
@@ -108,7 +108,7 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 	<?php foreach ($recentTopics as $rt): ?>
 	<li class="list-group-item px-0 py-2">
 		<a href="<?= Router::url('topic/view/' . $rt['id']) ?>"><?= htmlspecialchars((string) ($rt['title'] ?? '')) ?></a>
-		<small class="text-body-secondary ms-1"><?= date('Y-m-d', (int) ($rt['created'] ?? 0)) ?></small>
+		<small class="text-body-secondary ms-1"><?= date('Y-m-d', $rt['created'] ?? 0) ?></small>
 	</li>
 	<?php endforeach; ?>
 </ul>
@@ -122,7 +122,7 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 	<?php foreach ($recentPosts as $row): $rp = $row['post']; ?>
 	<li class="list-group-item px-0 py-2">
 		<a href="<?= $row['url'] ?>">回帖：<?= htmlspecialchars($row['topic_title']) ?></a>
-		<small class="text-body-secondary ms-1"><?= date('Y-m-d', (int) ($rp['created'] ?? 0)) ?></small>
+		<small class="text-body-secondary ms-1"><?= date('Y-m-d', $rp['created'] ?? 0) ?></small>
 	</li>
 	<?php endforeach; ?>
 </ul>

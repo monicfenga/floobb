@@ -29,7 +29,7 @@ class Forum {
 			if (is_array($f)) $forums[] = $f;
 		}
 		usort($forums, function ($a, $b) {
-			return ((int) ($a['order'] ?? 0)) <=> ((int) ($b['order'] ?? 0));
+			return (($a['order'] ?? 0) <=> ($b['order'] ?? 0));
 		});
 		return $forums;
 	}
@@ -43,9 +43,9 @@ class Forum {
 		$id = (string) ($data['slug'] ?? '');
 		if ($id === '' || self::exists($id)) return null;
 		$data['id'] = $id;
-		$data['order'] = (int) ($data['order'] ?? count(self::listAll()));
-		$data['topic_count'] = (int) ($data['topic_count'] ?? 0);
-		$data['post_count'] = (int) ($data['post_count'] ?? 0);
+		$data['order'] = $data['order'] ?? count(self::listAll());
+		$data['topic_count'] = $data['topic_count'] ?? 0;
+		$data['post_count'] = $data['post_count'] ?? 0;
 		$data['sticky_topic_ids'] = (array) ($data['sticky_topic_ids'] ?? array());
 		flatDB::saveDB('forums', $id, $data);
 		return $id;
@@ -60,7 +60,7 @@ class Forum {
 			$t = flatDB::getDB('topics', basename($file, '.dat.json'));
 			if (is_array($t) && (string) ($t['forum_id'] ?? '') === (string) $forumId) {
 				// 回帖活跃优先，退回发帖时间
-				$c = (int) (($t['last_reply_at'] ?? 0) ?: ($t['created'] ?? 0));
+				$c = ($t['last_reply_at'] ?? 0) ?: ($t['created'] ?? 0);
 				if ($c > $latest) $latest = $c;
 			}
 		}

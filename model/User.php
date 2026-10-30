@@ -80,7 +80,7 @@ class User {
 	 * 用户是否处于封禁中（banned_until > now；0 = 未封禁）
 	 */
 	public static function isBanned(array $user) {
-		return ((int) ($user['banned_until'] ?? 0)) > time();
+		return ($user['banned_until'] ?? 0) > time();
 	}
 
 	/**
@@ -91,7 +91,7 @@ class User {
 	public static function setBan($username, $until, $by, $reason = '') {
 		$user = self::get($username);
 		if ($user === null) return false;
-		$user['banned_until'] = max(0, (int) $until);
+		$user['banned_until'] = max(0, $until);
 		$user['banned_by'] = $user['banned_until'] > 0 ? (string) $by : '';
 		$user['banned_reason'] = $user['banned_until'] > 0 ? (string) $reason : '';
 		return self::save((string) $username, $user);
