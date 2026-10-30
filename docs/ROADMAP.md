@@ -128,6 +128,7 @@ B3-3 Poll 当前**未提交**，git status 显示以下待处理项，提交前�
 9. 全项目**禁 namespace**（裸类名）；常量在 `init.php` 已定义的直接引用，不重定义。
 10. 本地只走 `http://127.0.0.1/floobb/`；**禁自起临时服务器**；写操作只限 `M:\laragon\www\floobb\`；参考项目只读。
 11. **禁 `param()` 冗余强转反模式**（详见 SPEC §11）：`param()` 已按默认值类型返回原始值（string/int/float/bool/array），调用方**不得**写 `(string) param(...)`、`(int) param(...)`，也**不得**传第三参 `FALSE`（`param` 已无 htmlspecialchars 形参）。HTML 转义只在输出层（`htmlspecialchars()` / 模板）做。
+12. **库的标记是 Bootstrap 类名，主题自行承接、禁改库**：`lib/Pagination.lib.php`（`.pagination`/`.page-item`/`.page-link`/`.active`/`.disabled`）、`CSRF` 等共享库输出的 HTML 标记带 Bootstrap 类名。新增/修改主题时，必须在**主题自己的 CSS**（`theme/<theme>/assets/css/style.css`）里重定义这些类名，**不得**为迁就某主题去改共享库输出主题专属类（改库会污染 bootstrap 主题、破坏多主题可切换契约）。同理，模板里若用框架自有类（如 tawian-frontend 的 `.form-control`/`.form-group`/`.form-label`），须确认该框架 CSS 真定义了它——tawian-frontend 对 `input/select/textarea` 用元素选择器兜底样式，其他主题需各自保证。参考实现：`theme/tawian/assets/css/style.css` 第 106–111 行已承接分页类（含亮/暗变量），未改 `Pagination.lib.php`。
 
 ---
 

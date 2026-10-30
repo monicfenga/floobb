@@ -155,6 +155,11 @@ if (!flatDB::DBexists('config', 'config')) {
 	if (is_file(PATH_ROOT . DS . 'install.php')) { @unlink(PATH_ROOT . DS . 'install.php'); }
 }
 
+// 独立 session 名：与旧版程序隔离，避免 session 里遗留的旧版 User/Forum 对象
+// 反序列化到新版静态类上触发 dynamic property 弃用警告，也防止两站互相串登录态
+if (session_name() !== 'floobb_session') {
+	session_name('floobb_session');
+}
 if (!session_id()) session_start();
 // token 只在缺失时生成：POST 校验的是上一页渲染的 token，
 // 若每次请求都重新生成则 $_SESSION['token'] 永远对不上（CSRF::check 成功后 unset，下次请求再生成）
