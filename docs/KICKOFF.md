@@ -19,14 +19,36 @@
 - 本地开发只走 Laragon：`http://127.0.0.1/floobb/`（Apache :80 已在跑）。**禁止自起 python / node / 裸 php.exe 临时服务器**。
 - 命令按 pwsh 写；Windows 10 环境。
 - 写操作只限 `M:\laragon\www\floobb\`；参考项目一律只读。
+- **不扩大改动范围**（新增，重点）：
+  - 只修改本指令明确列出的文件与函数；**不重命名、不调整现有代码风格、不替换框架结构、不顺手"现代化"无关代码**。
+  - 需要额外改动才能完成时，**先列出方案等我确认，不要直接改**。
+  - 任何解压 / 临时产物也只能落在 `M:\laragon\www\floobb\` 内，不得写到该目录之外。
 
-## 本次任务：Phase 0 地基（SPEC §10）
-1. 修 PHP 8.4 兼容：`init.php` 的 `E_STRICT` / `track_errors` 等 PHP 8 已移除/废弃项，全项目扫一遍老构造（`create_function` 等）。
+## 执行方式：两回合制（本轮只做第一回合）
+
+### 第一回合（本轮唯一交付）：只读盘点，**不修改任何文件**
+完成第一步阅读后，先产出以下三张清单交我确认，**本轮结束即停，不要动手改任何代码**：
+
+1. **全项目老构造扫描清单**：逐条列出「文件路径 + 行号 + 命中的构造名」，扫描范围见下方《PHP 8 兼容检查清单》。
+2. **WebPress 组件吸纳映射表**：吸纳哪个源文件 → 落到 `lib/` 哪个文件 → 需要做哪些适配改动（逐条列明适配点）。
+3. **文件影响面清单**：Phase 0 六项任务各自会新增 / 修改 / 删除哪些文件。其中第 3 项搬迁 `param()` / `xn_url_parse` 时，**必须先 `grep` 全项目引用点，把所有调用点一一列出**。
+
+**等我回复"确认"后，才进入第二回合。**
+
+### 第二回合（待我确认后再执行）：Phase 0 地基（SPEC §10）
+1. 修 PHP 8.4 兼容：按第一回合清单，逐个修掉 `init.php` 的 `E_STRICT` / `track_errors` 及 `create_function` 等老构造。**只修清单内命中的项，不顺手扩改。**
 2. `Flatdb.lib.php` 全面接管 + 增强：内存 KV 缓存 `$FLATDB_MEMCACHE`、调试计数 `$FLATDB_TOTAL_QUERY` / `$FLATDB_TOTAL_QUERY_NUM`（分 c/r/u/d，仅 `DEBUG_MODE` 记录）；存储格式保持 JSON。缓存机制参考：`M:\laragon\www\七濑胡桃粉丝页第五版\discuss\lib\Flatdb.lib.php`。
-3. `lib/Router.lib.php`：把 `common.php` 里的 `param()` / `xn_url_parse` 移入并落地 SPEC §3.1 路由（三位置契约 + PATH_INFO + `?r=` 回退 + HTTP 方法感知 + `.htaccess` 伪静态）。
-4. 吸纳 WebPress 组件到 `lib/`：`Parsedown.lib.php`（后端 Markdown 渲染）、`Pagination.lib.php`、`Captcha.lib.php`、`files.lib.php`（源：`M:\laragon\www\WebPress\libs`）；CSRF / utils 与现有库比对合并。**不要吸纳 HTMLForm / toolkit / plugin / controller / events**（原因见 SPEC §3 注记）。
-5. `lib/Auth.lib.php`：登录态 / RememberMe / 尝试限制（MAX_LOGIN_ATTEMPT=3）/ IP 封锁（BLOCK_IP / BLOCK_TIMEOUT）；`CSRF.lib.php` 全面接入。
-6. 搭可跑骨架：`index.php` front-controller 分发 + `model/` 仓储层 + `theme/` 默认主题骨架（Bootstrap 5），至少让首页路由真实跑通。
+3. `lib/Router.lib.php`：把 `common.php` 里的 `param()` / `xn_url_parse` 移入并落地 SPEC §3.1 路由（三位置契约 + PATH_INFO + `?r=` 回退 + HTTP 方法感知 + `.htaccess` 伪静态）。**搬迁前按第一回合的影响面清单核对全部调用点，删原定义前确认无遗漏。**
+4. 吸纳 WebPress 组件到 `lib/`：`Parsedown.lib.php`（后端 Markdown 渲染）、`Pagination.lib.php`、`Captcha.lib.php`、`files.lib.php`（源：`M:\laragon\www\WebPress\libs`）。**CSRF / utils 一律按"增量补函数、现有库接口不变"处理**（现有 `Utils.lib.php` 质量好，不得大改或替换）。**不要吸纳 HTMLForm / toolkit / plugin / controller / events**（原因见 SPEC §3 注记）。
+5. `lib/Auth.lib.php`：登录态 / RememberMe / 尝试限制（`MAX_LOGIN_ATTEMPT=3`）/ IP 封锁（`BLOCK_IP` / `BLOCK_TIMEOUT`）；`CSRF.lib.php` 全面接入。**上述常量已在 `init.php` 定义，直接引用，不要重定义。**
+6. 搭可跑骨架：`index.php` front-controller 分发 + `model/` 仓储层 + `theme/` 默认主题骨架（Bootstrap 5），至少让首页路由真实跑通。**只搭骨架，不做 Phase 1 的业务功能。**
+
+## PHP 8 兼容检查清单（第一回合按此扫描，目标运行时 PHP 8.4）
+- **PHP 8.0 已整体移除**：`each()`、`money_format()`、`get_magic_quotes_gpc()`、`get_magic_quotes_runtime()`、`__autoload()`（改用 `spl_autoload_register`）、`restore_include_path()`、`fgetss()`、`create_function()`、`assert()` 的字符串形式；以及若残留的 `mysql_*` / `mcrypt_*` 系列函数。
+- **已移除的变量 / 常量**：`track_errors`（连带 `$php_errormsg`）、`E_STRICT`（8.4 已弃用，注意 `error_reporting(E_ALL | E_STRICT)` 这类写法）。
+- **语法级变更（PHP 8.0）**：花括号字符串 / 数组下标 `$str{0}` → 须改为 `$str[0]`（老论坛 / 模板代码里常见）；`(real)` 强制转换改 `(float)`；`(unset)` 强制转换移除。
+- **弃用（PHP 8.2+）**：隐式动态属性（给对象随手挂属性）、`utf8_encode()` / `utf8_decode()`。
+- 命中即登记；清单以外的疑似兼容风险，一并放在清单末尾"待定"区，由我判断是否处理。
 
 ## 参考资产（只读）
 - `M:\laragon\www\WebPress\libs\` —— 组件吸纳源
