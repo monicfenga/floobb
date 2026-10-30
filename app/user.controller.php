@@ -79,9 +79,9 @@ class UserController {
 		$user = Auth::user();
 		if ($user === null) self::redirect('auth/login');
 
-		$nickname = trim((string) param('nickname', '', FALSE));
+		$nickname = trim(strip_tags((string) param('nickname', '', FALSE)));
 		$email = trim((string) param('email', '', FALSE));
-		$bio = trim((string) param('bio', '', FALSE));
+		$bio = trim(strip_tags((string) param('bio', '', FALSE)));
 		// 密码字段禁 htmlspecialchars（会改坏原值，批次 1 教训）
 		$oldPass = (string) param('old_password', '', FALSE);
 		$newPass = (string) param('new_password', '', FALSE);

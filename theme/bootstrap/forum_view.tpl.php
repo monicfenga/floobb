@@ -9,7 +9,7 @@
 <div class="d-flex justify-content-between align-items-start mb-1">
 	<h1 class="h3 mb-0"><?= htmlspecialchars($forum['name'] ?? '') ?></h1>
 	<?php if (Auth::isLoggedIn()): ?>
-	<a class="btn btn-primary" href="<?= Router::url('topic/create/' . rawurlencode((string) ($forum['id'] ?? ''))) ?>">新建主题</a>
+	<a class="btn btn-primary" href="<?= Router::url('topic/create/' . $forum['id']) ?>">新建主题</a>
 	<?php else: ?>
 	<a class="btn btn-outline-primary" href="<?= Router::url('auth/login') ?>">登录后发帖</a>
 	<?php endif; ?>
@@ -20,7 +20,7 @@
 </p>
 
 <ul class="nav nav-pills mb-2" aria-label="排序">
-	<?php $fidEsc = rawurlencode((string) ($forum['id'] ?? '')); ?>
+	<?php $fidEsc = $forum['id']; ?>
 	<li class="nav-item"><a class="nav-link <?= $sort === 'latest' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . $fidEsc) ?>?sort=latest">最新发帖</a></li>
 	<li class="nav-item"><a class="nav-link <?= $sort === 'replied' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . $fidEsc) ?>?sort=replied">最新回帖</a></li>
 	<li class="nav-item"><a class="nav-link <?= $sort === 'posts' ? 'active' : '' ?>" href="<?= Router::url('forum/view/' . $fidEsc) ?>?sort=posts">最多回帖</a></li>
@@ -35,7 +35,7 @@
 		<div>
 			<span class="badge text-bg-warning me-1">置顶</span>
 			<?php if (!empty($t['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
-			<a href="<?= Router::url('topic/view/' . rawurlencode((string) $t['id'])) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
+			<a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
 			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', strtotime((string) ($t['created'] ?? ''))) ?></small>
 		</div>
 		<?php require THEME_DIR . $conf['theme'] . DS . '_topic_actions.tpl.php'; ?>
@@ -53,7 +53,7 @@
 	<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
 		<div>
 			<?php if (!empty($t['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
-			<a href="<?= Router::url('topic/view/' . rawurlencode((string) $t['id'])) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
+			<a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
 			<small class="text-body-secondary ms-2"><?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', strtotime((string) ($t['created'] ?? ''))) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖 · <?= (int) ($t['views'] ?? 0) ?> 查看</small>
 		</div>
 		<?php require THEME_DIR . $conf['theme'] . DS . '_topic_actions.tpl.php'; ?>

@@ -12,7 +12,7 @@
 				<div>
 					<?php if (!empty($t['sticky'])): ?><span class="badge text-bg-warning me-1">置顶</span><?php endif; ?>
 					<?php if (!empty($t['locked'])): ?><span class="badge text-bg-secondary me-1">已锁定</span><?php endif; ?>
-					<a href="<?= Router::url('topic/view/' . rawurlencode((string) $t['id'])) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
+					<a href="<?= Router::url('topic/view/' . $t['id']) ?>"><?= htmlspecialchars($t['title'] ?? '') ?></a>
 				</div>
 				<small class="text-body-secondary">
 					<?php if ($row['forum_name'] !== ''): ?><a class="text-decoration-none" href="<?= Router::url('forum/view/' . rawurlencode($row['forum_id'])) ?>"><?= htmlspecialchars($row['forum_name']) ?></a> · <?php endif; ?>
@@ -35,7 +35,7 @@
 		<?php else: ?>
 		<div class="list-group">
 			<?php foreach ($forums as $forum): ?>
-			<a class="list-group-item list-group-item-action" href="<?= Router::url('forum/view/' . rawurlencode((string) ($forum['id'] ?? ''))) ?>">
+			<a class="list-group-item list-group-item-action" href="<?= Router::url('forum/view/' . $forum['id']) ?>">
 				<div class="d-flex justify-content-between align-items-baseline">
 					<span class="fw-bold"><?= htmlspecialchars($forum['name'] ?? '') ?></span>
 					<small class="text-body-secondary"><?= (int) ($forum['topic_count'] ?? 0) ?> 主题 · <?= (int) ($forum['post_count'] ?? 0) ?> 帖</small>

@@ -45,7 +45,7 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 <ul class="list-group list-group-flush mb-4">
 	<?php foreach ($recentTopics as $rt): ?>
 	<li class="list-group-item px-0 py-2">
-		<a href="<?= Router::url('topic/view/' . rawurlencode((string) ($rt['id'] ?? ''))) ?>"><?= htmlspecialchars((string) ($rt['title'] ?? '')) ?></a>
+		<a href="<?= Router::url('topic/view/' . $rt['id']) ?>"><?= htmlspecialchars((string) ($rt['title'] ?? '')) ?></a>
 		<small class="text-body-secondary ms-1"><?= date('Y-m-d', strtotime((string) ($rt['created'] ?? ''))) ?></small>
 	</li>
 	<?php endforeach; ?>

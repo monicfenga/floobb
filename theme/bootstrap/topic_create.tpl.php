@@ -15,7 +15,7 @@
 		<label for="t-forum" class="form-label">版块</label>
 		<select class="form-select" id="t-forum" name="fid" required>
 			<?php foreach ($forums as $f): ?>
-			<option value="<?= htmlspecialchars((string) ($f['id'] ?? '')) ?>" <?= (string) ($values['fid'] ?? '') === (string) $f['id'] ? 'selected' : '' ?>><?= htmlspecialchars($f['name'] ?? '') ?></option>
+			<option value="<?= $f['id'] ?>" <?= (string) ($values['fid'] ?? '') === $f['id'] ? 'selected' : '' ?>><?= htmlspecialchars($f['name'] ?? '') ?></option>
 			<?php endforeach; ?>
 		</select>
 	</div>

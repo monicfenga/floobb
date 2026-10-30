@@ -29,8 +29,8 @@ class ForumController {
 		if (!Auth::isLoggedIn()) self::redirect('auth/login');
 		if (Auth::level() < 3) self::forbidden();
 
-		$name = trim((string) param('name', '', FALSE));
-		$description = trim((string) param('description', '', FALSE));
+		$name = trim(strip_tags((string) param('name', '', FALSE)));
+		$description = trim(strip_tags((string) param('description', '', FALSE)));
 		// slug 可留空 → 回退 name；填写时只允许字母数字横线下划线
 		$slug = trim((string) param('slug', '', FALSE));
 		$values = array('name' => $name, 'slug' => $slug, 'description' => $description);

@@ -112,7 +112,7 @@ class TopicController {
 		if ($user === null) self::redirect('auth/login');
 
 		$fid = (string) param('fid', $fid, FALSE);
-		$title = trim((string) param('title', '', FALSE));
+		$title = trim(strip_tags((string) param('title', '', FALSE)));
 		$content = (string) param('content', '', FALSE);
 		$values = array('fid' => $fid, 'title' => $title, 'content' => $content);
 

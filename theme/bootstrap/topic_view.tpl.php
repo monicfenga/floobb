@@ -3,7 +3,7 @@
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
 		<?php if ($forum !== null): ?>
-		<li class="breadcrumb-item"><a href="<?= Router::url('forum/view/' . rawurlencode((string) ($forum['id'] ?? ''))) ?>"><?= htmlspecialchars($forum['name'] ?? '') ?></a></li>
+		<li class="breadcrumb-item"><a href="<?= Router::url('forum/view/' . $forum['id']) ?>"><?= htmlspecialchars($forum['name'] ?? '') ?></a></li>
 		<?php endif; ?>
 		<li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($topic['title'] ?? '') ?></li>
 	</ol>
@@ -17,9 +17,9 @@
 	</h1>
 	<div class="d-flex gap-1 align-items-center">
 		<ul class="nav nav-pills" aria-label="帖子排序与筛选">
-			<li class="nav-item"><a class="nav-link py-1 <?= $sort === 'oldest' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' . rawurlencode((string) ($topic['id'] ?? ''))) ?><?= $filter === 'author' ? '?filter=author' : '' ?>">正序</a></li>
-			<li class="nav-item"><a class="nav-link py-1 <?= $sort === 'latest' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' . rawurlencode((string) ($topic['id'] ?? ''))) ?>?sort=latest<?= $filter === 'author' ? '&filter=author' : '' ?>">倒序</a></li>
-			<li class="nav-item"><a class="nav-link py-1 <?= $filter === 'author' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' . rawurlencode((string) ($topic['id'] ?? ''))) ?>?filter=author<?= $sort === 'latest' ? '&sort=latest' : '' ?>">只看楼主</a></li>
+			<li class="nav-item"><a class="nav-link py-1 <?= $sort === 'oldest' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' .$topic['id']) ?><?= $filter === 'author' ? '?filter=author' : '' ?>">正序</a></li>
+			<li class="nav-item"><a class="nav-link py-1 <?= $sort === 'latest' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' .$topic['id']) ?>?sort=latest<?= $filter === 'author' ? '&filter=author' : '' ?>">倒序</a></li>
+			<li class="nav-item"><a class="nav-link py-1 <?= $filter === 'author' ? 'active' : '' ?>" href="<?= Router::url('topic/view/' .$topic['id']) ?>?filter=author<?= $sort === 'latest' ? '&sort=latest' : '' ?>">只看楼主</a></li>
 		</ul>
 	</div>
 </div>
@@ -31,15 +31,15 @@
 
 <?php if (Auth::level() >= 2): ?>
 <div class="btn-group btn-group-sm mb-3" role="group" aria-label="管理操作">
-	<form method="post" action="<?= Router::url('topic/lock/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline">
+	<form method="post" action="<?= Router::url('topic/lock/' . $topic['id']) ?>" class="d-inline">
 		<?= Auth::csrfField() ?>
 		<button type="submit" class="btn btn-outline-secondary"><?= empty($topic['locked']) ? '锁定' : '解锁' ?></button>
 	</form>
-	<form method="post" action="<?= Router::url('topic/sticky/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline">
+	<form method="post" action="<?= Router::url('topic/sticky/' . $topic['id']) ?>" class="d-inline">
 		<?= Auth::csrfField() ?>
 		<button type="submit" class="btn btn-outline-secondary"><?= empty($topic['sticky']) ? '置顶' : '取消置顶' ?></button>
 	</form>
-	<form method="post" action="<?= Router::url('topic/move/' . rawurlencode((string) $topic['id'])) ?>" class="input-group input-group-sm" style="width: 13rem;">
+	<form method="post" action="<?= Router::url('topic/move/' . $topic['id']) ?>" class="input-group input-group-sm" style="width: 13rem;">
 		<?= Auth::csrfField() ?>
 		<select name="fid" class="form-select" aria-label="移动到版块" required>
 			<?php foreach (($allForums ?? array()) as $fId => $fName): ?>
@@ -48,7 +48,7 @@
 		</select>
 		<button type="submit" class="btn btn-outline-secondary">移动</button>
 	</form>
-	<form method="post" action="<?= Router::url('topic/delete/' . rawurlencode((string) $topic['id'])) ?>" class="d-inline" onsubmit="return confirm('确定删除该主题及其全部帖子？');">
+	<form method="post" action="<?= Router::url('topic/delete/' . $topic['id']) ?>" class="d-inline" onsubmit="return confirm('确定删除该主题及其全部帖子？');">
 		<?= Auth::csrfField() ?>
 		<button type="submit" class="btn btn-outline-danger">删除主题</button>
 	</form>
@@ -56,7 +56,7 @@
 <?php endif; ?>
 
 <?php foreach ($posts as $row): $p = $row['post']; ?>
-<article class="card mb-2" id="p<?= htmlspecialchars((string) ($p['id'] ?? '')) ?>">
+<article class="card mb-2" id="p<?= $p['id'] ?>">
 	<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
 		<span class="d-inline-flex align-items-center gap-1">
 			<?php if (!empty($row['author_avatar'])): ?>
@@ -69,7 +69,7 @@
 			<?php endif; ?>
 		</span>
 		<small class="text-body-secondary">
-			<a href="#p<?= htmlspecialchars((string) ($p['id'] ?? ''))?>">#<?= substr($p['id'], -5) ?></a>
+			<a href="#p<?= $p['id'] ?>">#<?= substr($p['id'], -5) ?></a>
 			· <?= date('Y-m-d H:i', strtotime((string) ($p['created'] ?? ''))) ?>
 			<?php if (!empty($p['edited'])): ?>· 已编辑（<?= date('m-d H:i', strtotime((string) $p['edited'])) ?>）<?php endif; ?>
 		</small>
@@ -78,10 +78,10 @@
 	<?php if ($row['can_edit'] || $row['can_delete']): ?>
 	<div class="card-footer bg-transparent d-flex gap-2 py-1">
 		<?php if ($row['can_edit']): ?>
-		<a class="btn btn-sm btn-link text-decoration-none px-0" href="<?= Router::url('post/edit/' . rawurlencode((string) ($p['id'] ?? ''))) ?>">编辑</a>
+		<a class="btn btn-sm btn-link text-decoration-none px-0" href="<?= Router::url('post/edit/' . $p['id']) ?>">编辑</a>
 		<?php endif; ?>
 		<?php if ($row['can_delete']): ?>
-		<form method="post" action="<?= Router::url('post/delete/' . rawurlencode((string) ($p['id'] ?? ''))) ?>" onsubmit="return confirm('确定删除该帖子？');">
+		<form method="post" action="<?= Router::url('post/delete/' . $p['id']) ?>" onsubmit="return confirm('确定删除该帖子？');">
 			<?= Auth::csrfField() ?>
 			<button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none px-0">删除</button>
 		</form>
@@ -97,7 +97,7 @@
 <div class="alert alert-secondary" role="status">主题已锁定，无法回帖。</div>
 <?php elseif (Auth::isLoggedIn()): ?>
 <h2 class="h6 mt-4">回复</h2>
-<form method="post" action="<?= Router::url('post/create/' . rawurlencode((string) ($topic['id'] ?? ''))) ?>">
+<form method="post" action="<?= Router::url('post/create/' .$topic['id']) ?>">
 	<?= Auth::csrfField() ?>
 	<div class="mb-2">
 		<label for="reply-content" class="form-label visually-hidden">回帖内容（Markdown）</label>
