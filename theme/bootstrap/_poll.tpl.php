@@ -9,7 +9,7 @@ $isMulti = (int) ($poll['max_choices'] ?? 1) > 1;
 		<strong><?= htmlspecialchars((string) ($poll['question'] ?? '')) ?></strong>
 		<span class="text-body-secondary small">
 			<?= $isMulti ? '多选（最多 ' . (int) $poll['max_choices'] . ' 项）' : '单选' ?>
-			· 截止 <?= htmlspecialchars((string) ($poll['deadline'] ?? '')) ?>
+			· 截止 <?= date('Y-m-d H:i', (int) ($poll['deadline'] ?? 0)) ?>
 			<?php if (!empty($poll['closed'])): ?>· 已关闭<?php elseif ($pollView['expired']): ?>· 已过期<?php endif; ?>
 		</span>
 	</div>

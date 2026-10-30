@@ -24,7 +24,7 @@ class Post {
 			}
 		}
 		usort($posts, function ($a, $b) {
-			return strcmp((string) ($a['created'] ?? ''), (string) ($b['created'] ?? ''));
+			return ((int) ($a['created'] ?? 0)) <=> ((int) ($b['created'] ?? 0));
 		});
 		return $posts;
 	}

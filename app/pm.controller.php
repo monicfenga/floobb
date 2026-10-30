@@ -37,8 +37,8 @@ class PMController {
 		$box = PM::getBox($user['username']);
 		$items = $box[$side];
 		// 新的在前
-	usort($items, function ($a, $b) {
-			return strcmp((string) ($b['time'] ?? ''), (string) ($a['time'] ?? ''));
+		usort($items, function ($a, $b) {
+			return ((int) ($b['time'] ?? 0)) <=> ((int) ($a['time'] ?? 0));
 		});
 
 		$per = 10;

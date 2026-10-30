@@ -34,14 +34,13 @@ class PM {
 	 */
 	public static function send($from, $to, $subject, $body) {
 		$id = flatDB::newEntry();
-		$now = date('Y-m-d\TH:i:s');
 		$msg = array(
 			'id' => $id,
 			'from' => (string) $from,
 			'to' => (string) $to,
 			'subject' => (string) $subject,
 			'body' => (string) $body,
-			'time' => $now,
+			'time' => time(), // unix int（时间字段规约，SPEC §11.4）
 			'read' => false,
 		);
 		$toBox = self::getBox($to);

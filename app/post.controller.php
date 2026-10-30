@@ -41,13 +41,13 @@ class PostController {
 			'topic_id' => (string) $tid,
 			'forum_id' => $forumId,
 			'author' => $user['username'],
-			'created' => date('Y-m-d\TH:i:s'),
+			'created' => time(),
 			'edited' => null,
 			'content_md' => $content,
 		));
 		// topic.post_ids 维护 + last_reply_at + 版块 post_count+1
 		$topic['post_ids'][] = $pid;
-		$topic['last_reply_at'] = date('Y-m-d\TH:i:s');
+		$topic['last_reply_at'] = time();
 		Topic::save((string) $tid, $topic);
 		if ($forumId !== '') Forum::adjustCounts($forumId, 0, 1);
 
@@ -88,7 +88,7 @@ class PostController {
 		}
 
 		$post['content_md'] = $content;
-		$post['edited'] = date('Y-m-d\TH:i:s');
+		$post['edited'] = time();
 		Post::save((string) $pid, $post); // save() 内部重渲染 content_html
 
 		self::redirect('topic/view/' . rawurlencode((string) ($post['topic_id'] ?? '')) . '#p' . rawurlencode((string) $pid));

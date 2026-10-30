@@ -40,7 +40,7 @@ class Report {
 			'reporter' => (string) $reporter,
 			'reason' => (string) $reason,
 			'detail' => (string) $detail,
-			'created' => date('Y-m-d\TH:i:s'),
+			'created' => time(),
 			'status' => 'open',
 			'resolved_by' => '',
 			'resolution' => '',
@@ -69,7 +69,7 @@ class Report {
 			else $done[] = $r;
 		}
 		$cmp = function ($a, $b) {
-			return strcmp((string) ($b['created'] ?? ''), (string) ($a['created'] ?? ''));
+			return ((int) ($b['created'] ?? 0)) <=> ((int) ($a['created'] ?? 0));
 		};
 		usort($open, $cmp);
 		usort($done, $cmp);

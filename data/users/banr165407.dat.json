@@ -5,8 +5,8 @@
     "password_hash": "$2y$12$TvIZyFmdlLdNXJyrlwEW6u1gXkoRQydFL1GdtQIyotVNitZV.XngS",
     "email": "",
     "level": 1,
-    "registered": "2026-10-30T08:54:07",
-    "last_seen": "2026-10-30T08:54:07",
+    "registered": 1793350447,
+    "last_seen": 1793350447,
     "signature": "",
     "avatar": "",
     "recovery_codes": [
@@ -21,7 +21,7 @@
     "remember_hash": "b09af066ac9c233cb0ce9519c22d7856a0b403ce8ffcf136ace60ef21666dbb1",
     "totp_secret": "",
     "totp_enabled": false,
-    "banned_until": "2026-10-31T08:54:08",
+    "banned_until": 1793436848,
     "banned_by": "rootadmin",
     "banned_reason": ""
 }

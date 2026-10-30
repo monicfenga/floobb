@@ -1,33 +1,33 @@
 {
-  "question": "你最喜欢哪些功能？",
-  "options": [
-    {
-      "text": "功能甲",
-      "votes": 2
-    },
-    {
-      "text": "功能乙",
-      "votes": 1
-    },
-    {
-      "text": "功能丙",
-      "votes": 1
-    }
-  ],
-  "votes": {
-    "pollb162257": [
-      0,
-      2
+    "question": "你最喜欢哪些功能？",
+    "options": [
+        {
+            "text": "功能甲",
+            "votes": 2
+        },
+        {
+            "text": "功能乙",
+            "votes": 1
+        },
+        {
+            "text": "功能丙",
+            "votes": 1
+        }
     ],
-    "pollc162257": [
-      0
-    ],
-    "pollz162257": [
-      1
-    ]
-  },
-  "max_choices": 2,
-  "deadline": "2026-10-01T00:00:00",
-  "closed": false,
-  "closed_by": "polla162257"
+    "votes": {
+        "pollb162257": [
+            0,
+            2
+        ],
+        "pollc162257": [
+            0
+        ],
+        "pollz162257": [
+            1
+        ]
+    },
+    "max_choices": 2,
+    "deadline": 1790812800,
+    "closed": false,
+    "closed_by": "polla162257"
 }

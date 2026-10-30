@@ -52,15 +52,15 @@ class Forum {
 	}
 
 	/**
-	 * 版块最后活跃时间（该版块下最新主题的 created；无主题返回 ''）
+	 * 版块最后活跃时间（该版块下最新主题的活动时间；无主题返回 0）
 	 */
 	public static function lastActive($forumId) {
-		$latest = '';
+		$latest = 0;
 		foreach (flatDB::listDB('topics') as $file) {
 			$t = flatDB::getDB('topics', basename($file, '.dat.json'));
 			if (is_array($t) && (string) ($t['forum_id'] ?? '') === (string) $forumId) {
 				// 回帖活跃优先，退回发帖时间
-				$c = (string) ($t['last_reply_at'] ?? '') !== '' ? (string) $t['last_reply_at'] : (string) ($t['created'] ?? '');
+				$c = (int) (($t['last_reply_at'] ?? 0) ?: ($t['created'] ?? 0));
 				if ($c > $latest) $latest = $c;
 			}
 		}

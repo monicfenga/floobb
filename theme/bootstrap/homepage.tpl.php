@@ -16,7 +16,7 @@
 				</div>
 				<small class="text-body-secondary">
 					<?php if ($row['forum_name'] !== ''): ?><a class="text-decoration-none" href="<?= Router::url('forum/view/' . rawurlencode($row['forum_id'])) ?>"><?= htmlspecialchars($row['forum_name']) ?></a> · <?php endif; ?>
-					<?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', strtotime((string) (($t['last_reply_at'] ?? '') !== '' ? $t['last_reply_at'] : ($t['created'] ?? '')))) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖
+					<?= htmlspecialchars($t['author'] ?? '') ?> · <?= date('Y-m-d H:i', (int) (($t['last_reply_at'] ?? 0) ?: ($t['created'] ?? 0))) ?> · <?= count((array) ($t['post_ids'] ?? array())) ?> 帖
 				</small>
 			</li>
 			<?php endforeach; ?>
@@ -43,7 +43,7 @@
 				<div class="text-body-secondary small">
 					<?= htmlspecialchars($forum['description'] ?? '') ?>
 					<?php if (!empty($forum['last_active'])): ?>
-					<span class="ms-1">· 最后活跃 <?= date('m-d H:i', strtotime((string) $forum['last_active'])) ?></span>
+					<span class="ms-1">· 最后活跃 <?= date('m-d H:i', (int) $forum['last_active']) ?></span>
 					<?php endif; ?>
 				</div>
 			</a>

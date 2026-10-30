@@ -10,9 +10,9 @@
             "votes": 0
         }
     ],
-    "votes": {},
+    "votes": [],
     "max_choices": 1,
-    "deadline": "2026-11-06T08:21:43",
+    "deadline": 1793953303,
     "closed": false,
     "closed_by": ""
 }

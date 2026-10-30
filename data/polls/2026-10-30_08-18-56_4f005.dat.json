@@ -14,9 +14,9 @@
             "votes": 0
         }
     ],
-    "votes": {},
+    "votes": [],
     "max_choices": 2,
-    "deadline": "2026-11-29T08:18:56",
+    "deadline": 1795940336,
     "closed": false,
     "closed_by": ""
 }

@@ -177,7 +177,7 @@ class UserController {
 		if ($until === false) {
 			http_response_code(422);
 			header('Content-Type: text/plain; charset=utf-8');
-			exit('422: 封禁时长参数无效（custom 需合法的 ISO 时间戳，且晚于当前时间）。');
+			exit('422: 封禁时长参数无效（custom 需合法的日期时间，且晚于当前时间）。');
 		}
 
 		$reason = trim(strip_tags(param('reason', '')));
@@ -187,7 +187,7 @@ class UserController {
 
 		// 私信通知当事用户（版主署名；解封也通知）
 		$modName = (string) ($mod['nickname'] ?? $mod['username']);
-		if ($until === '') {
+		if ($until === 0) {
 			PM::send((string) $mod['username'], $username, '你的账号已解封',
 				"你的账号已被版主 {$modName} 解封，欢迎回来。请遵守社区规范。");
 		} elseif (!$wasBanned) {
@@ -201,21 +201,21 @@ class UserController {
 	}
 
 	/**
-	 * duration 档位 → (until ISO | '' 解封)；无效返回 [false, false]
-	 * 供 user/ban 与举报队列 ban 处理共用
+	 * duration 档位 → [until unix int, 展示文本]；无效返回 [false, false]
+	 * 供 user/ban 与举报队列 ban 处理共用。custom 的用户输入 ISO 串在此机器转 int，存储层只见 int。
 	 */
 	public static function resolveDuration($duration, $customUntil = '') {
 		$now = time();
 		switch ((string) $duration) {
-			case '0': return array('', '（已解封）');
-			case '1d': return array(date('Y-m-d\TH:i:s', $now + 86400), '1 天后');
-			case '7d': return array(date('Y-m-d\TH:i:s', $now + 7 * 86400), '7 天后');
-			case '30d': return array(date('Y-m-d\TH:i:s', $now + 30 * 86400), '30 天后');
+			case '0': return array(0, '（已解封）');
+			case '1d': return array($now + 86400, '1 天后');
+			case '7d': return array($now + 7 * 86400, '7 天后');
+			case '30d': return array($now + 30 * 86400, '30 天后');
 			case 'permanent': return array(User::BAN_FOREVER, '永久');
 			case 'custom':
-				$u = trim((string) $customUntil);
-				if ($u === '' || $u <= date('Y-m-d\TH:i:s') || strtotime($u) === false) return array(false, false);
-				return array($u, $u);
+				$ts = strtotime(trim((string) $customUntil));
+				if ($ts === false || $ts <= $now) return array(false, false);
+				return array($ts, date('Y-m-d H:i', $ts));
 		}
 		return array(false, false);
 	}

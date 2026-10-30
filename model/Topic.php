@@ -35,15 +35,17 @@ class Topic {
 	 */
 	public static function sortBy(array $topics, $sort = 'latest') {
 		$lastActivity = function (array $t) {
-			return (string) ($t['last_reply_at'] ?? '') !== '' ? (string) $t['last_reply_at'] : (string) ($t['created'] ?? '');
+			return (int) (($t['last_reply_at'] ?? 0) ?: ($t['created'] ?? 0));
 		};
 		usort($topics, function ($a, $b) use ($sort, $lastActivity) {
-			$createdDesc = strcmp($lastActivity($b), $lastActivity($a)); // 兜底：时间降序
+			$createdDesc = ((int) ($b['created'] ?? 0)) <=> ((int) ($a['created'] ?? 0)); // 兜底：时间降序
+			$activityDesc = $lastActivity($b) <=> $lastActivity($a); // 最近活动降序
 			switch ($sort) {
-				case 'replied': return $createdDesc;
+				case 'latest':  return $createdDesc;
+				case 'replied': return $activityDesc ?: $createdDesc;
 				case 'posts':   return (count((array) ($b['post_ids'] ?? array())) <=> count((array) ($a['post_ids'] ?? array()))) ?: $createdDesc;
 				case 'views':   return ((int) ($b['views'] ?? 0) <=> (int) ($a['views'] ?? 0)) ?: $createdDesc;
-				default:        return strcmp((string) ($b['created'] ?? ''), (string) ($a['created'] ?? ''));
+				default:        return $createdDesc;
 			}
 		});
 		return $topics;

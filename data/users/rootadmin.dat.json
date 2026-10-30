@@ -1,11 +1,11 @@
 {
     "id": "9c18d630d601",
     "username": "rootadmin",
-    "password_hash": "$2y$12$CRsWHY0S/wOqSGD6NvMa0eK3xvBqwV6EplWz.To4XRbNaTXXft4OC",
+    "password_hash": "$2y$12$CRsWHY0S\/wOqSGD6NvMa0eK3xvBqwV6EplWz.To4XRbNaTXXft4OC",
     "email": "root@example.com",
     "level": 3,
-    "registered": "2026-10-30T05:09:21",
-    "last_seen": "2026-10-30T05:09:21",
+    "registered": 1793336961,
+    "last_seen": 1793336961,
     "signature": "",
     "avatar": "",
     "recovery_codes": [

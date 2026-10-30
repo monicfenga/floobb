@@ -84,8 +84,8 @@ class Poll {
 	 * 是否已过期（deadline 非空且已过 → 视为自动关闭，只读展示）
 	 */
 	public static function isExpired(array $poll) {
-		$dl = (string) ($poll['deadline'] ?? '');
-		return $dl !== '' && strtotime($dl) < time();
+		$dl = (int) ($poll['deadline'] ?? 0);
+		return $dl > 0 && $dl < time();
 		}
 
 	/**

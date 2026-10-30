@@ -38,12 +38,12 @@ class AuthController {
 			}
 			self::redirect('');
 		}
-		// 封禁用户提示解封时间（B3-4b）
+		// 封禁用户提示解封时间（B3-4b；banned_until 为 unix int）
 		$banMsg = null;
 		if ($error === 'auth.user_banned') {
 			$u = User::get($username);
-			$until = $u !== null ? (string) ($u['banned_until'] ?? '') : '';
-			$untilText = $until === User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', strtotime($until));
+			$until = $u !== null ? (int) ($u['banned_until'] ?? 0) : 0;
+			$untilText = $until >= User::BAN_FOREVER ? '永久' : date('Y-m-d H:i', $until);
 			$reason = $u !== null ? (string) ($u['banned_reason'] ?? '') : '';
 			$banMsg = '该账号已被封禁（至 ' . $untilText . '）' . ($reason !== '' ? '，原因：' . $reason : '') . '。';
 		}
@@ -96,7 +96,7 @@ class AuthController {
 		}
 
 		// 建用户（SPEC §4 users 模型）；recovery_codes 只存哈希，明文仅注册成功页展示一次
-		$now = date('Y-m-d\TH:i:s');
+		$now = time();
 		$plainCodes = array();
 		$user = array(
 			'id' => bin2hex(random_bytes(6)),

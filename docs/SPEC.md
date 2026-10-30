@@ -202,12 +202,12 @@ data/
   "password_hash": "<password_hash() 输出>",
   "email": "",
   "level": 3,
-  "registered": "2023-10-30T09:00:00",
-  "last_seen": "2026-10-30T09:00:00",
+  "registered": 1793336961,
+  "last_seen": 1793336961,
   "signature": "",
   "avatar": "",
   "bio": "",                   // 一句话介绍（知乎风，B3-1 决议；楼层/用户页展示）
-  "banned_until": "",          // B3-4b：ISO 时间戳；空=未封禁；"9999-12-31T23:59:59"=永久（User::BAN_FOREVER）
+  "banned_until": 0,           // B3-4b：unix 时间戳 int；0=未封禁；PHP_INT_MAX=永久（User::BAN_FOREVER）
   "banned_by": "",             // 操作版主用户名
   "banned_reason": "",         // 封禁原因（展示用）
   "recovery_codes": [],        // Phase 1 密码重置用，注册时生成、哈希存储、一次性
@@ -237,8 +237,8 @@ data/
   "forum_id": "1",
   "title": "...",
   "author": "Geticer",
-  "created": "2023-10-30T09:00:00",
-  "last_reply_at": "2023-10-30T10:00:00",
+  "created": 1793336961,
+  "last_reply_at": 1793337000,
   "views": 0,
   "sticky": false,
   "locked": false,
@@ -256,7 +256,7 @@ data/
   "topic_id": "...",
   "forum_id": "1",
   "author": "Geticer",
-  "created": "2023-10-30T09:00:00",
+  "created": 1793336961,
   "edited": null,
   "content_md": "**Markdown 源**",
   "content_html": "<p><strong>渲染缓存</strong></p>"
@@ -265,7 +265,7 @@ data/
 
 **pms/<username>.dat.json**（⚠️ 本实体为粗稿：**PM 路由与数据操作清单在批次 3 第一回合盘点时产出并由用户确认后才准实现**——发信/已发送/标记已读/会话查看的路由 SPEC 均未定，如 `POST /pm/send` vs `POST /pm/send/{to}`、显式已读 vs 打开即已读；落定时回填本节与 §3.1 路由表）
 ```json
-{ "inbox": [{"id":"","from":"","to":"","subject":"","body":"","time":"","read":false}],
+{ "inbox": [{"id":"","from":"","to":"","subject":"","body":"","time":0,"read":false}],
   "outbox": [ /* 同上 */ ] }
 ```
 
@@ -276,7 +276,7 @@ data/
   "options": [{"text": "", "votes": 0}],
   "votes": {"username": [0, 2]},
   "max_choices": 1,
-  "deadline": "2026-11-06T00:00:00",
+  "deadline": 1794431600,
   "closed": false,
   "closed_by": ""
 }
@@ -293,7 +293,7 @@ data/
   "reporter":"",
   "reason":"spam|abuse|illegal|other",
   "detail":"",
-  "created":"",
+  "created":0,
   "status":"open|resolved|dismissed",
   "resolved_by":"",
   "resolution":""          // 如 "deleted" / "banned" / "warned"
@@ -308,7 +308,7 @@ data/
   "actor":"Geticer",
   "text":"",            // status 类型的正文
   "ref_id":"",          // 系统事件关联 topic_id / post_id
-  "created":"",
+  "created":0,
   "public":true
 }
 ```
@@ -451,6 +451,13 @@ $sort = Router::query('sort', 'latest');
 
 ### 11.3 输出转义
 - 任何用户可控字符串进 HTML，必须经 `htmlspecialchars()`（模板里统一处理）。Markdown 正文走 Parsedown 渲染并经 DOMPurify 消毒后再输出，不套 `htmlspecialchars()`。
+
+### 11.4 时间字段规约
+- **所有数据实体里的时间字段一律 unix 时间戳 int**（`time()` 落盘：registered/last_seen/banned_until/created/last_reply_at/edited/time/deadline…），**禁 ISO 字符串入库**。
+- 理由：时间是机器生成的内部字段，永远不进用户输入语境，int 无格式歧义（比较/排序直接 `<=>`，不存在 `strcmp` 对 `'9999-…'` 的格式依赖）、无 strtotime 解析失败/时区坑；展示层才 `date('Y-m-d H:i', (int) $x)` 格式化。
+- 永久封禁 = `User::BAN_FOREVER`（PHP_INT_MAX）；未封禁 = `0`。
+- 唯一例外：flatDB::newEntry() 的 **ID 内嵌日期串**（`Y-m-d_H-i-s_`）不是数据字段，保持原样（id 是字符串键）。
+- 2026-10-30 已全量迁移：ISO → int（迁移前 git 快照 bef10eb 可回滚）。
 
 ---
 

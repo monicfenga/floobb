@@ -2,9 +2,9 @@
     "topic_id": "2026-10-30061630d6897",
     "forum_id": "announce",
     "author": "rootadmin",
-    "created": "2026-10-30T06:16:30",
+    "created": 1793340990,
     "edited": null,
-    "content_md": "本批次交付：\n\n1. 版块页 / 主题页 / 发帖回帖闭环\n2. Markdown 渲染 + 代码高亮\n3. 锁定、置顶、移动、删除等管理动作\n4. 版块 slug 化 URL（/forum/view/tech）",
+    "content_md": "本批次交付：\n\n1. 版块页 \/ 主题页 \/ 发帖回帖闭环\n2. Markdown 渲染 + 代码高亮\n3. 锁定、置顶、移动、删除等管理动作\n4. 版块 slug 化 URL（\/forum\/view\/tech）",
     "id": "2026-10-30061630d6c10",
-    "content_html": "<p>本批次交付：</p>\n<ol>\n<li>版块页 / 主题页 / 发帖回帖闭环</li>\n<li>Markdown 渲染 + 代码高亮</li>\n<li>锁定、置顶、移动、删除等管理动作</li>\n<li>版块 slug 化 URL（/forum/view/tech）</li>\n</ol>"
+    "content_html": "<p>本批次交付：<\/p>\n<ol>\n<li>版块页 \/ 主题页 \/ 发帖回帖闭环<\/li>\n<li>Markdown 渲染 + 代码高亮<\/li>\n<li>锁定、置顶、移动、删除等管理动作<\/li>\n<li>版块 slug 化 URL（\/forum\/view\/tech）<\/li>\n<\/ol>"
 }

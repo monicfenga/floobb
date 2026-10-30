@@ -2,11 +2,11 @@
     "id": "bca4dca34f48",
     "username": "banv165448",
     "nickname": "banv165448",
-    "password_hash": "$2y$12$jjt9nmYDQC73Wu3wtp/zbuSSQsRRGNg91Bp0i8rRl5DxglojyYeUy",
+    "password_hash": "$2y$12$jjt9nmYDQC73Wu3wtp\/zbuSSQsRRGNg91Bp0i8rRl5DxglojyYeUy",
     "email": "",
     "level": 1,
-    "registered": "2026-10-30T08:54:48",
-    "last_seen": "2026-10-30T08:54:48",
+    "registered": 1793350488,
+    "last_seen": 1793350488,
     "signature": "",
     "avatar": "",
     "recovery_codes": [
@@ -21,7 +21,7 @@
     "remember_hash": "",
     "totp_secret": "",
     "totp_enabled": false,
-    "banned_until": "",
+    "banned_until": 0,
     "banned_by": "",
     "banned_reason": ""
 }

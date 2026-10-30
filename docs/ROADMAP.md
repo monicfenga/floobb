@@ -36,6 +36,7 @@
 - votes 结构：`votes: { username: [optionIndex,...] }`（SPEC §4 已同步）；投票人展示 nickname ?? username
 - 选项输入：textarea 一行一个（tagger.js 评估后弃用）；投票参数接收：裸 $_POST + 白名单过滤
 - 旧版参考路径：`M:\laragon\www\floobb-master`（repo 里旧文件已删）
+- **时间字段一律 unix int**（SPEC §11.4）：禁 ISO 字符串入库；永久封禁=PHP_INT_MAX，未封禁=0；展示层 date() 格式化；迁移前 git 快照 bef10eb
 
 ### B3-4 举报 + 版主队列（✅ 已验收 31/31 curl PASS，待统一 commit）— 已定死的决策（不用再讨论）
 - 拆两子块：4a 举报队列（post/topic）+ 4b 封禁体系（type=user + banned_until，⬜ 待做）

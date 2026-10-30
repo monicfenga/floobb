@@ -199,11 +199,11 @@ class TopicController {
 					return array('text' => $t, 'votes' => 0);
 				}, $options),
 				'max_choices' => $pollMax,
-				'deadline' => date('Y-m-d\TH:i:s', time() + $pollDays * 86400),
+				'deadline' => time() + $pollDays * 86400,
 			);
 		}
 
-		$now = date('Y-m-d\TH:i:s');
+		$now = time();
 		$tid = Topic::create(array(
 			'forum_id' => $fid,
 			'title' => $title,

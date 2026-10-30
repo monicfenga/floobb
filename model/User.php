@@ -73,27 +73,27 @@ class User {
 
 	/* ---------------- 封禁（B3-4b；level 不动，封禁是独立状态） ---------------- */
 
-	const BAN_FOREVER = '9999-12-31T23:59:59';
+	/** 永久封禁（时间字段规约：一律 unix int，SPEC §11.4） */
+	const BAN_FOREVER = PHP_INT_MAX;
 
 	/**
-	 * 用户是否处于封禁中（banned_until 非空且 > now）
+	 * 用户是否处于封禁中（banned_until > now；0 = 未封禁）
 	 */
 	public static function isBanned(array $user) {
-		$until = (string) ($user['banned_until'] ?? '');
-		return $until !== '' && $until > date('Y-m-d\TH:i:s');
+		return ((int) ($user['banned_until'] ?? 0)) > time();
 	}
 
 	/**
 	 * 封禁/解封唯一写入口（user/ban 路由与举报队列处理共用）。
-	 * @param string|null $until ISO 时间戳；null/空 = 解封；User::BAN_FOREVER = 永久
+	 * @param int $until unix 时间戳；0 = 解封；User::BAN_FOREVER = 永久
 	 * @return bool
 	 */
 	public static function setBan($username, $until, $by, $reason = '') {
 		$user = self::get($username);
 		if ($user === null) return false;
-		$user['banned_until'] = ($until === null || $until === '') ? '' : (string) $until;
-		$user['banned_by'] = $user['banned_until'] === '' ? '' : (string) $by;
-		$user['banned_reason'] = $user['banned_until'] === '' ? '' : (string) $reason;
+		$user['banned_until'] = max(0, (int) $until);
+		$user['banned_by'] = $user['banned_until'] > 0 ? (string) $by : '';
+		$user['banned_reason'] = $user['banned_until'] > 0 ? (string) $reason : '';
 		return self::save((string) $username, $user);
 	}
 

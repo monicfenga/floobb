@@ -18,7 +18,7 @@ $isInbox = ($side === 'inbox');
 		<p class="text-body-secondary small mb-2">
 			<?= $isInbox ? '来自' : '发给' ?>
 			<a href="<?= Router::url('user/view/' . rawurlencode((string) ($isInbox ? ($msg['from'] ?? '') : ($msg['to'] ?? '')))) ?>"><?= htmlspecialchars($peerName) ?></a>
-			· <?= htmlspecialchars((string) ($msg['time'] ?? '')) ?>
+			· <?= date('Y-m-d H:i', (int) ($msg['time'] ?? 0)) ?>
 		</p>
 		<p class="mb-0" style="white-space: pre-wrap;"><?= htmlspecialchars((string) ($msg['body'] ?? '')) ?></p>
 	</div>
