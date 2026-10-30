@@ -55,6 +55,9 @@
 </div>
 <?php endif; ?>
 
+<?php $report_type = 'topic'; $report_target = (string) $topic['id']; $report_label = '举报主题'; ?>
+<?php require __DIR__ . DS . '_report_btn.tpl.php'; ?>
+
 <?php require __DIR__ . DS . '_poll.tpl.php'; ?>
 
 <?php foreach ($posts as $row): $p = $row['post']; ?>
@@ -78,7 +81,9 @@
 	</div>
 	<div class="card-body post-content"><?= $p['content_html'] ?? '' ?></div>
 	<?php if ($row['can_edit'] || $row['can_delete']): ?>
-	<div class="card-footer bg-transparent d-flex gap-2 py-1">
+	<div class="card-footer bg-transparent d-flex gap-2 py-1 align-items-center">
+		<?php $report_type = 'post'; $report_target = (string) $p['id']; $report_label = '举报'; ?>
+		<?php require __DIR__ . DS . '_report_btn.tpl.php'; ?>
 		<?php if ($row['can_edit']): ?>
 		<a class="btn btn-sm btn-link text-decoration-none px-0" href="<?= Router::url('post/edit/' . $p['id']) ?>">编辑</a>
 		<?php endif; ?>

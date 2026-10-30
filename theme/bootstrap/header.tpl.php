@@ -24,6 +24,9 @@
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/settings') ?>">设置</a></li>
 				<?php $pmUnread = PM::unreadCount((string) $navUser['username']); ?>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('pm/inbox') ?>">私信<?php if ($pmUnread > 0): ?><span class="badge text-bg-danger ms-1"><?= $pmUnread ?></span><?php endif; ?></a></li>
+				<?php if ((int) $navUser['level'] >= 2): ?>
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('report/list') ?>">举报队列</a></li>
+				<?php endif; ?>
 				<li class="nav-item">
 					<form method="post" action="<?= Router::url('auth/logout') ?>" class="d-inline">
 						<?= Auth::csrfField() ?>
