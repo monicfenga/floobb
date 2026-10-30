@@ -5,6 +5,31 @@ global $FLOO_START, $FLATDB_TOTAL_QUERY, $FLATDB_TOTAL_QUERY_NUM;
 $showDebug = DEBUG_MODE && Auth::level() >= 3;
 ?>
 </main>
+<!-- 全局搜索弹窗 -->
+<dialog id="search-modal" aria-label="搜索">
+	<article>
+		<header>
+			<h5>搜索</h5>
+			<button type="button" class="close" aria-label="关闭" data-target="search-modal">✕</button>
+		</header>
+		<main>
+			<form id="search-modal-form" method="get" action="<?= Router::url('search') ?>" role="search">
+				<label class="visually-hidden" for="search-modal-q">关键词</label>
+				<input class="form-control mb-2" type="search" id="search-modal-q" name="q" placeholder="输入关键词…" maxlength="100" autofocus>
+				<label class="visually-hidden" for="search-modal-scope">搜索范围</label>
+				<select class="form-select" id="search-modal-scope" name="scope">
+					<option value="topics">主题标题</option>
+					<option value="posts">帖子内容</option>
+					<option value="users">用户名 / 昵称</option>
+				</select>
+			</form>
+		</main>
+		<footer>
+			<button type="button" class="btn btn-outline-secondary btn-sm" data-target="search-modal">取消</button>
+			<button type="submit" class="btn btn-primary btn-sm" form="search-modal-form">搜索</button>
+		</footer>
+	</article>
+</dialog>
 <footer class="border-top mt-5 py-4 text-center">
 	<div><?= htmlspecialchars($conf['footer_text'] ? $conf['footer_text'] . ' · ' : '') ?> 
 		Powered by <a href="https://github.com/monicfenga/floobb" rel="noopener">FlooBB</a> (GPLv3+)
@@ -22,6 +47,7 @@ $showDebug = DEBUG_MODE && Auth::level() >= 3;
 	<?php endif; ?>
 </footer>
 <script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/bootstrap.bundle.min.js') ?>"></script>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/modal.js') ?>"></script>
 <script id="theme_js">
 (function () {
 	'use strict';
