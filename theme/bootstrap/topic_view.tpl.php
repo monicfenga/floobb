@@ -58,7 +58,16 @@
 <?php foreach ($posts as $row): $p = $row['post']; ?>
 <article class="card mb-2" id="p<?= htmlspecialchars((string) ($p['id'] ?? '')) ?>">
 	<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-		<a href="<?= Router::url('user/view/' . rawurlencode((string) ($p['author'] ?? ''))) ?>"><?= htmlspecialchars($row['author_nickname']) ?></a>
+		<span class="d-inline-flex align-items-center gap-1">
+			<?php if (!empty($row['author_avatar'])): ?>
+			<img class="rounded" width="24" height="24"
+				src="<?= Router::url('uploads/avatars/' . rawurlencode((string) $row['author_avatar'])) ?>" alt="">
+			<?php endif; ?>
+			<a href="<?= Router::url('user/view/' . rawurlencode((string) ($p['author'] ?? ''))) ?>"><?= htmlspecialchars($row['author_nickname']) ?></a>
+			<?php if ((string) ($row['author_bio'] ?? '') !== ''): ?>
+			<small class="text-body-secondary"><?= htmlspecialchars((string) $row['author_bio']) ?></small>
+			<?php endif; ?>
+		</span>
 		<small class="text-body-secondary">
 			#<?= htmlspecialchars((string) ($p['id'] ?? '')) ?>
 			· <?= date('Y-m-d H:i', strtotime((string) ($p['created'] ?? ''))) ?>

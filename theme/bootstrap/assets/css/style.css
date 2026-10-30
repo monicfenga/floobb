@@ -1,0 +1,11 @@
+:root {
+    font-size: 16px;
+}
+::selection {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+}
+:moz-selection {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+}

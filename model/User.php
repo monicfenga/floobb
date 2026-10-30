@@ -62,6 +62,15 @@ class User {
 			&& !preg_match('/[\x00-\x1F\x7F]/', $nickname);
 	}
 
+	/**
+	 * Bio 一句话介绍（知乎风，用户决议：替代 BBS 签名风格；帖子楼层/用户页展示）
+	 * 0-200 字符，禁控制字符（单行文本）
+	 */
+	public static function validBio($bio) {
+		return is_string($bio) && mb_strlen($bio) <= 200
+			&& !preg_match('/[\x00-\x1F\x7F]/', $bio);
+	}
+
 	/* ---------------- recovery_codes（SPEC §9 #10：无邮件重置，哈希存储、一次性） ---------------- */
 
 	const RECOVERY_COUNT = 6;

@@ -62,6 +62,21 @@ class Post {
 	}
 
 	/**
+	 * 某作者的帖子，created 降序截前 $limit 条（个人资料页「近期发帖」用）
+	 */
+	public static function listByAuthor($author, $limit = 10) {
+		$posts = array();
+		foreach (flatDB::listDB('posts') as $file) {
+			$p = flatDB::getDB('posts', basename($file, '.dat.json'));
+			if (is_array($p) && (string) ($p['author'] ?? '') === (string) $author) $posts[] = $p;
+		}
+		usort($posts, function ($a, $b) {
+			return strcmp((string) ($b['created'] ?? ''), (string) ($a['created'] ?? ''));
+		});
+		return array_slice($posts, 0, (int) $limit);
+	}
+
+	/**
 	 * Markdown → HTML（Parsedown Extra + safeMode，服务端消毒）
 	 */
 	public static function render($markdown) {

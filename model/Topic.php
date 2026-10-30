@@ -91,6 +91,19 @@ class Topic {
 		return $n;
 	}
 
+	/**
+	 * 某作者的主题，created 降序截前 $limit 条（个人资料页「近期发帖」用）
+	 */
+	public static function listByAuthor($author, $limit = 10) {
+		$topics = array();
+		foreach (flatDB::listDB('topics') as $file) {
+			$t = flatDB::getDB('topics', basename($file, '.dat.json'));
+			if (is_array($t) && (string) ($t['author'] ?? '') === (string) $author) $topics[] = $t;
+		}
+		$topics = self::sortBy($topics, 'latest');
+		return array_slice($topics, 0, (int) $limit);
+	}
+
 	public static function delete($topicId) {
 		return flatDB::removeDB('topics', (string) $topicId);
 	}

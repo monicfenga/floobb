@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= htmlspecialchars($header['title'] ?? $conf['title']) ?></title>
 <meta name="description" content="<?= htmlspecialchars($header['description'] ?? '') ?>">
-<link href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/bootstrap.min.css') ?>" rel="stylesheet">
+<link href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/bootswatch.zephyr.css') ?>" rel="stylesheet">
 <link href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/style.css') ?>" rel="stylesheet">
 </head>
 <body>
@@ -21,6 +21,7 @@
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url() ?>">首页</a></li>
 				<?php if (Auth::isLoggedIn()): $navUser = Auth::user(); ?>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/view/' . urlencode((string) $navUser['username'])) ?>"><?= htmlspecialchars((string) ($navUser['nickname'] ?? $navUser['username'])) ?></a></li>
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/settings') ?>">设置</a></li>
 				<li class="nav-item">
 					<form method="post" action="<?= Router::url('auth/logout') ?>" class="d-inline">
 						<?= Auth::csrfField() ?>
