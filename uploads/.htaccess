@@ -1,0 +1,10 @@
+# 上传目录禁止执行任何脚本（纵深防御：即使伪装成图片的 PHP 落盘也不可执行）
+php_flag engine off
+Options -ExecCGI -Indexes
+
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|php8|phar|pht|pl|py|cgi|asp|aspx|sh|htaccess)$">
+	Require all denied
+</FilesMatch>
+
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pht
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pht

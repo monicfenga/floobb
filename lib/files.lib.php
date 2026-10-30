@@ -42,7 +42,7 @@ class Files{
 
 		$target_dir = rtrim($loc, '/\\') . DS;
 		if (!Files::checkFolder($target_dir)) {
-			Files::createFolder($target_dir, 0777, true);
+			Files::createFolder($target_dir, 0755, true);
 		}
 
 		$original = basename($_FILES[$name]['name']);
@@ -56,6 +56,20 @@ class Files{
 		if(!in_array($file_type, $allowExt, true)){
 			$error = 'upload.failed.extentions';
 			return false;
+		}
+		// 内容 MIME 校验（纵深防御：防止伪装扩展名的脚本落盘，配合上传目录禁执行）
+		$mimeMap = array(
+			'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg',
+			'png' => 'image/png', 'gif' => 'image/gif',
+			'webp' => 'image/webp',
+		);
+		if (class_exists('finfo')) {
+			$finfo = new finfo(FILEINFO_MIME_TYPE);
+			$mime = $finfo ? $finfo->file($_FILES[$name]['tmp_name']) : false;
+			if ($mime === false || !isset($mimeMap[$file_type]) || $mime !== $mimeMap[$file_type]) {
+				$error = 'upload.failed.mime';
+				return false;
+			}
 		}
 		// 重命名目标同样校验扩展名
 		if($rename !== null){
@@ -121,11 +135,11 @@ class Files{
 	/**
 	 * 创建目录（已存在时直接返回 true）
 	 * @param string $dir       目录路径
-	 * @param int    $mode      权限，默认 0777
+	 * @param int    $mode      权限，默认 0755
 	 * @param bool   $recursive 是否递归创建父目录
 	 * @return bool
 	 */
-	public static function createFolder($dir, $mode=0777, $recursive=false){
+	public static function createFolder($dir, $mode=0755, $recursive=false){
 		return !Files::checkFolder($dir) ? @mkdir($dir, (int)$mode, (bool)$recursive) : true;
 	}
 
