@@ -34,7 +34,11 @@ function floob_captcha_font() {
 }
 
 function floob_create_captcha($w=200, $h=38, $bgr=128, $bgg=128, $bgb=128, $cr=0, $cg=0, $cb=0, $size=20, $angle=0){
-	if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+	if (session_status() !== PHP_SESSION_ACTIVE) {
+		// 与 init.php 保持同一会话名，否则验证码写进 app 读不到的 PHPSESSID 会话
+		if (session_name() !== 'floobb_session') session_name('floobb_session');
+		session_start();
+	}
 
 	$captcha_code = substr(bin2hex(random_bytes(6)), 0, 6);
 

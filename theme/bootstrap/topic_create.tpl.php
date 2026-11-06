@@ -26,12 +26,8 @@
 	</div>
 	<div class="mb-3">
 		<label for="t-content" class="form-label">正文（Markdown）</label>
-		<textarea class="form-control font-monospace" id="t-content" name="content" rows="10" required><?= htmlspecialchars($values['content'] ?? '') ?></textarea>
-		<div class="form-text">支持 Markdown；预览仅供参考，以服务端渲染为准。</div>
-	</div>
-	<div class="mb-3">
-		<span id="previewHelp" class="form-label d-block">预览</span>
-		<div class="border rounded p-3 post-content" id="preview" aria-describedby="previewHelp" aria-live="polite"></div>
+		<textarea class="form-control font-monospace" id="t-content" name="content" rows="10" required data-md-editor><?= htmlspecialchars($values['content'] ?? '') ?></textarea>
+		<div class="form-text">支持 Markdown，所见即所得；以服务端渲染为准。</div>
 	</div>
 
 	<?php /* 附带投票（可选；建票只在发主题时一笔提交） */ ?>
@@ -86,17 +82,6 @@
 	<button type="submit" class="btn btn-primary">发布主题</button>
 </form>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-	var md = document.getElementById('t-content');
-	var pv = document.getElementById('preview');
-	function upd() { pv.innerHTML = DOMPurify.sanitize(marked.parse(md.value)); }
-	md.addEventListener('input', upd);
-	upd();
-	if (window.PR) PR.prettyPrint();
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/overtype@2/dist/overtype.min.js"></script>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/md-editor.js') ?>"></script>
 <?php endif; ?>

@@ -18,26 +18,11 @@
 	<?= Auth::csrfField() ?>
 	<div class="mb-3">
 		<label for="p-content" class="form-label">正文（Markdown）</label>
-		<textarea class="form-control font-monospace" id="p-content" name="content" rows="10" required><?= htmlspecialchars($post['content_md'] ?? '') ?></textarea>
-	</div>
-	<div class="mb-3">
-		<span id="previewHelp" class="form-label d-block">预览</span>
-		<div class="border rounded p-3 post-content" id="preview" aria-describedby="previewHelp" aria-live="polite"></div>
+		<textarea class="form-control font-monospace" id="p-content" name="content" rows="10" required data-md-editor><?= htmlspecialchars($post['content_md'] ?? '') ?></textarea>
 	</div>
 	<button type="submit" class="btn btn-primary">保存</button>
 	<a class="btn btn-link" href="<?= Router::url('topic/view/' . $post['topic_id']) ?>">取消</a>
 </form>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-	var md = document.getElementById('p-content');
-	var pv = document.getElementById('preview');
-	function upd() { pv.innerHTML = DOMPurify.sanitize(marked.parse(md.value)); }
-	md.addEventListener('input', upd);
-	upd();
-	if (window.PR) PR.prettyPrint();
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/overtype@2/dist/overtype.min.js"></script>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/md-editor.js') ?>"></script>

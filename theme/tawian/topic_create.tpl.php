@@ -24,14 +24,10 @@
         <span class="form-label">标题</span>
     </label>
     <label class="form-group">
-        <textarea class="form-control" id="t-content" name="content" rows="10" required><?= htmlspecialchars($values['content'] ?? '') ?></textarea>
+        <textarea class="form-control" id="t-content" name="content" rows="10" required data-md-editor><?= htmlspecialchars($values['content'] ?? '') ?></textarea>
         <span class="form-label">正文（Markdown）</span>
-        <div class="help-block">支持 Markdown；预览仅供参考，以服务端渲染为准。</div>
+        <div class="help-block">支持 Markdown，所见即所得；以服务端渲染为准。</div>
     </label>
-    <div class="mb-3">
-        <span class="form-label d-block">预览</span>
-        <div class="card"><div class="card-body post-content" id="preview" aria-live="polite"></div></div>
-    </div>
 
     <?php /* 附带投票（可选；建票只在发主题时一笔提交） */ ?>
     <div class="card mb-3">
@@ -72,17 +68,6 @@
     <button type="submit" class="btn btn-primary">发布主题</button>
 </form>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var md = document.getElementById('t-content');
-    var pv = document.getElementById('preview');
-    function upd() { pv.innerHTML = DOMPurify.sanitize(marked.parse(md.value)); }
-    md.addEventListener('input', upd);
-    upd();
-    if (window.PR) PR.prettyPrint();
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/overtype@2/dist/overtype.min.js"></script>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/md-editor.js') ?>"></script>
 <?php endif; ?>

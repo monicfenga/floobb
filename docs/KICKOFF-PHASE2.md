@@ -15,6 +15,7 @@
   - 回帖 → 写 `type=new_reply`（`PostController::create`）。
   - 集成点：对应控制器提交成功后追加 `Activity::record(...)`；**不破坏既有逻辑**，抽一个小函数便于插入。
 - [ ] **直接发动态（MVP 先做）**：`GET/POST /activity` 或 `/status` 让用户发纯文本动态（`type=status`，存 `text`）；POST 需 CSRF、登录态。
+  - 并做出对动态进行评论的功能
 - [ ] **模板**：`theme/bootstrap/activity_timeline.tpl.php`（时间线卡片：头像/昵称/动作/时间/关联链接）+ 发布框。
 - [ ] **插件机制（可选）**：参考 `M:\laragon\www\tinysocial\Plugin.php` 钩子思路，提供 `Plugin::hook('activity_record', ...)` 之类扩展点；非必需，按需。
 
@@ -29,4 +30,4 @@
 3. 筛选 `?type=new_topic` 只显示发主题事件。
 4. 未登录访问时间线可看（public）；发动态需登录。
 
-完成后 memory + curl 结果，**不自动 commit**。
+完成后 memory + curl 结果，允许自动 commit。

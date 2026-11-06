@@ -108,7 +108,7 @@
 	<?= Auth::csrfField() ?>
 	<div class="mb-2">
 		<label for="reply-content" class="form-label visually-hidden">回帖内容（Markdown）</label>
-		<textarea class="form-control" id="reply-content" name="content" rows="4" required placeholder="Markdown 回帖…"></textarea>
+		<textarea class="form-control" id="reply-content" name="content" rows="4" required placeholder="Markdown 回帖…" data-md-editor></textarea>
 	</div>
 	<button type="submit" class="btn btn-primary">回帖</button>
 </form>
@@ -119,3 +119,5 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.css">
 <script src="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded', function () { if (window.PR) PR.prettyPrint(); });</script>
+<script src="https://cdn.jsdelivr.net/npm/overtype@2/dist/overtype.min.js"></script>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/md-editor.js') ?>"></script>

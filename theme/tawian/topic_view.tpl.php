@@ -103,7 +103,7 @@
 <form method="post" action="<?= Router::url('post/create/' . $topic['id']) ?>">
     <?= Auth::csrfField() ?>
     <label class="form-group">
-        <textarea class="form-control" id="reply-content" name="content" rows="4" required placeholder="Markdown 回帖…" style="min-width: calc(100% - 11rem);"></textarea>
+        <textarea class="form-control" id="reply-content" name="content" rows="4" required placeholder="Markdown 回帖…" style="min-width: calc(100% - 11rem);" data-md-editor></textarea>
         <span class="form-label">回帖内容（Markdown）</span>
     </label>
     <button type="submit" class="btn btn-primary">回帖</button>
@@ -115,3 +115,5 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.css">
 <script src="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded', function () { if (window.PR) PR.prettyPrint(); });</script>
+<script src="https://cdn.jsdelivr.net/npm/overtype@2/dist/overtype.min.js"></script>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/md-editor.js') ?>"></script>

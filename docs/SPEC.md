@@ -59,7 +59,7 @@
 | 服务端 | 原生 PHP，服务端渲染（无框架或极薄自研路由） |
 | 前端基底 | Bootstrap 5（默认主题）/ Tawian-frontend（备选主题，本地 vendored ~23KB，class 近似 Bootstrap）/ MD3（可选） |
 | 交互 | HTMX（局部刷新）+ Alpine.js（轻状态）（若不使用Bootstrap 5（因为它已经自带了组件JS，下拉菜单之类的都有），则Alpine.js为必选） |
-| 编辑器 | Markdown（已定：marked.js + DOMPurify，仅做实时预览/输入） |
+| 编辑器 | **OverType**（CDN IIFE，无构建步骤）Markdown 所见即所得编辑，textarea 叠加渲染层，底层值为纯 Markdown 源；见 §7.1 编辑器规范 |
 | Markdown 渲染 | 后端 **Parsedown**（吸纳 WebPress/libs/Parsedown.lib.php，PHP 服务端渲染，输出缓存进 `content_html`；SEO/无 JS 友好） |
 | 字体 | 默认主题 Noto Sans SC（中文）/ Tawian-frontend 备选主题 Maple Mono（等宽）/ 可选sans-serif？ |
 | 代码高亮 | Google Code Prettify（CDN，帖子详情页代码块） |
@@ -371,7 +371,16 @@ data/
 
 ### 代码高亮
 - 帖子详情页等出现代码块的位置，使用 **Google Code Prettify**（引入 `prettify.js` + `prettify.css`），对 `pre.prettyprint` 代码块自动高亮。
-- Markdown 渲染（marked.js）输出的代码块需带 `prettyprint` class 并触发 `PR.prettyPrint()`。
+- 后端 Parsedown 输出的代码块需带 `prettyprint` class 并触发 `PR.prettyPrint()`。
+
+### 7.1 编辑器（OverType，2026-10-31 定）
+- 库：**OverType**（https://github.com/panphora/overtype ，MIT）。隐形 textarea 叠加在 Markdown 渲染层上，**底层值就是纯 Markdown 源**，与 `content_md` 存储模型零冲突；内置工具栏（加粗/斜体/代码/链接/标题/列表/引用/视图切换）、GitHub 式列表续行、Ctrl+B/I/K 快捷键。
+- 引入方式：IIFE 构建 `https://cdn.jsdelivr.net/npm/overtype@2/dist/overtype.min.js`（**锁大版本 @2**，不用 @latest），无 Node.js、无构建步骤。
+- 引导脚本：`theme/<主题>/assets/js/md-editor.js`（两主题内容一致），对带 `data-md-editor` 属性的 `<textarea>` 生效。
+- **值载体约定**：原 textarea 保留在 DOM 中（name/rows 不变），OverType 初始化时读其 value，onChange 回写 `textarea.value`，表单提交仍走原字段；JS 失效时原样降级为普通 textarea（a11y + 渐进增强）。
+- 原 textarea 初始化后置 `hidden` 且移除 `required`；空值校验由引导脚本在 form submit 时拦截（hidden + required 会阻断原生校验弹窗）。
+- 适用范围：发主题、编辑帖子、回帖框。PM 正文与版块描述为纯文本，**不适用**。
+- 浏览器端不再引入 marked.js / DOMPurify 做预览；展示渲染一律以服务端 Parsedown 为准。
 
 ---
 
@@ -387,10 +396,10 @@ data/
 
 | # | 项 | 决议 |
 |---|----|------|
-| 1 | 帖子编辑器 | **Markdown**：textarea + marked.js + DOMPurify（均走 CDN），存 Markdown 源、渲染时消毒。弃用 TinyMCE。 |
+| 1 | 帖子编辑器 | **Markdown**：textarea + marked.js + DOMPurify（均走 CDN），存 Markdown 源、渲染时消毒。弃用 TinyMCE。**2026-10-31 升级**：编辑体验替换为 **OverType**（见 §7.1 编辑器规范），marked.js + DOMPurify 浏览器端预览随之移除。 |
 | 2 | 前端基底 | **Bootstrap 5 默认**；**Tawian-frontend 作备选主题**（本地 vendored，~23KB，class 近似 Bootstrap）；MD3 留作可选。 |
 | 3 | SNS 动态阶段 | **Phase 2**：先交付 MVP 论坛，数据模型现在就预留 `activity` 实体。 |
-| 4 | Markdown 渲染位置 | **后端 Parsedown**（吸纳 WebPress/libs），服务端渲染并缓存 `content_html`；marked.js 仅做编辑器实时预览。 |
+| 4 | Markdown 渲染位置 | **后端 Parsedown**（吸纳 WebPress/libs），服务端渲染并缓存 `content_html`；浏览器端不再做 Markdown 预览（编辑器内渲染由 OverType 提供）。 |
 | 5 | lib 组件来源 | 吸纳 WebPress 通用组件：**Parsedown / Pagination / Captcha / files / CSRF / utils**；`controller.lib.php`(后台访问页) 与 `events.lib.php`(事件日志器) 非框架不吸纳。**不吸纳 `HTMLForm.lib.php`**（硬编码 Bootstrap 类、耦合 Flatboard 全局，违背主题解耦——表单 HTML 写进主题模板）；**不吸纳 `toolkit.lib.php`**（纯包装器，`__toStr` 即 `strval` 别名，无价值）；**插件机制（Phase 2）改参考 TinySocial 的 `Plugin.php`，不取 WebPress `plugin.lib.php`**。 |
 | 6 | 路由风格 | **RESTful 段数组 + PATH_INFO 传输**（§3.1）：清洁 front-controller，传输层采纳 Flatboard 3.x fURL 的 `PATH_INFO` 思路（带 `?r=` 回退）；解析层用**三位置契约**`[控制器, 动作(缺省 index), ...参数(含资源 ID)]`，而非 fURL 的 kv 配对，也弃用「第2段数字=ID/字符串=动作」规则（字符串用户名会被误判为动作）；HTTP 方法（GET/POST）参与分发；非结构性修饰符（page/sort/filter）走 query string。原 `param()` 等移入 `lib/Router.lib.php`，紧邻 Flatdb 载入。 |
 | 7 | 旧版迁移 | **不做迁移**：Flatdb JSON 全新安装，旧 `db/*.dat` 废弃不保留。 |
@@ -450,7 +459,7 @@ $sort = Router::query('sort', 'latest');
 - `param()` 的键可为数字（`param(0)` / `param(1)`）取路径段，但控制器优先用 `Router::segments()`。
 
 ### 11.3 输出转义
-- 任何用户可控字符串进 HTML，必须经 `htmlspecialchars()`（模板里统一处理）。Markdown 正文走 Parsedown 渲染并经 DOMPurify 消毒后再输出，不套 `htmlspecialchars()`。
+- 任何用户可控字符串进 HTML，必须经 `htmlspecialchars()`（模板里统一处理）。Markdown 正文走 Parsedown（safeMode + markupEscaped）服务端消毒后输出，不套 `htmlspecialchars()`。
 
 ### 11.4 时间字段规约
 - **所有数据实体里的时间字段一律 unix 时间戳 int**（`time()` 落盘：registered/last_seen/banned_until/created/last_reply_at/edited/time/deadline…），**禁 ISO 字符串入库**。
