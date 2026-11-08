@@ -381,6 +381,21 @@ data/
 - 原 textarea 初始化后置 `hidden` 且移除 `required`；空值校验由引导脚本在 form submit 时拦截（hidden + required 会阻断原生校验弹窗）。
 - 适用范围：发主题、编辑帖子、回帖框。PM 正文与版块描述为纯文本，**不适用**。
 - 浏览器端不再引入 marked.js / DOMPurify 做预览；展示渲染一律以服务端 Parsedown 为准。
+- 编辑器替换原 textarea 后必须补 a11y 关联：label→`aria-labelledby`/`for` 迁移到编辑器真实输入框、`aria-required`、`aria-describedby`（帮助文本）、placeholder 迁移（2026-11-08 定）。
+
+### 弹窗规范（2026-11-08 随 a11y 改造更新）
+- 两主题各自持有 `modal.css` + `modal.js`（移植自 Pico CSS Dialog，MIT，**已重写为原生 `showModal()`**：焦点陷阱、打开聚焦、Esc 关闭、关闭回焦），HTML 只写 `data-target="modalId"` 触发。
+- 结构：`dialog > article > header / .modal-body / footer`（body 从 `<main>` 改为 `div.modal-body`，避免弹窗内重复 landmark；padding/分隔线靠 `dialog article > .modal-body` 选择器生效）。
+- 表单放 `.modal-body` 内部，footer 按钮用 `form="id"` 属性关联；弹窗标题用 `h2` + `dialog aria-labelledby`。
+- bootstrap 主题消费 `--bs-*` 变量，tawian 主题映射自建 `--bg/--fg/--border` 且直角。
+- 全局搜索弹窗（id=search-modal）放在 footer.tpl.php；举报弹窗 id 用 `report-modal-` + md5(type:target) 防同页冲突。
+- 禁止用 `open` 属性造"假模态"（无焦点陷阱、背景可 Tab）。
+
+### 无障碍（WCAG 2.1 AA 基线，2026-11-08 定）
+- 静态语义（landmark、label、alt、标题层级、skip link、`<time datetime>`）一律写在模板里；运行时状态同步（`aria-current`/`aria-expanded`/`aria-pressed`/错误块 `aria-describedby`+`aria-invalid`/skip link 焦点移交）由两主题共用的 `a11y.js` 承担（两主题内容一致）。
+- 焦点可见：`:focus-visible` 3px 焦点环；支持 `prefers-reduced-motion` 与 `forced-colors`；"当前项"不得仅靠颜色区分。
+- 正文配色对比度 ≥ 4.5:1（AA）；tawian 按钮与标签配色已加深达标。
+- 遗留（拍板项）：图片验证码无等效非视觉替代（WCAG 1.1.1 CAPTCHA 例外），如需真合规需改安全机制（逻辑题/已登录免验证），属产品决策。
 
 ---
 

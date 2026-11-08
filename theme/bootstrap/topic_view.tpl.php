@@ -1,5 +1,5 @@
 <?php defined('FLOO') or die('FlooBB'); ?>
-<nav aria-label="breadcrumb">
+<nav aria-label="面包屑导航">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
 		<?php if ($forum !== null): ?>
@@ -74,7 +74,7 @@
 			<?php endif; ?>
 		</span>
 		<small class="text-body-secondary">
-			<a href="#p<?= $p['id'] ?>">#<?= substr($p['id'], -5) ?></a>
+			<a href="#p<?= $p['id'] ?>" aria-label="第 <?= substr($p['id'], -5) ?> 楼的永久链接">#<?= substr($p['id'], -5) ?></a>
 			· <?= date('Y-m-d H:i', $p['created'] ?? 0) ?>
 			<?php if (!empty($p['edited'])): ?>· 已编辑（<?= date('m-d H:i', $p['edited']) ?>）<?php endif; ?>
 		</small>
@@ -101,7 +101,7 @@
 <?= $pageLinks ?>
 
 <?php if (!empty($topic['locked'])): ?>
-<div class="alert alert-secondary" role="status">主题已锁定，无法回帖。</div>
+<div class="alert alert-secondary">主题已锁定，无法回帖。</div>
 <?php elseif (Auth::isLoggedIn()): ?>
 <h2 class="h6 mt-4">回复</h2>
 <form method="post" action="<?= Router::url('post/create/' .$topic['id']) ?>">
@@ -113,7 +113,7 @@
 	<button type="submit" class="btn btn-primary">回帖</button>
 </form>
 <?php else: ?>
-<div class="alert alert-info" role="status"><a href="<?= Router::url('auth/login') ?>">登录</a> 后回帖。</div>
+<div class="alert alert-info"><a href="<?= Router::url('auth/login') ?>">登录</a> 后回帖。</div>
 <?php endif; ?>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/google-code-prettify@1.0.5/bin/prettify.min.css">

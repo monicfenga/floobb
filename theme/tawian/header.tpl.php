@@ -23,14 +23,15 @@
 </script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">跳转到主内容</a>
 <header class="site-header dashed-bottom">
     <div class="container">
         <a class="site-title" href="<?= Router::url() ?>"><?= htmlspecialchars($conf['title'] ?? 'FlooBB') ?></a>
-        <nav class="responsive-nav">
-            <label for="navigation-toggle" aria-label="切换导航">&#9776;</label>
+        <nav class="responsive-nav" aria-label="移动端导航开关">
+            <button type="button" id="navigation-toggle-btn" aria-controls="site-nav-list" aria-expanded="false" aria-label="展开导航菜单"><span aria-hidden="true">&#9776;</span></button>
         </nav>
-        <input type="checkbox" id="navigation-toggle">
-        <nav class="site-nav nav-separated">
+        <input type="checkbox" id="navigation-toggle" tabindex="-1" aria-hidden="true">
+        <nav class="site-nav nav-separated" id="site-nav-list" aria-label="主导航">
             <button type="button" class="btn btn-link" data-target="search-modal" aria-label="搜索">搜索</button>
             <ul>
                 <li><a href="<?= Router::url() ?>">首页</a></li>
@@ -54,13 +55,13 @@
                 <li><a href="<?= Router::url('auth/register') ?>">注册</a></li>
                 <?php endif; ?>
                 <li>
-                    <button type="button" class="btn btn-link" id="themeToggle" aria-label="切换深浅色模式">
-                        <span id="themeToggleIcon">&#9790;</span>
+                    <button type="button" class="btn btn-link" id="themeToggle" aria-label="深色模式" aria-pressed="false">
+                        <span id="themeToggleIcon" aria-hidden="true">&#9790;</span>
                     </button>
                 </li>
             </ul>
         </nav>
     </div>
 </header>
-<main class="site-main">
+<main class="site-main" id="main-content" tabindex="-1">
     <div class="container">

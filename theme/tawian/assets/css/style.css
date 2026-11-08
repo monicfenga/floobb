@@ -171,7 +171,7 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0; }
 textarea.form-control + .form-label:before { background-color: var(--bg); }
 
 /* ---- 标签变体补充（tawian 原生有 tag/error/info/primary/success，补 warning 对齐 Material 琥珀） ---- */
-.tag-warning { color: #fff; background-color: #ff9800; -webkit-box-shadow: 0 -1px 0 3px #ff9800, inset 0 0 0 1px #ff9800; box-shadow: 0 -1px 0 3px #ff9800, inset 0 0 0 1px #ff9800; }
+.tag.tag-warning { color: #fff; background-color: #8a4b00; -webkit-box-shadow: 0 -1px 0 3px #8a4b00, inset 0 0 0 1px #8a4b00; box-shadow: 0 -1px 0 3px #8a4b00, inset 0 0 0 1px #8a4b00; }
 
 /* ---- 代码 / 引用 ---- */
 code { background: var(--code-bg); padding: .1rem .3rem; border-radius: 3px; font-family: inherit; }
@@ -251,3 +251,80 @@ html.dark .pagination .page-link { background: var(--bg); color: var(--link); bo
 html.dark .pagination .page-item.active .page-link { background: var(--accent); color: #fff; border-color: var(--accent); }
 html.dark .site-header,
 html.dark .site-footer { border-color: var(--border); }
+
+/* =========================================================================
+   a11y · WCAG 2.1 AA / 2.2（不动 vendored tawian-frontend.css）
+   vendored 框架含 .btn{outline:none}、input{outline:0}、summary{outline:none}、
+   .responsive-nav+input{display:none}（汉堡菜单键盘不可达）与低对比配色，
+   本层统一覆盖；彩色按钮/标签加深到白字 >=4.5:1。
+   ========================================================================= */
+
+*:focus-visible {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 2px !important;
+}
+html.dark *:focus-visible { outline-color: #ffca68 !important; }
+
+.skip-link {
+    position: absolute; left: 1rem; top: -4rem; z-index: 3000;
+    padding: .5rem .75rem;
+    color: var(--fg); background: var(--bg); border: 2px solid currentColor;
+}
+.skip-link:focus { top: 1rem; }
+main[tabindex="-1"]:focus { outline: none; }
+
+dialog::backdrop { background: transparent; }
+
+/* 汉堡菜单：vendored 用 display:none 藏 checkbox，键盘改走真实按钮 */
+.responsive-nav button {
+    cursor: pointer; color: var(--link); background: none;
+    border: 2px solid transparent; font-size: 1.25rem; line-height: 1;
+    padding: .25rem .5rem; min-width: 44px; min-height: 44px;
+}
+
+/* 面包屑补 <ol> 后保持横排，抑制全局 li:before 短横 */
+.breadcrumb ol { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: 0; }
+.breadcrumb ol li:before { content: none; }
+h2.poll-question:before { content: none; }
+fieldset.poll-options { border: 0; margin: 0; padding: 0; min-width: 0; }
+
+/* 当前项不能只靠字重/颜色 */
+.site-nav .active,
+.list-group.list-group-horizontal > .active,
+.list-group.list-group-horizontal > a.active,
+.pagination .page-item.active .page-link {
+    text-decoration: underline; text-underline-offset: .2em;
+}
+
+/* 彩色按钮 / 标签：vendored 白字对比仅 2.0-3.3:1，未达 AA 4.5:1 */
+.btn.btn-primary { background-color: #1565c0; color: #fff; }
+.btn.btn-success { background-color: #2e7d32; color: #fff; }
+.btn.btn-info    { background-color: #00838f; color: #fff; }
+.btn.btn-warning { background-color: #8a4b00; color: #fff; }
+.btn.btn-error   { background-color: #c62828; color: #fff; }
+.btn.btn-ghost   { color: var(--fg); }   /* 原继承 .btn 白字 → 白底白字 */
+.btn.btn-ghost.btn-primary { color: #0d47a1; }
+.btn.btn-ghost.btn-success { color: #1b5e20; }
+.btn.btn-ghost.btn-info    { color: #006064; }
+.btn.btn-ghost.btn-warning { color: #8a4b00; }
+.btn.btn-ghost.btn-error   { color: #b71c1c; }
+
+.tag { background-color: #546e7a; box-shadow: 0 -1px 0 3px #546e7a, inset 0 0 0 1px #546e7a; }
+.tag.tag-primary { background-color: #1565c0; box-shadow: 0 -1px 0 3px #1565c0, inset 0 0 0 1px #1565c0; }
+.tag.tag-success { background-color: #2e7d32; box-shadow: 0 -1px 0 3px #2e7d32, inset 0 0 0 1px #2e7d32; }
+.tag.tag-info    { background-color: #00838f; box-shadow: 0 -1px 0 3px #00838f, inset 0 0 0 1px #00838f; }
+.tag.tag-warning { background-color: #8a4b00; box-shadow: 0 -1px 0 3px #8a4b00, inset 0 0 0 1px #8a4b00; }
+.tag.tag-error   { background-color: #c62828; box-shadow: 0 -1px 0 3px #c62828, inset 0 0 0 1px #c62828; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+@media (forced-colors: active) {
+    :focus-visible { outline-color: Highlight !important; }
+    .skip-link:focus { outline: 3px solid Highlight; }
+}

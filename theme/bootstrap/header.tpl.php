@@ -11,17 +11,18 @@
 <link href="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/css/modal.css') ?>" rel="stylesheet">
 </head>
 <body>
+<a class="skip-link" href="#main-content">跳转到主内容</a>
 <header class="bg-body-tertiary border-bottom mb-4">
-	<nav class="navbar navbar-expand-lg container">
+	<nav class="navbar navbar-expand-lg container" aria-label="主导航">
 		<a class="navbar-brand fw-bold" href="<?= Router::url() ?>"><?= htmlspecialchars($conf['title'] ?? 'FlooBB') ?></a>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="切换导航">
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="展开导航菜单">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="mainNav">
 			<ul class="navbar-nav ms-auto">
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url() ?>">首页</a></li>
 				<li class="nav-item">
-					<button class="btn btn-outline-secondary btn-sm" type="button" data-target="search-modal" aria-label="搜索">🔍 搜索</button>
+					<button class="btn btn-outline-secondary btn-sm" type="button" data-target="search-modal" aria-label="搜索"><span aria-hidden="true">🔍</span> 搜索</button>
 				</li>
 				<?php if (Auth::isLoggedIn()): $navUser = Auth::user(); ?>
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('user/view/' . urlencode((string) $navUser['username'])) ?>"><?= htmlspecialchars((string) ($navUser['nickname'] ?? $navUser['username'])) ?></a></li>
@@ -42,12 +43,12 @@
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url('auth/register') ?>">注册</a></li>
 				<?php endif; ?>
 				<li class="nav-item">
-					<button class="btn btn-link nav-link p-0 lh-lg" type="button" id="themeToggle" aria-label="切换深浅色模式">
-						<span id="themeToggleIcon">🌙</span>
+					<button class="btn btn-link nav-link p-0 lh-lg" type="button" id="themeToggle" aria-label="深色模式" aria-pressed="false">
+						<span id="themeToggleIcon" aria-hidden="true">🌙</span>
 					</button>
 				</li>
 			</ul>
 		</div>
 	</nav>
 </header>
-<main class="container" role="main">
+<main class="container" id="main-content" tabindex="-1">

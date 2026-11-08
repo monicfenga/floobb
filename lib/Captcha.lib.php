@@ -24,9 +24,10 @@ class Captcha
 			. '+cr-' . (int)$cr . '+cg-' . (int)$cg . '+cb-' . (int)$cb
 			. '+size-' . (int)$size . '+angle-' . (int)$angle;
 		$out = '<div class="input-group mb-3">
-	<label class="input-group-text" for="captcha">Captcha</label>
-	<input class="form-control" type="text" maxlength="6" id="captcha" name="captcha" required="true" autocomplete="off"/>
-	<span class="input-group-text"><img src="' . $src . '" id="captchaImg" alt="captcha" width="' . (int)$w . '" height="' . (int)$h . '"/><button type="button" class="btn btn-secondary ms-1 captcha-reload" aria-label="reload captcha">&#8635;</button></span>
+	<label class="input-group-text" for="captcha">验证码</label>
+	<input class="form-control" type="text" maxlength="6" id="captcha" name="captcha" required="true" autocomplete="off" aria-describedby="captcha-help"/>
+	<span class="input-group-text"><img src="' . $src . '" id="captchaImg" alt="验证码图片：请输入图中的字符" width="' . (int)$w . '" height="' . (int)$h . '"/><button type="button" class="btn btn-secondary ms-1 captcha-reload" aria-label="换一张验证码"><span aria-hidden="true">&#8635;</span></button></span>
+	<span class="visually-hidden" id="captcha-help">看不清可点击「换一张验证码」刷新图片；若始终无法识别，请联系管理员协助注册。</span>
 </div>';
 		$out .= '<script>
 			document.querySelector(".captcha-reload").addEventListener("click", function(){

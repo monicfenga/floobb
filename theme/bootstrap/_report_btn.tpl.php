@@ -9,13 +9,13 @@ if ($viewer === null) return; // 未登录不出举报入口
 $dialogId = 'report-modal-' . md5((string) $report_type . ':' . (string) $report_target);
 ?>
 <button type="button" class="btn btn-sm btn-link text-body-secondary text-decoration-none px-1" data-target="<?= $dialogId ?>"><?= htmlspecialchars($report_label ?? '举报') ?></button>
-<dialog id="<?= $dialogId ?>" aria-label="举报">
+<dialog id="<?= $dialogId ?>" aria-labelledby="<?= $dialogId ?>-title">
 	<article>
 		<header>
-			<h5><?= htmlspecialchars($report_label ?? '举报') ?></h5>
-			<button type="button" class="close" aria-label="关闭" data-target="<?= $dialogId ?>">✕</button>
+			<h2 class="modal-title" id="<?= $dialogId ?>-title"><?= htmlspecialchars($report_label ?? '举报') ?></h2>
+			<button type="button" class="close" aria-label="关闭" data-target="<?= $dialogId ?>"><span aria-hidden="true">✕</span></button>
 		</header>
-		<main>
+		<div class="modal-body">
 			<form id="<?= $dialogId ?>-form" method="post" action="<?= Router::url('report/create/' . rawurlencode((string) $report_type) . '/' . rawurlencode((string) $report_target)) ?>">
 				<?= Auth::csrfField() ?>
 				<div class="mb-2">
@@ -31,7 +31,7 @@ $dialogId = 'report-modal-' . md5((string) $report_type . ':' . (string) $report
 					<input type="text" class="form-control" id="rep-detail-<?= $dialogId ?>" name="detail" maxlength="200">
 				</div>
 			</form>
-		</main>
+		</div>
 		<footer>
 			<button type="button" class="btn btn-outline-secondary btn-sm" data-target="<?= $dialogId ?>">取消</button>
 			<button type="submit" class="btn btn-danger btn-sm" form="<?= $dialogId ?>-form">提交举报</button>

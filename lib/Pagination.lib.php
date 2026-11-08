@@ -25,18 +25,18 @@ class Paginate {
 		$start = ($p - 4) >= 1 ? $p - 4 : 1;
 		$end = ($p + 4) <= $total ? $p + 4 : $total;
 		$out = '
-			<nav aria-label="pagination">
+			<nav aria-label="分页导航">
 			  <ul class="pagination justify-content-center mt-3">' .
-			($p > 1 ? '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($p - 1) . '" rel="prev">&larr;</a></li>' : '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">&larr;</a></li>') .
-			($start === 1 ? '' : '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($start - 1) . '">…</a></li>');
+			($p > 1 ? '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($p - 1) . '" rel="prev" aria-label="上一页">&larr;</a></li>' : '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true" aria-label="已是第一页">&larr;</a></li>') .
+			($start === 1 ? '' : '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($start - 1) . '" aria-label="更多页码">…</a></li>');
 		for ($i = $start; $i <= $end; $i++) {
 			if ($p === $i)
 				$out .= '<li class="page-item active" aria-current="page"><span class="page-link">' . $i . '</span></li>';
 			else
-				$out .= '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . $i . '">' . $i . '</a></li>';
+				$out .= '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . $i . '" aria-label="第 ' . $i . ' 页">' . $i . '</a></li>';
 		}
-		$out .= ($end === $total ? '' : '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($end + 1) . '">…</a></li>') .
-			($p < $total ? '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($p + 1) . '" rel="next">&rarr;</a></li>' : '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">&rarr;</a></li>');
+		$out .= ($end === $total ? '' : '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($end + 1) . '" aria-label="更多页码">…</a></li>') .
+			($p < $total ? '<li class="page-item"><a class="page-link" href="' . $loc . 'page=' . ($p + 1) . '" rel="next" aria-label="下一页">&rarr;</a></li>' : '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true" aria-label="已是最后一页">&rarr;</a></li>');
 		$out .= '</ul>
           </nav>';
 		# Return all links of Pagination

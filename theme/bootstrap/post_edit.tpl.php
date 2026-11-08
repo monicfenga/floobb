@@ -1,5 +1,5 @@
 <?php defined('FLOO') or die('FlooBB'); ?>
-<nav aria-label="breadcrumb">
+<nav aria-label="面包屑导航">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
 		<?php if ($topic !== null): ?>

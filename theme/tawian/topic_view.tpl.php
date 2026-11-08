@@ -1,11 +1,11 @@
 <?php defined('FLOO') or die('FlooBB'); ?>
-<nav class="breadcrumb">
+<nav class="breadcrumb" aria-label="面包屑导航"><ol>
     <li><a href="<?= Router::url() ?>">首页</a></li>
     <?php if ($forum !== null): ?>
     <li><a href="<?= Router::url('forum/view/' . $forum['id']) ?>"><?= htmlspecialchars($forum['name'] ?? '') ?></a></li>
     <?php endif; ?>
-    <li class="active"><?= htmlspecialchars($topic['title'] ?? '') ?></li>
-</nav>
+    <li class="active" aria-current="page"><?= htmlspecialchars($topic['title'] ?? '') ?></li>
+</ol></nav>
 
 <div class="flex between items-start wrap gap-2 mb-1">
     <h1 class="mb-0">
@@ -61,8 +61,8 @@
 <article class="form-group" id="p<?= $p['id'] ?>">
     <div class="listmessage form-control">
         <div class="flex between items-start wrap gap-2">
-            <time>
-                <a href="#p<?= $p['id'] ?>" class="muted">#<?= substr($p['id'], -5) ?></a>
+            <time datetime="<?= date('c', $p['created'] ?? 0) ?>">
+                <a href="#p<?= $p['id'] ?>" class="muted" aria-label="第 <?= substr($p['id'], -5) ?> 楼的永久链接">#<?= substr($p['id'], -5) ?></a>
                 <?= date('Y-m-d H:i', $p['created'] ?? 0) ?>
                 <?php if (!empty($p['edited'])): ?><span class="muted">· 编辑于 <?= date('m-d H:i', $p['edited']) ?></span><?php endif; ?>
             </time>
@@ -97,7 +97,7 @@
 <?= $pageLinks ?>
 
 <?php if (!empty($topic['locked'])): ?>
-<div class="alert alert-error" role="status">主题已锁定，无法回帖。</div>
+<div class="alert alert-error">主题已锁定，无法回帖。</div>
 <?php elseif (Auth::isLoggedIn()): ?>
 <h2 class="small mt-4">回复</h2>
 <form method="post" action="<?= Router::url('post/create/' . $topic['id']) ?>">

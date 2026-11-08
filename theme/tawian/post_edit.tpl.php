@@ -1,11 +1,11 @@
 <?php defined('FLOO') or die('FlooBB'); ?>
-<nav class="breadcrumb">
+<nav class="breadcrumb" aria-label="面包屑导航"><ol>
     <li><a href="<?= Router::url() ?>">首页</a></li>
     <?php if ($topic !== null): ?>
     <li><a href="<?= Router::url('topic/view/' . $topic['id']) ?>"><?= htmlspecialchars($topic['title'] ?? '') ?></a></li>
     <?php endif; ?>
-    <li class="active">编辑帖子</li>
-</nav>
+    <li class="active" aria-current="page">编辑帖子</li>
+</ol></nav>
 <h1 class="mb-4">编辑帖子</h1>
 
 <?php if (!empty($error)): ?>

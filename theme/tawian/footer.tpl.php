@@ -2,13 +2,13 @@
     </div>
 </main>
 <!-- 全局搜索弹窗 -->
-<dialog id="search-modal" aria-label="搜索">
+<dialog id="search-modal" aria-labelledby="search-modal-title">
     <article>
         <header>
-            <h5>搜索</h5>
-            <button type="button" class="close" aria-label="关闭" data-target="search-modal">✕</button>
+            <h2 class="modal-title" id="search-modal-title">搜索</h2>
+            <button type="button" class="close" aria-label="关闭" data-target="search-modal"><span aria-hidden="true">✕</span></button>
         </header>
-        <main>
+        <div class="modal-body">
             <form id="search-modal-form" method="get" action="<?= Router::url('search') ?>" role="search">
                 <label class="visually-hidden" for="search-modal-q">关键词</label>
                 <input class="form-control full-width mb-2" type="search" id="search-modal-q" name="q" placeholder="输入关键词…" maxlength="100" autofocus>
@@ -19,7 +19,7 @@
                     <option value="users">用户名 / 昵称</option>
                 </select>
             </form>
-        </main>
+        </div>
         <footer>
             <button type="button" class="btn btn-link" data-target="search-modal">取消</button>
             <button type="submit" class="btn btn-primary btn-sm" form="search-modal-form">搜索</button>
@@ -48,6 +48,7 @@
     </div>
 </footer>
 <script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/modal.js') ?>"></script>
+<script src="<?= Router::url('theme/' . rawurlencode((string) $conf['theme']) . '/assets/js/a11y.js') ?>"></script>
 <script>
 (function () {
     'use strict';

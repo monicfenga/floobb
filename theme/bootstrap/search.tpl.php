@@ -2,7 +2,7 @@
 /** @var string $q @var string $scope @var array $items @var bool $truncated @var int $page $totalPage */
 $scopes = array('topics' => '主题', 'posts' => '帖子', 'users' => '用户');
 ?>
-<nav aria-label="breadcrumb">
+<nav aria-label="面包屑导航">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
 		<li class="breadcrumb-item active" aria-current="page">搜索</li>
@@ -76,7 +76,7 @@ $scopes = array('topics' => '主题', 'posts' => '帖子', 'users' => '用户');
 <?php if ($totalPage > 1): ?>
 <nav aria-label="分页" class="mt-3"><ul class="pagination">
 	<?php for ($i = 1; $i <= $totalPage; $i++): ?>
-	<li class="page-item<?= $i === $page ? ' active' : '' ?>"><a class="page-link" href="<?= Router::url('search') ?>?q=<?= rawurlencode($q) ?>&amp;scope=<?= $scope ?>&amp;page=<?= $i ?>"><?= $i ?></a></li>
+	<li class="page-item<?= $i === $page ? ' active' : '' ?>"><a class="page-link" href="<?= Router::url('search') ?>?q=<?= rawurlencode($q) ?>&amp;scope=<?= $scope ?>&amp;page=<?= $i ?>"<?= $i === $page ? ' aria-current="page"' : '' ?> aria-label="第 <?= $i ?> 页"><?= $i ?></a></li>
 	<?php endfor; ?>
 </ul></nav>
 <?php endif; ?>

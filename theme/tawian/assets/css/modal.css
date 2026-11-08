@@ -53,6 +53,7 @@ dialog article > header {
     border-bottom: 1px dashed var(--border);
 }
 
+dialog article > header h2.modal-title,
 dialog article > header h5,
 dialog article > header h4 { margin: 0; font-size: 1.05rem; }
 
@@ -67,7 +68,7 @@ dialog article > header .close {
     cursor: pointer;
 }
 
-dialog article > main { padding: 1em; }
+dialog article > .modal-body { padding: 1em; }
 
 dialog article > footer {
     display: flex;

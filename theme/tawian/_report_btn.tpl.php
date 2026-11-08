@@ -9,29 +9,29 @@ if ($viewer === null) return; // 未登录不出举报入口
 $dialogId = 'report-modal-' . md5((string) $report_type . ':' . (string) $report_target);
 ?>
 <button type="button" class="btn btn-link btn-sm" data-target="<?= $dialogId ?>"><?= htmlspecialchars($report_label ?? '举报') ?></button>
-<dialog id="<?= $dialogId ?>" aria-label="举报">
+<dialog id="<?= $dialogId ?>" aria-labelledby="<?= $dialogId ?>-title">
     <article>
         <header>
-            <h5><?= htmlspecialchars($report_label ?? '举报') ?></h5>
-            <button type="button" class="close" aria-label="关闭" data-target="<?= $dialogId ?>">✕</button>
+            <h2 class="modal-title" id="<?= $dialogId ?>-title"><?= htmlspecialchars($report_label ?? '举报') ?></h2>
+            <button type="button" class="close" aria-label="关闭" data-target="<?= $dialogId ?>"><span aria-hidden="true">✕</span></button>
         </header>
-        <main>
+        <div class="modal-body">
             <form id="<?= $dialogId ?>-form" method="post" action="<?= Router::url('report/create/' . rawurlencode((string) $report_type) . '/' . rawurlencode((string) $report_target)) ?>">
                 <?= Auth::csrfField() ?>
                 <div class="form-group full-width mb-2">
-                    <select class="form-control" name="reason" required>
+                    <select class="form-control" id="<?= $dialogId ?>-reason" name="reason" required>
                         <?php foreach (Report::reasons() as $rk => $rt): ?>
                         <option value="<?= $rk ?>"><?= htmlspecialchars($rt) ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <label class="form-label">原因</label>
+                    <label class="form-label" for="<?= $dialogId ?>-reason">原因</label>
                 </div>
                 <div class="form-group full-width">
-                    <input type="text" class="form-control" name="detail" maxlength="200" placeholder="补充说明（选填）">
-                    <label class="form-label">补充说明</label>
+                    <input type="text" class="form-control" id="<?= $dialogId ?>-detail" name="detail" maxlength="200" placeholder="补充说明（选填）">
+                    <label class="form-label" for="<?= $dialogId ?>-detail">补充说明</label>
                 </div>
             </form>
-        </main>
+        </div>
         <footer>
             <button type="button" class="btn btn-link" data-target="<?= $dialogId ?>">取消</button>
             <button type="submit" class="btn btn-error btn-sm" form="<?= $dialogId ?>-form">提交举报</button>

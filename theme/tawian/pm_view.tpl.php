@@ -2,11 +2,11 @@
 /** @var string $side inbox|outbox @var array $msg @var string $peerName */
 $isInbox = ($side === 'inbox');
 ?>
-<nav class="breadcrumb">
+<nav class="breadcrumb" aria-label="面包屑导航"><ol>
     <li><a href="<?= Router::url() ?>">首页</a></li>
     <li><a href="<?= Router::url('pm/inbox') ?>">私信</a></li>
-    <li class="active">详情</li>
-</nav>
+    <li class="active" aria-current="page">详情</li>
+</ol></nav>
 
 <div class="card">
     <div class="card-header">

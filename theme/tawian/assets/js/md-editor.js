@@ -30,6 +30,30 @@
 		});
 		var editor = instances[0];
 
+		// a11y：可见 textarea 被替换后，把原 <label> 关联到 OverType 的真实输入框，
+		// 否则标签点了不聚焦、编辑器对屏幕阅读器无名。
+		var wasRequired = ta.required;
+		var editorTa = editor.textarea;
+		if (editorTa) {
+			if (!editorTa.id) editorTa.id = (ta.id || 'md-' + mountSeq) + '-editor';
+			var label = (ta.labels && ta.labels[0]) ||
+				(ta.id ? document.querySelector('label[for="' + ta.id + '"]') : null);
+			if (label) {
+				if (!label.id) label.id = editorTa.id + '-label';
+				editorTa.setAttribute('aria-labelledby', label.id);
+				label.setAttribute('for', editorTa.id);
+			} else {
+				editorTa.setAttribute('aria-label', ta.getAttribute('aria-label') || 'Markdown 正文');
+			}
+			if (wasRequired) editorTa.setAttribute('aria-required', 'true');
+			if (ta.placeholder && !editorTa.placeholder) editorTa.placeholder = ta.placeholder;
+			var help = ta.parentNode.querySelector('.form-text, .help-block');
+			if (help) {
+				if (!help.id) help.id = editorTa.id + '-help';
+				editorTa.setAttribute('aria-describedby', help.id);
+			}
+		}
+
 		ta.hidden = true;
 		ta.required = false;
 
@@ -38,7 +62,10 @@
 			form.addEventListener('submit', function (e) {
 				if (!ta.value.trim()) {
 					e.preventDefault();
+					if (editorTa) editorTa.setAttribute('aria-invalid', 'true');
 					editor.textarea.focus();
+				} else if (editorTa) {
+					editorTa.removeAttribute('aria-invalid');
 				}
 			});
 		}

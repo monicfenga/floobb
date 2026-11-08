@@ -33,7 +33,7 @@
     <div class="card mb-3">
         <div class="card-header">
             <label class="flex items-center gap-2">
-                <input type="checkbox" id="t-isvote" name="is_vote" value="1" <?= ($values['is_vote'] ?? '') === '1' ? 'checked' : '' ?> onchange="document.getElementById('poll-fields').hidden = !this.checked;">
+                <input type="checkbox" id="t-isvote" name="is_vote" value="1" aria-controls="poll-fields" aria-expanded="<?= ($values['is_vote'] ?? '') === '1' ? 'true' : 'false' ?>" <?= ($values['is_vote'] ?? '') === '1' ? 'checked' : '' ?> onchange="var f=document.getElementById('poll-fields'); f.hidden = !this.checked; this.setAttribute('aria-expanded', this.checked ? 'true' : 'false');">
                 附带投票
             </label>
         </div>

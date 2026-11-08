@@ -2,10 +2,10 @@
 /** @var string $side inbox|outbox @var array $items @var array $peerNames @var string $pageLinks */
 $unreadOnly = ($side === 'inbox');
 ?>
-<nav class="breadcrumb">
+<nav class="breadcrumb" aria-label="面包屑导航"><ol>
     <li><a href="<?= Router::url() ?>">首页</a></li>
-    <li class="active">私信</li>
-</nav>
+    <li class="active" aria-current="page">私信</li>
+</ol></nav>
 
 <div class="flex between items-center mb-3">
     <h1 class="mb-0"><?= $unreadOnly ? '收件箱' : '已发送' ?></h1>
@@ -19,7 +19,7 @@ $unreadOnly = ($side === 'inbox');
 </ul>
 
 <?php if (empty($items)): ?>
-<div class="alert" role="status"><?= $unreadOnly ? '收件箱为空。' : '还没有发过私信。' ?></div>
+<div class="alert"><?= $unreadOnly ? '收件箱为空。' : '还没有发过私信。' ?></div>
 <?php else: ?>
 <ul class="list-group">
     <?php foreach ($items as $m): $mid = (string) ($m['id'] ?? ''); $peer = (string) ($unreadOnly ? ($m['from'] ?? '') : ($m['to'] ?? '')); ?>

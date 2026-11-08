@@ -1,7 +1,7 @@
 <?php defined('FLOO') or die('FlooBB');
 /** @var array $rows @var string $tab open|done */
 ?>
-<nav aria-label="breadcrumb">
+<nav aria-label="面包屑导航">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
 		<li class="breadcrumb-item active" aria-current="page">举报队列</li>
@@ -16,7 +16,7 @@
 </ul>
 
 <?php if (empty($rows)): ?>
-<div class="alert alert-secondary" role="status"><?= $tab === 'open' ? '暂无待处理举报。' : '暂无处理记录。' ?></div>
+<div class="alert alert-secondary"><?= $tab === 'open' ? '暂无待处理举报。' : '暂无处理记录。' ?></div>
 <?php else: ?>
 <?php foreach ($rows as $row): $r = $row['report']; ?>
 <div class="card mb-2">

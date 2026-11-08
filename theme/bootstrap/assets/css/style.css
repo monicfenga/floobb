@@ -9,3 +9,55 @@
     background-color: var(--bs-primary);
     color: var(--bs-white);
 }
+
+/* =========================================================================
+   a11y · WCAG 2.1 AA / 2.2（主题层覆盖，不动 vendored bootswatch.zephyr.css）
+   ========================================================================= */
+
+/* 键盘焦点：链接与小按钮不能只靠 Bootswatch 的 box-shadow 提示 */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+[role="button"]:focus-visible {
+    outline: 3px solid var(--bs-primary, #3459e6);
+    outline-offset: 2px;
+}
+[data-bs-theme="dark"] a:focus-visible,
+[data-bs-theme="dark"] button:focus-visible,
+[data-bs-theme="dark"] input:focus-visible,
+[data-bs-theme="dark"] select:focus-visible,
+[data-bs-theme="dark"] textarea:focus-visible,
+[data-bs-theme="dark"] summary:focus-visible { outline-color: #9ec5fe; }
+
+/* 跳转到主内容：平时不占位，键盘聚焦才出现 */
+.skip-link {
+    position: absolute; left: 1rem; top: -4rem; z-index: 3000;
+    padding: .5rem .75rem;
+    color: var(--bs-body-color, #212529); background: var(--bs-body-bg, #fff);
+    border: 2px solid currentColor; border-radius: .25rem;
+}
+.skip-link:focus { top: 1rem; }
+main[tabindex="-1"]:focus { outline: none; }
+
+/* 原生 <dialog>.showModal() 的 backdrop 交给 modal.css 的 dialog 自己画 */
+dialog::backdrop { background: transparent; }
+
+/* 状态不能只靠颜色：当前排序 / 标签页 / 分页 */
+.nav-pills .nav-link.active,
+.page-item.active .page-link,
+.list-group-item.active { text-decoration: underline; text-underline-offset: .2em; }
+
+/* 最小点击目标 24×24（WCAG 2.2 / 2.5.8） */
+.btn-link, .close, .navbar-toggler { min-width: 24px; min-height: 24px; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+@media (forced-colors: active) {
+    :focus-visible { outline-color: Highlight !important; }
+    .skip-link:focus { outline: 3px solid Highlight; }
+}

@@ -1,5 +1,5 @@
 <?php defined('FLOO') or die('FlooBB'); ?>
-<nav aria-label="breadcrumb">
+<nav aria-label="面包屑导航">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
 		<li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($forum['name'] ?? '') ?></li>
@@ -46,7 +46,7 @@
 
 <h2 class="h6 text-body-secondary">全部主题</h2>
 <?php if (empty($topics) && empty($stickyTopics)): ?>
-<div class="alert alert-info" role="status">还没有主题，来发第一帖。</div>
+<div class="alert alert-info">还没有主题，来发第一帖。</div>
 <?php else: ?>
 <ul class="list-group">
 	<?php foreach ($topics as $t): ?>

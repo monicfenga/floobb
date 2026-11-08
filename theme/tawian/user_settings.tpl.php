@@ -3,7 +3,7 @@
 <h1 class="mb-3">个人设置</h1>
 
 <?php if ($saved): ?>
-<div class="alert alert-success" role="alert">设置已保存。</div>
+<div class="alert alert-success" role="status">设置已保存。</div>
 <?php endif; ?>
 
 <?php if (!empty($errors)): ?>

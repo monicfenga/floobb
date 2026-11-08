@@ -1,7 +1,7 @@
 <?php defined('FLOO') or die('FlooBB');
 /** @var string|null $error @var array $values */
 ?>
-<nav aria-label="breadcrumb">
+<nav aria-label="面包屑导航">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="<?= Router::url() ?>">首页</a></li>
 		<li class="breadcrumb-item"><a href="<?= Router::url('pm/inbox') ?>">私信</a></li>

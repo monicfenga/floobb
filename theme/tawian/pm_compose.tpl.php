@@ -1,11 +1,11 @@
 <?php defined('FLOO') or die('FlooBB');
 /** @var string|null $error @var array $values */
 ?>
-<nav class="breadcrumb">
+<nav class="breadcrumb" aria-label="面包屑导航"><ol>
     <li><a href="<?= Router::url() ?>">首页</a></li>
     <li><a href="<?= Router::url('pm/inbox') ?>">私信</a></li>
-    <li class="active">写私信</li>
-</nav>
+    <li class="active" aria-current="page">写私信</li>
+</ol></nav>
 
 <h1 class="mb-3">写私信</h1>
 

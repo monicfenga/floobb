@@ -2,7 +2,7 @@
 <h1 class="h3 mb-4">新建主题</h1>
 
 <?php if (empty($forums)): ?>
-<div class="alert alert-info" role="status">还没有版块，无法发主题。</div>
+<div class="alert alert-info">还没有版块，无法发主题。</div>
 <?php else: ?>
 
 <?php if (!empty($error)): ?>
@@ -34,9 +34,9 @@
 	<div class="card mb-3">
 		<div class="card-header">
 			<div class="form-check mb-0">
-				<input class="form-check-input" type="checkbox" id="t-isvote" name="is_vote" value="1"
+				<input class="form-check-input" type="checkbox" id="t-isvote" name="is_vote" value="1" aria-controls="poll-fields" aria-expanded="<?= ($values['is_vote'] ?? '') === '1' ? 'true' : 'false' ?>"
 					<?= ($values['is_vote'] ?? '') === '1' ? 'checked' : '' ?>
-					onchange="document.getElementById('poll-fields').hidden = !this.checked;">
+					onchange="var f=document.getElementById('poll-fields'); f.hidden = !this.checked; this.setAttribute('aria-expanded', this.checked ? 'true' : 'false');">
 				<label class="form-check-label" for="t-isvote">附带投票</label>
 			</div>
 		</div>

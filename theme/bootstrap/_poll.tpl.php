@@ -4,9 +4,9 @@ if (empty($pollView)) return;
 $poll = $pollView['poll'];
 $isMulti = ($poll['max_choices'] ?? 1) > 1;
 ?>
-<div class="card mb-4 poll-card">
+<div class="card mb-4 poll-card" role="group" aria-labelledby="poll-question">
 	<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-		<strong><?= htmlspecialchars((string) ($poll['question'] ?? '')) ?></strong>
+		<h2 class="h6 mb-0" id="poll-question"><?= htmlspecialchars((string) ($poll['question'] ?? '')) ?></h2>
 		<span class="text-body-secondary small">
 			<?= $isMulti ? '多选（最多 ' . $poll['max_choices'] . ' 项）' : '单选' ?>
 			· 截止 <?= date('Y-m-d H:i', $poll['deadline'] ?? 0) ?>
@@ -20,13 +20,17 @@ $isMulti = ($poll['max_choices'] ?? 1) > 1;
 		<?php if ($viewer !== null): ?>
 		<form method="post" action="<?= Router::url('poll/vote/' . rawurlencode((string) ($topic['id'] ?? ''))) ?>">
 			<?= Auth::csrfField() ?>
-			<?php foreach ($pollView['options'] as $opt): ?>
-			<div class="form-check">
-				<input class="form-check-input" type="<?= $isMulti ? 'checkbox' : 'radio' ?>"
-					name="choices[]" id="poll-opt-<?= $opt['index'] ?>" value="<?= $opt['index'] ?>">
-				<label class="form-check-label" for="poll-opt-<?= $opt['index'] ?>"><?= htmlspecialchars($opt['text']) ?></label>
-			</div>
-			<?php endforeach; ?>
+			<?php /* fieldset/legend：把一组同名单选/复选与投票问题绑定，否则屏幕阅读器只读到零散选项 */ ?>
+			<fieldset class="mb-0">
+				<legend class="visually-hidden">投票选项：<?= htmlspecialchars((string) ($poll['question'] ?? '')) ?><?= $isMulti ? '（最多选 ' . $poll['max_choices'] . ' 项）' : '（单选）' ?></legend>
+				<?php foreach ($pollView['options'] as $opt): ?>
+				<div class="form-check">
+					<input class="form-check-input" type="<?= $isMulti ? 'checkbox' : 'radio' ?>"
+						name="choices[]" id="poll-opt-<?= $opt['index'] ?>" value="<?= $opt['index'] ?>">
+					<label class="form-check-label" for="poll-opt-<?= $opt['index'] ?>"><?= htmlspecialchars($opt['text']) ?></label>
+				</div>
+				<?php endforeach; ?>
+			</fieldset>
 			<button type="submit" class="btn btn-primary btn-sm mt-2">投票</button>
 			<?php if ($isMulti): ?><div class="form-text">可选 <?= $poll['max_choices'] ?> 项。</div><?php endif; ?>
 		</form>
@@ -43,7 +47,8 @@ $isMulti = ($poll['max_choices'] ?? 1) > 1;
 				<span class="text-body-secondary"><?= (int) $opt['votes'] ?> 票（<?= (int) $opt['pct'] ?>%）</span>
 			</div>
 			<div class="progress" role="progressbar" aria-label="<?= htmlspecialchars($opt['text']) ?>"
-				aria-valuenow="<?= (int) $opt['pct'] ?>" aria-valuemin="0" aria-valuemax="100" style="height: 8px;">
+				aria-valuenow="<?= (int) $opt['pct'] ?>" aria-valuemin="0" aria-valuemax="100"
+				aria-valuetext="<?= (int) $opt['votes'] ?> 票，占 <?= (int) $opt['pct'] ?>%" style="height: 8px;">
 				<div class="progress-bar<?= $opt['checked'] ? ' bg-success' : '' ?>" style="width: <?= (int) $opt['pct'] ?>%;"></div>
 			</div>
 		</div>

@@ -4,7 +4,7 @@
 	<div class="col-lg-6">
 		<h1 class="h5 mb-3">最新主题</h1>
 		<?php if (empty($latestTopics)): ?>
-		<div class="alert alert-info" role="status">还没有主题。</div>
+		<div class="alert alert-info">还没有主题。</div>
 		<?php else: ?>
 		<ul class="list-group">
 			<?php foreach ($latestTopics as $row): $t = $row['topic']; ?>
@@ -31,7 +31,7 @@
 			<?php endif; ?>
 		</div>
 		<?php if (empty($forums)): ?>
-		<div class="alert alert-info" role="status">还没有版块。安装管理员登录后可在 Phase 1 创建第一个版块。</div>
+		<div class="alert alert-info">还没有版块。安装管理员登录后可在 Phase 1 创建第一个版块。</div>
 		<?php else: ?>
 		<div class="list-group">
 			<?php foreach ($forums as $forum): ?>
