@@ -145,7 +145,7 @@ index.php                 ← 入口：init + 解析 param(0/1/2) + 分发到控
 | GET | `/pm/inbox` | PMController::inbox | 私信收件箱 | 可能包括翻页，可能包括查看特定收件人的对话 |
 | POST | `/poll/vote/{tid}` | PollController::vote(tid) | 投票 |  |
 | GET | `/activity` | ActivityController::timeline（Phase 2） | SNS 动态时间线 | 筛选 `?type=status|register|new_topic|new_reply|comment`、关注流 `?tab=following`、翻页 `?page=`（每页 10）——全部 query string |
-| POST | `/activity` | ActivityController::timelinePost | 发纯文本动态（type=status） | 登录态 + CSRF；可见性取作者 default_visibility |
+| POST | `/activity` | ActivityController::timelinePost | 发纯文本动态（type=status） | 登录态 + CSRF；可见性取表单 `visibility` 下拉（非法值回退作者 `default_visibility`） |
 | POST | `/activity/comment/{aid}` | ActivityController::commentPost(aid) | 评论动态（type=comment，ref_id=父活动 id） | 登录态 + CSRF；可见性继承父活动 |
 | GET | `/search` | SearchController::query | 搜索 | 关键词 `?q=`、范围 `?scope=`（topics/posts/users，可选）、`?page=`（翻页）；**全部走 query string，路径不含关键字** |
 
