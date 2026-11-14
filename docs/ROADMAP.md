@@ -16,7 +16,7 @@
 | Phase 1 | B3-2 PM 私信 | ✅ 已 commit（`22db5ac`） | — |
 | Phase 1 | B3-3 Poll 投票 | ✅ 已验收已 commit（含时间字段 unix int 化） | 决策见 §1 |
 | Phase 1 | B3-4a 举报+队列 / B3-4b 封禁体系 | ✅ 已验收已 commit（banned_until=unix int） | `KICKOFF-B3-4.md` |
-| Phase 1 | **B3-5 搜索** | 🔄 已实现待验收（stripos 子串匹配、无索引、posts 池 1000、3 秒标准） | `KICKOFF-B3-5.md` |
+z
 | Phase 2 | SNS 动态时间线 | ⬜ 待开始 | `KICKOFF-PHASE2.md` |
 | Phase 3 | 身份与安全（TOTP） | ⬜ 待开始 | `KICKOFF-PHASE3.md` |
 
