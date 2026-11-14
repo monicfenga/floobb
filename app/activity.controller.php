@@ -123,6 +123,8 @@ class ActivityController {
 			'text' => (string) ($a['text'] ?? ''),
 			'link' => $link,
 			'created' => (int) ($a['created'] ?? 0),
+			'likes' => (int) ($a['likes'] ?? 0),
+			'liked' => $viewerName !== null && in_array((string) $viewerName, $a['liked_by'] ?? array(), true),
 			'comments' => array(),
 		);
 	}
@@ -165,6 +167,16 @@ class ActivityController {
 
 		// 评论可见性继承父活动（拍板：SPEC §4）
 		Activity::record('comment', (string) $viewer['username'], $text, (string) $parent['id'], (string) ($parent['visibility'] ?? 'public'));
+		self::redirect('activity');
+	}
+
+	/** POST /activity/like/{aid} 点赞 toggle（登录态 + CSRF；仅 status 动态） */
+	public function likePost($aid = '') {
+		if (!Auth::csrfCheck()) self::forbidden();
+		$viewer = Auth::user();
+		if ($viewer === null) self::redirect('auth/login');
+
+		Activity::toggleLike((string) $aid, (string) $viewer['username']);
 		self::redirect('activity');
 	}
 

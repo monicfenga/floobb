@@ -42,6 +42,8 @@ class Activity
 				'created' => time(),
 				'public' => true,
 				'visibility' => $visibility,
+				'likes' => 0,            // 点赞数（int，默认 0；用户拍板 2026-11-14）
+				'liked_by' => array(),   // 点过赞的用户名（防重复点赞 + 支持取消）
 			);
 			if (flatDB::saveDB('activity', $id, $activity) === false) {
 				throw new RuntimeException('saveDB failed');
@@ -157,6 +159,35 @@ class Activity
 		if ($id === '' || !flatDB::DBexists('activity', $id)) return null;
 		$a = flatDB::getDB('activity', $id);
 		return is_array($a) ? $a : null;
+	}
+
+	/**
+	 * 点赞 toggle（用户拍板 2026-11-14：仅 status 类型的动态可点赞）。
+	 * 已点过 → 取消（likes-1、移出 liked_by）；未点 → 点赞（likes+1）。
+	 * @return int|null 新的 likes 计数；动态不存在/类型不符/失败返回 null
+	 */
+	public static function toggleLike($id, $username)
+	{
+		try {
+			$a = self::get((string) $id);
+			if ($a === null || ($a['type'] ?? '') !== 'status') return null;
+			$username = (string) $username;
+			$likedBy = $a['liked_by'] ?? array();
+			if (in_array($username, $likedBy, true)) {
+				$likedBy = array_values(array_filter($likedBy, function ($u) use ($username) {
+					return (string) $u !== $username;
+				}));
+			} else {
+				$likedBy[] = $username;
+			}
+			$a['liked_by'] = $likedBy;
+			$a['likes'] = max(0, count($likedBy));
+			if (flatDB::saveDB('activity', (string) $id, $a) === false) return null;
+			return $a['likes'];
+		} catch (Throwable $e) {
+			error_log('[Activity::toggleLike] ' . $e->getMessage());
+			return null;
+		}
 	}
 
 	/** 某活动的评论（type=comment 且 ref_id=父活动 id），created 正序 */

@@ -147,6 +147,7 @@ index.php                 ← 入口：init + 解析 param(0/1/2) + 分发到控
 | GET | `/activity` | ActivityController::timeline（Phase 2） | SNS 动态时间线 | 筛选 `?type=status|register|new_topic|new_reply|comment`、关注流 `?tab=following`、翻页 `?page=`（每页 10）——全部 query string |
 | POST | `/activity` | ActivityController::timelinePost | 发纯文本动态（type=status） | 登录态 + CSRF；可见性取表单 `visibility` 下拉（非法值回退作者 `default_visibility`） |
 | POST | `/activity/comment/{aid}` | ActivityController::commentPost(aid) | 评论动态（type=comment，ref_id=父活动 id） | 登录态 + CSRF；可见性继承父活动 |
+| POST | `/activity/like/{aid}` | ActivityController::likePost(aid) | 动态点赞 toggle（已点=取消） | 登录态 + CSRF；仅 `type=status` 动态；likes 计数 + liked_by 数组（§4） |
 | GET | `/search` | SearchController::query | 搜索 | 关键词 `?q=`、范围 `?scope=`（topics/posts/users，可选）、`?page=`（翻页）；**全部走 query string，路径不含关键字** |
 
 其余 controller（`post`/`user`/`pm`/`poll`/`activity`/`report`/`mod`/`search`）类推。~~命名空间 `Controller\{资源}Controller`~~（**已废除**：2026-10-30 起全项目禁 namespace，裸类名 `{资源}Controller`，见 §9）
@@ -317,7 +318,9 @@ data/
   "ref_id":"",          // 系统事件关联 topic_id / post_id / activity_id / username
   "created":0,
   "public":true,
-  "visibility":"public" // Phase 2 社交：public|login|followers|private；缺省=public（老数据兜底）；comment 继承父活动
+  "visibility":"public", // Phase 2 社交：public|login|followers|private；缺省=public（老数据兜底）；comment 继承父活动
+  "likes":0,             // 点赞数（int，默认 0；仅 status 动态可点赞，2026-11-14 拍板）
+  "liked_by":[]          // 点过赞的 username 数组（防重复 + toggle 取消；likes=count(liked_by)）
 }
 ```
 > Phase 2 社交决策（2026-11-14 拍板）：四级可见性按**作者/actor**判断——`followers` = viewer 在 actor 的 fans 数组里；作者恒可见；comment/follow 恒 public（comment 可见性继承父活动）。所有用户（现有+新注册）`default_visibility` 初始 `public`。

@@ -2,33 +2,105 @@
 /**
  * activity_timeline.tpl.php — SNS 动态时间线（Phase 2，SPEC §3.1 / §9 #17）
  * 变量：$items（渲染行，含 comments 子行）、$total、$page、$pages、$loc、$tab、$type、$viewer、$token
+ *
+ * 卡片结构参照 docs/参考用的单个动态卡片的HTML结构.html：
+ * 一条 status 动态 = 一张卡（头部/正文/点赞行/评论气泡/卡底评论框）；
+ * 系统事件（register/new_topic/new_reply/follow）= 紧凑事件卡。
  */
-if (!function_exists('activity_render_card')) {
-	/** 渲染单张活动卡（父卡与评论子行共用；评论子行紧凑样式） */
-	function activity_render_card(array $r, $compact = false) {
-		$userUrl = Router::url('user/view/' . rawurlencode($r['actor']));
+if (!function_exists('activity_avatar')) {
+	/** 头像（有图用图，无图用首字母圆底） */
+	function activity_avatar(array $r, $size = 32) {
+		if ($r['avatar'] !== '') { ?>
+			<img src="<?php echo htmlspecialchars($r['avatar']); ?>" alt="" class="rounded-circle flex-shrink-0 me-2" style="width:<?= $size ?>px;height:<?= $size ?>px;">
+		<?php } else { ?>
+			<span class="rounded-circle flex-shrink-0 me-2 d-inline-flex align-items-center justify-content-center bg-secondary text-white" style="width:<?= $size ?>px;height:<?= $size ?>px;font-size:0.8rem;"><?php echo htmlspecialchars(mb_substr($r['nickname'], 0, 1)); ?></span>
+		<?php }
+	}
+}
+
+if (!function_exists('activity_render_event')) {
+	/** 系统事件紧凑卡（register/new_topic/new_reply/follow：无点赞无评论） */
+	function activity_render_event(array $r) {
 		?>
-		<div class="d-flex<?php echo $compact ? ' py-2 border-top' : ' mb-3'; ?>">
-			<?php if ($r['avatar'] !== '') { ?>
-				<img src="<?php echo htmlspecialchars($r['avatar']); ?>" alt="" class="rounded-circle flex-shrink-0 me-2" style="width:32px;height:32px;">
-			<?php } else { ?>
-				<span class="rounded-circle flex-shrink-0 me-2 d-inline-flex align-items-center justify-content-center bg-secondary text-white" style="width:32px;height:32px;font-size:0.8rem;"><?php echo htmlspecialchars(mb_substr($r['nickname'], 0, 1)); ?></span>
-			<?php } ?>
-			<div class="flex-grow-1">
-				<div>
-					<a class="fw-bold text-decoration-none" href="<?php echo $userUrl; ?>"><?php echo htmlspecialchars($r['nickname']); ?></a>
-					<?php if ($compact) { ?><span class="text-muted small"><?php echo htmlspecialchars($r['action']); ?></span>
-					<?php } else { echo htmlspecialchars($r['action']); } ?>
+		<article class="card card-body mb-3 py-2">
+			<div class="d-flex align-items-center">
+				<?php activity_avatar($r, 28); ?>
+				<div class="flex-grow-1 small">
+					<a class="fw-bold text-decoration-none" href="<?php echo Router::url('user/view/' . rawurlencode($r['actor'])); ?>"><?php echo htmlspecialchars($r['nickname']); ?></a>
+					<span class="text-muted"><?php echo htmlspecialchars($r['action']); ?></span>
 					<?php if ($r['link'] !== '') { ?>
-						<a class="small text-decoration-none" href="<?php echo $r['link']; ?>">查看</a>
+						<a class="text-decoration-none" href="<?php echo $r['link']; ?>">查看</a>
 					<?php } ?>
-					<span class="text-muted small ms-1"><?php echo date('Y-m-d H:i', $r['created']); ?></span>
+					<span class="text-muted ms-1"><?php echo date('Y-m-d H:i', $r['created']); ?></span>
 				</div>
-				<?php if ($r['text'] !== '') { ?>
-					<div class="<?php echo $compact ? 'small' : ''; ?>"><?php echo nl2br(htmlspecialchars($r['text'])); ?></div>
+			</div>
+		</article>
+		<?php
+	}
+}
+
+if (!function_exists('activity_render_status')) {
+	/** status 动态卡：一卡一条（点赞行 + 评论气泡 + 卡底评论框） */
+	function activity_render_status(array $r, $viewer, $token) {
+		$isStatusParent = $r['type'] === 'status';
+		?>
+		<article class="card card-body mb-3">
+			<!-- 头部：头像/昵称/动作/时间/关联链接 -->
+			<div class="d-flex">
+				<?php activity_avatar($r); ?>
+				<div class="flex-grow-1">
+					<div class="d-flex align-items-center justify-content-between">
+						<div>
+							<a class="fw-bold text-decoration-none" href="<?php echo Router::url('user/view/' . rawurlencode($r['actor'])); ?>"><?php echo htmlspecialchars($r['nickname']); ?></a>
+							<?php if (!$isStatusParent) { ?><span class="text-muted small"><?php echo htmlspecialchars($r['action']); ?></span><?php } ?>
+							<span class="text-muted small ms-1"><?php echo date('Y-m-d H:i', $r['created']); ?></span>
+							<?php if ($r['link'] !== '') { ?>
+								<a class="small text-decoration-none ms-1" href="<?php echo $r['link']; ?>">查看</a>
+							<?php } ?>
+						</div>
+					</div>
+					<?php if ($r['text'] !== '') { ?>
+						<div class="my-2<?php echo !$isStatusParent ? ' small' : ''; ?>"><?php echo nl2br(htmlspecialchars($r['text'])); ?></div>
+					<?php } ?>
+				</div>
+			</div>
+			<?php if ($isStatusParent) { ?>
+			<!-- 点赞行（toggle：已点赞高亮；游客只读计数） -->
+			<div class="d-flex align-items-center mb-2">
+				<?php if ($viewer !== null) { ?>
+				<form method="post" action="<?php echo Router::url('activity/like/' . rawurlencode($r['id'])); ?>">
+					<input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+					<button type="submit" class="btn btn-sm btn-<?php echo $r['liked'] ? 'primary' : 'outline-secondary'; ?> rounded-pill">
+						♥ <span class="like-count"><?php echo (int) $r['likes']; ?></span>
+					</button>
+				</form>
+				<?php } else { ?>
+				<span class="btn btn-sm btn-outline-secondary rounded-pill disabled">♥ <?php echo (int) $r['likes']; ?></span>
 				<?php } ?>
 			</div>
-		</div>
+			<?php } ?>
+			<!-- 评论气泡（挂卡内，不单独占卡） -->
+			<?php foreach ($r['comments'] as $c) { ?>
+			<div class="d-flex mb-2">
+				<?php activity_avatar($c, 26); ?>
+				<div class="ms-1 small">
+					<div class="bg-light px-3 py-2 rounded-4">
+						<a class="fw-bold text-decoration-none" href="<?php echo Router::url('user/view/' . rawurlencode($c['actor'])); ?>"><?php echo htmlspecialchars($c['nickname']); ?></a>
+						<span class="text-muted ms-1"><?php echo date('Y-m-d H:i', $c['created']); ?></span>
+						<div><?php echo nl2br(htmlspecialchars($c['text'])); ?></div>
+					</div>
+				</div>
+			</div>
+			<?php } ?>
+			<?php if ($viewer !== null && $isStatusParent) { ?>
+			<!-- 卡底评论框 -->
+			<form method="post" action="<?php echo Router::url('activity/comment/' . rawurlencode($r['id'])); ?>" class="input-group input-group-sm">
+				<input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+				<input type="text" class="form-control rounded-3" name="text" maxlength="200" required placeholder="写评论…">
+				<button type="submit" class="btn btn-outline-primary">评论</button>
+			</form>
+			<?php } ?>
+		</article>
 		<?php
 	}
 }
@@ -74,25 +146,16 @@ if (!function_exists('activity_render_card')) {
 			<?php } } ?>
 		</div>
 
-		<!-- 时间线卡片（KICKOFF：头像/昵称/动作/时间/关联链接） -->
-		<div class="card">
-			<div class="card-body">
-				<?php if (empty($items)) { ?>
-					<p class="text-muted text-center my-4">还没有任何动态。</p>
-				<?php } else { foreach ($items as $r) {
-					activity_render_card($r);
-					// 评论挂父卡片下方（不单独占卡片，拍板 2026-11-14）
-					foreach ($r['comments'] as $c) activity_render_card($c, true);
-					foreach ($r['comments'] as $c) { /* 评论框只在末尾一次 */ }
-					if ($viewer !== null) { ?>
-					<form method="post" action="<?php echo Router::url('activity/comment/' . rawurlencode($r['id'])); ?>" class="input-group input-group-sm mb-3">
-						<input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-						<input type="text" class="form-control" name="text" maxlength="200" required placeholder="评论这条动态…">
-						<button type="submit" class="btn btn-outline-secondary">评论</button>
-					</form>
-				<?php } } } ?>
-			</div>
-		</div>
+		<!-- 时间线：一卡一条（status 含点赞/评论；系统事件为紧凑卡） -->
+		<?php if (empty($items)) { ?>
+			<p class="text-muted text-center my-4">还没有任何动态。</p>
+		<?php } else { foreach ($items as $r) {
+			if ($r['type'] === 'status') {
+				activity_render_status($r, $viewer, $token);
+			} else {
+				activity_render_event($r);
+			}
+		} } ?>
 
 		<?php if ($pages > 1) echo Paginate::pageLink($page, $pages, Router::url($loc)); ?>
 
