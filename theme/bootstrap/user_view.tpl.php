@@ -20,9 +20,28 @@ $levelNames = array(1 => '注册用户', 2 => '版主', 3 => '管理员');
 <p class="text-body-secondary mb-3"><?= htmlspecialchars((string) $user['bio']) ?></p>
 <?php endif; ?>
 
+<!-- 关注/粉丝计数（Phase 2 社交，SPEC §9 #17） -->
+<p class="small mb-3">
+	<a class="text-decoration-none" href="<?= Router::url('activity?tab=following') ?>"><strong><?= count($user['follows'] ?? array()) ?></strong> 关注</a>
+	<span class="text-body-secondary mx-1">·</span>
+	<span><strong><?= count($user['fans'] ?? array()) ?></strong> 粉丝</span>
+</p>
+
 <?php $viewer = Auth::user(); ?>
 <?php if ($viewer !== null && $viewer['username'] !== $username): ?>
 <p class="mb-3 d-flex gap-2">
+	<!-- 微博式单向关注按钮（拍板 2026-11-14） -->
+	<?php if (in_array($username, $viewer['follows'] ?? array(), true)): ?>
+	<form method="post" action="<?= Router::url('user/unfollow/' . rawurlencode($username)) ?>">
+		<?= Auth::csrfField() ?>
+		<button type="submit" class="btn btn-sm btn-outline-secondary">取消关注</button>
+	</form>
+	<?php else: ?>
+	<form method="post" action="<?= Router::url('user/follow/' . rawurlencode($username)) ?>">
+		<?= Auth::csrfField() ?>
+		<button type="submit" class="btn btn-sm btn-primary">关注</button>
+	</form>
+	<?php endif; ?>
 	<a class="btn btn-sm btn-outline-primary" href="<?= Router::url('pm/compose') ?>?to=<?= rawurlencode($username) ?>">发私信</a>
 	<?php $report_type = 'user'; $report_target = $username; $report_label = '举报此用户'; ?>
 	<?php require __DIR__ . DS . '_report_btn.tpl.php'; ?>

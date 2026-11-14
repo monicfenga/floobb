@@ -129,6 +129,8 @@ index.php                 ← 入口：init + 解析 param(0/1/2) + 分发到控
 | GET | `/auth/reset` | AuthController::reset(GET) | 密码重置表单（恢复码） | 无邮件；recovery_codes 注册时生成 |
 | POST | `/auth/reset` | AuthController::reset(POST) | 提交重置 | 校验 recovery_codes；Phase 3 升级为 TOTP 挑战 |
 | GET | `/user/view/{name}` | UserController::view(name) | 用户资料 | 查看他人 |
+| POST | `/user/follow/{name}` | UserController::followPost(name) | 单向关注（微博式，无需对方同意） | 登录态 + CSRF；写双方 follows/fans + 写 activity（`type=follow`，§4） |
+| POST | `/user/unfollow/{name}` | UserController::unfollowPost(name) | 取关 | 登录态 + CSRF；双方字段同步移除；不写 activity |
 | GET | `/user/settings` | UserController::settings(GET) | 设置表单 | 登录态；签名/头像/邮箱/改密 |
 | POST | `/user/settings` | UserController::settings(POST) | 保存设置 | CSRF；头像走 files.lib.php；改密需验旧密码 |
 | GET | `/report/post/{pid}` | ReportController::create(pid) | 举报帖子表单 | 登录态 |
@@ -142,7 +144,9 @@ index.php                 ← 入口：init + 解析 param(0/1/2) + 分发到控
 | POST | `/mod/dismiss/{rid}` | ModController::dismissReport(rid) | 忽略举报 | 版主；CSRF |
 | GET | `/pm/inbox` | PMController::inbox | 私信收件箱 | 可能包括翻页，可能包括查看特定收件人的对话 |
 | POST | `/poll/vote/{tid}` | PollController::vote(tid) | 投票 |  |
-| GET | `/activity` | ActivityController::timeline（Phase 2） | SNS 动态时间线 | 可能包括筛选和翻页 |
+| GET | `/activity` | ActivityController::timeline（Phase 2） | SNS 动态时间线 | 筛选 `?type=status|register|new_topic|new_reply|comment`、关注流 `?tab=following`、翻页 `?page=`（每页 10）——全部 query string |
+| POST | `/activity` | ActivityController::timelinePost | 发纯文本动态（type=status） | 登录态 + CSRF；可见性取作者 default_visibility |
+| POST | `/activity/comment/{aid}` | ActivityController::commentPost(aid) | 评论动态（type=comment，ref_id=父活动 id） | 登录态 + CSRF；可见性继承父活动 |
 | GET | `/search` | SearchController::query | 搜索 | 关键词 `?q=`、范围 `?scope=`（topics/posts/users，可选）、`?page=`（翻页）；**全部走 query string，路径不含关键字** |
 
 其余 controller（`post`/`user`/`pm`/`poll`/`activity`/`report`/`mod`/`search`）类推。~~命名空间 `Controller\{资源}Controller`~~（**已废除**：2026-10-30 起全项目禁 namespace，裸类名 `{资源}Controller`，见 §9）
@@ -212,7 +216,10 @@ data/
   "banned_reason": "",         // 封禁原因（展示用）
   "recovery_codes": [],        // Phase 1 密码重置用，注册时生成、哈希存储、一次性
   "totp_secret": "",           // Phase 3 TOTP（加密存储；空 = 未启用）
-  "totp_enabled": false
+  "totp_enabled": false,
+  "follows": [],               // Phase 2 社交：我关注的人（username 数组，微博式单向，无需对方同意）
+  "fans": [],                  // Phase 2 社交：关注我的人（username 数组；A.follows 含 B ⇔ B.fans 含 A，双写）
+  "default_visibility": "public"  // Phase 2 社交：新动态默认可见度 public|login|followers|private；只影响新动态，不动历史
 }
 ```
 > **封禁语义（B3-4b）**：level 不动，封禁是独立状态。登录（Auth::login）/会话（Auth::user 每请求校验，命中即踢下线+作废 remember）/remember 恢复（Auth::resume 跳过）三处拦截；封禁中的用户等同游客可浏览。写入口唯一：`User::setBan()`（user/ban 路由与举报队列 ban 处理共用）。防护：不能封自己、不能封 level≥自己的人。
@@ -304,14 +311,16 @@ data/
 ```json
 {
   "id":"",
-  "type":"status|register|new_topic|new_reply",
+  "type":"status|register|new_topic|new_reply|comment|follow",  // comment=对动态的评论（ref_id=父活动 id，text=评论内容，时间线挂父卡片下方）；follow=关注事件（ref_id=被关注者 username）
   "actor":"Geticer",
   "text":"",            // status 类型的正文
-  "ref_id":"",          // 系统事件关联 topic_id / post_id
+  "ref_id":"",          // 系统事件关联 topic_id / post_id / activity_id / username
   "created":0,
-  "public":true
+  "public":true,
+  "visibility":"public" // Phase 2 社交：public|login|followers|private；缺省=public（老数据兜底）；comment 继承父活动
 }
 ```
+> Phase 2 社交决策（2026-11-14 拍板）：四级可见性按**作者/actor**判断——`followers` = viewer 在 actor 的 fans 数组里；作者恒可见；comment/follow 恒 public（comment 可见性继承父活动）。所有用户（现有+新注册）`default_visibility` 初始 `public`。
 
 ---
 
@@ -427,6 +436,7 @@ data/
 | 14 | 版块 ID | **= slug**（弃用 `newEntry()` 日期串作版块标识）：选填、留空回退 name，填写校验 `[A-Za-z0-9_-]{1,50}`，`Forum::create()` 内查重；URL 形如 `/forum/view/tech`。主题/帖子 ID 维持 `newEntry()`。 |
 | 15 | topics 增补字段 | 实装新增 **`views`**（topic/view GET +1）与 **`last_reply_at`**（回帖时写、首帖=created）：支撑「最多查看 / 最新回帖」排序与首页最新主题（§4 已同步）。 |
 | 16 | PM 设计前置 | SPEC 对 PM 记录最粗（§4 实体为粗稿、§3.1 仅 1 条路由）：**批次 3 第一回合必须先产出「PM 路由表 + 数据操作清单」经用户确认后才准实现**，落定后回填 §3.1 与 §4。 |
+| 17 | Phase 2 社交范围（2026-11-14 拍板，层 1+2+3 全做） | ① 时间线/发动态/动态评论（comment 枚举、`POST /activity`、每页 10、public 全默认公开）；② **插件机制**移植 tinysocial 思路（`lib/Plugin.lib.php` + 注册表 `data/plugins.dat.json`，`Plugin::hook('activity_record', ...)` 扩展点）；③ **社交关系**：微博式单向关注（users.follows/fans 双写，`POST /user/follow|unfollow/{name}`）+ 四级可见性（public/login/followers/private）+ 用户级 `default_visibility`（settings 内可改，只影响新动态）+ 用户页 Follow/Unfollow 按钮。借鉴 tinysocial SocialPlugin 实现（M:\laragon\www\tinysocial\plugins\Social），但落地为 floobb 原生（禁 namespace、关联数组、Router::url）。 |
 
 ---
 

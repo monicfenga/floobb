@@ -38,6 +38,20 @@
 		</div>
 	</div></div>
 
+	<!-- 新动态默认可见度（Phase 2 社交，SPEC §9 #17：只影响新发布的动态，不动历史） -->
+	<h2 class="h6 mb-2">动态可见度</h2>
+	<div class="card mb-3"><div class="card-body">
+		<label for="set-visibility" class="form-label">新动态默认可见度</label>
+		<select class="form-select" id="set-visibility" name="default_visibility" style="max-width:300px;">
+			<?php $visibilities = array('public' => '完全公开', 'login' => '仅登录用户', 'followers' => '仅粉丝', 'private' => '仅自己'); ?>
+			<?php $curVis = (string) ($user['default_visibility'] ?? 'public'); ?>
+			<?php foreach ($visibilities as $v => $label): ?>
+			<option value="<?= $v ?>"<?= $curVis === $v ? ' selected' : '' ?>><?= $label ?></option>
+			<?php endforeach; ?>
+		</select>
+		<div class="form-text">只影响之后新发布的动态；已发布的动态保持各自原可见度。</div>
+	</div></div>
+
 	<h2 class="h6 mb-2">头像</h2>
 	<div class="card mb-3"><div class="card-body">
 		<?php if (!empty($user['avatar'])): ?>

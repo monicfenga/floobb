@@ -21,6 +21,8 @@
 		<div class="collapse navbar-collapse" id="mainNav">
 			<ul class="navbar-nav ms-auto">
 				<li class="nav-item"><a class="nav-link" href="<?= Router::url() ?>">首页</a></li>
+				<!-- 动态时间线：游客可见 public 活动（Phase 2，SPEC §9 #17） -->
+				<li class="nav-item"><a class="nav-link" href="<?= Router::url('activity') ?>">动态</a></li>
 				<li class="nav-item">
 					<button class="btn btn-outline-secondary btn-sm" type="button" data-target="search-modal" aria-label="搜索"><span aria-hidden="true">🔍</span> 搜索</button>
 				</li>

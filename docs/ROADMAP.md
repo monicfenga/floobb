@@ -64,10 +64,13 @@
 - 已定死的决策：范围 topics(title)+posts(content_md 最新 1000 帖)+users(username+nickname)；**LIKE %% 风格整词子串匹配（stripos），无分词无 AND**；不建 data/index/；护栏=posts 池截 1000 帖、空查询不扫库（性能标准：3 秒内即合格，实测 <110ms）
 - 实测坑：Router 缺省 action=index，`/search` 需 `SearchController::index()` 转发到 query()——**SPEC §3.1「首段直达非 index 方法」的路由都要注意此坑**
 
-### Phase 2 SNS 动态时间线（⬜）
-- 范围：`ActivityController::timeline`（GET `/activity`）+ `model/Activity.php` + 系统事件自动写入（注册/发主题/回帖时 `Activity::record()`）+ 可选直接发动态。
-- 锁定决策：SPEC §9 #3（SNS 进 Phase 2）、§4 `activity` 实体、§5 Phase 2。
-- 跨切面：需改 auth/topic/post 控制器插入活动记录，**不破坏既有逻辑**。
+### Phase 2 SNS 动态时间线（✅ 完成，2026-11-14）
+- 范围（用户拍板层 1+2+3 全做，SPEC §9 #17）：① `ActivityController` 时间线/发动态/动态评论 + `model/Activity.php` + 系统事件自动写入（注册/发主题/回帖）；② 插件机制 `lib/Plugin.lib.php`（tinysocial 思路移植，`Plugin::hook('activity_record',...)`）；③ 社交关系：单向关注（users.follows/fans）+ 四级可见性 + default_visibility + Follow 按钮。
+- 已拍板：comment 枚举（ref_id=父活动）、`POST /activity` 发动态、每页 10 条、public 全默认公开；`POST /user/follow|unfollow/{name}`；可见性按 actor 判断，comment 继承父活动。
+- 跨切面：auth/topic/post 控制器成功分支各 +1 行 `Activity::record()`，不破坏既有逻辑。
+- 验收：CLI 冒烟 15 项 + curl 全流程 21 项 + 游客 403/200 全过（KICKOFF 四项全覆盖）。
+- 实现备注：`ActivityController::indexPost()` 转发（Router 方法感知按 action 补 Post 方法）；`POST /user/settings` 需带齐 nickname/email/bio；时间线排序 created 倒序 + id 次级键防同秒乱序；CSRF token 一次性，自动化测试每个写操作前需重取。
+- 测试账号现场：p2test01 / p2test02（密码 P2test12345）保留在 data/users/ 供后续批次使用。
 - 开工指令：`KICKOFF-PHASE2.md`。
 
 ### Phase 3 TOTP（⬜）

@@ -247,6 +247,9 @@ class TopicController {
 		Topic::save($tid, $topic);
 		Forum::adjustCounts($fid, 1, 1);
 
+		// 系统事件进时间线（Phase 2，SPEC §9 #17；静默失败不阻断发主题）
+		Activity::record('new_topic', (string) $user['username'], '', (string) $tid);
+
 		self::redirect('topic/view/' . rawurlencode($tid));
 	}
 

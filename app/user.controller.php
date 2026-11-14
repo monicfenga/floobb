@@ -128,6 +128,10 @@ class UserController {
 		$user['nickname'] = $nickname;
 		$user['email'] = $email;
 		$user['bio'] = $bio;
+		// 新动态默认可见度（Phase 2 社交；白名单校验，非法值回退 public）
+		$visibility = param('default_visibility', 'public');
+		if (!in_array($visibility, Activity::VISIBILITIES, true)) $visibility = 'public';
+		$user['default_visibility'] = $visibility;
 		if ($uploadedName !== '') {
 			// 换头像时清理旧文件（扩展名不同会残留）
 			if (!empty($user['avatar']) && (string) $user['avatar'] !== $uploadedName) {
@@ -146,6 +150,66 @@ class UserController {
 		if ($changePassword) Auth::forgetRemember();
 
 		self::redirect('user/settings?saved=1');
+	}
+
+	/* ---------------- 关注（Phase 2 社交，SPEC §9 #17：微博式单向，双写 follows/fans） ---------------- */
+
+	/** POST /user/follow/{name} */
+	public function followPost($name = '') {
+		if (!Auth::csrfCheck()) self::forbidden();
+		$me = Auth::user();
+		if ($me === null) self::redirect('auth/login');
+		self::followToggle((string) $me['username'], (string) $name, true);
+		self::redirect('user/view/' . rawurlencode((string) $name));
+	}
+
+	/** POST /user/unfollow/{name} */
+	public function unfollowPost($name = '') {
+		if (!Auth::csrfCheck()) self::forbidden();
+		$me = Auth::user();
+		if ($me === null) self::redirect('auth/login');
+		self::followToggle((string) $me['username'], (string) $name, false);
+		self::redirect('user/view/' . rawurlencode((string) $name));
+	}
+
+	/**
+	 * 关注/取关核心（双方字段同步双写；自关注/目标不存在 → 404/403）
+	 * @return void 侧效应写 users 数据；成功写 activity(type=follow)，取关不写
+	 */
+	private static function followToggle($meName, $targetName, $follow) {
+		$target = User::get($targetName);
+		if ($target === null || (string) $target['username'] === $meName) {
+			http_response_code(404);
+			header('Content-Type: text/plain; charset=utf-8');
+			exit('404: 用户不存在。');
+		}
+
+		$meUser = User::get($meName);
+		$meFollows = $meUser['follows'] ?? array();
+		$targetFans = $target['fans'] ?? array();
+
+		if ($follow) {
+			$already = in_array($targetName, $meFollows, true);
+			if (!$already) $meFollows[] = $targetName;
+			if (!in_array($meName, $targetFans, true)) $targetFans[] = $meName;
+			if (!$already) {
+				// 关注事件进时间线（ref_id=被关注者 username，SPEC §4）
+				Activity::record('follow', $meName, '', $targetName);
+			}
+		} else {
+			$meFollows = array_values(array_filter($meFollows, function ($u) use ($targetName) {
+				return (string) $u !== $targetName;
+			}));
+			$targetFans = array_values(array_filter($targetFans, function ($u) use ($meName) {
+				return (string) $u !== $meName;
+			}));
+		}
+
+		$meUser['follows'] = $meFollows;
+		$target['fans'] = $targetFans;
+		if (!User::save($meName, $meUser) || !User::save((string) $target['username'], $target)) {
+			self::forbidden();
+		}
 	}
 
 	/* ---------------- 封禁（B3-4b；版主/管理员，level≥2） ---------------- */

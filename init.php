@@ -88,6 +88,11 @@ require_once LIB_DIR . 'ParsedownExtra.lib.php';
 require_once LIB_DIR . 'Pagination.lib.php';
 require_once LIB_DIR . 'Captcha.lib.php';
 require_once LIB_DIR . 'files.lib.php';
+require_once LIB_DIR . 'Plugin.lib.php';
+
+// 插件引导：加载启用注册表里的插件（启用顺序 = 钩子执行顺序，SPEC §9 #17）
+$pluginManager = new PluginManager();
+$pluginManager->loadEnabled();
 
 /**
  *---------------------------------------------------------------

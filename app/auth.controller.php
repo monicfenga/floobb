@@ -114,10 +114,17 @@ class AuthController {
 			'remember_hash' => '',
 			'totp_secret' => '',
 			'totp_enabled' => false,
+			// Phase 2 社交（SPEC §4 / §9 #17）：初始全公开（拍板 2026-11-14）
+			'follows' => array(),
+			'fans' => array(),
+			'default_visibility' => 'public',
 		);
 		if (!User::create($user)) {
 			self::renderRegisterError('注册失败：用户名已被占用。', $values);
 		}
+
+		// 系统事件进时间线（Phase 2，SPEC §9 #17；静默失败不阻断注册）
+		Activity::record('register', $username);
 
 		// 自动登录（不邮件激活，SPEC §9 #6/#10）
 		Auth::login($username, $password);

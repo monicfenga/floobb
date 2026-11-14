@@ -19,6 +19,11 @@
 - [ ] **模板**：`theme/bootstrap/activity_timeline.tpl.php`（时间线卡片：头像/昵称/动作/时间/关联链接）+ 发布框。
 - [ ] **插件机制（可选）**：参考 `M:\laragon\www\tinysocial\Plugin.php` 钩子思路，提供 `Plugin::hook('activity_record', ...)` 之类扩展点；非必需，按需。
 
+## 2026-11-14 开工确认（用户拍板，覆盖以上可选标记）
+- **范围 = 层 1+2+3 全做**（SPEC §9 #17）：上述全部任务 + 插件机制移植（`lib/Plugin.lib.php`）+ 社交关系（单向关注 follows/fans、四级可见性、default_visibility、Follow 按钮，路由见 SPEC §3.1，schema 见 §4）。
+- 已定：`comment` 枚举（ref_id=父活动 id）；`POST /activity` 发动态；每页 10 条；所有活动 `public` 默认 true、用户 `default_visibility` 初始 public；`POST /user/follow|unfollow/{name}`。
+- 现有用户（data/users/ 下已有文件）补默认字段：follows=[]、fans=[]、default_visibility="public"（读取处 `??` 兜底即可，不做批量迁移文件）。
+
 ## 硬约束
 - 站内 URL `Router::url()`；关联数组；写操作 CSRF；`param()` 取输入。
 - 活动写入不得拖慢主流程（失败静默日志，不阻断发帖/注册）。

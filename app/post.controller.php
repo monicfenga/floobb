@@ -51,6 +51,9 @@ class PostController {
 		Topic::save((string) $tid, $topic);
 		if ($forumId !== '') Forum::adjustCounts($forumId, 0, 1);
 
+		// 系统事件进时间线（Phase 2，SPEC §9 #17；静默失败不阻断回帖）
+		Activity::record('new_reply', (string) $user['username'], '', (string) $tid);
+
 		// 跳到最后一页（时间正序分页，每页 10）
 		$n = count(Post::listByTopic((string) $tid));
 		$lastPage = max(1, (int) ceil($n / 10));
