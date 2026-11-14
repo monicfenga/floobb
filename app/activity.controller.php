@@ -140,7 +140,8 @@ class ActivityController {
 			self::redirect('activity?error=invalid');
 		}
 
-		Activity::record('status', (string) $viewer['username'], $text);
+		// 本次发布的可见度：表单下拉优先，非法值由 record() 回退到作者 default_visibility
+		Activity::record('status', (string) $viewer['username'], $text, '', param('visibility', ''));
 		self::redirect('activity');
 	}
 

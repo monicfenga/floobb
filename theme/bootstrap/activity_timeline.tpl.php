@@ -42,7 +42,15 @@ if (!function_exists('activity_render_card')) {
 				<form method="post" action="<?php echo Router::url('activity'); ?>">
 					<input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 					<textarea class="form-control mb-2" name="text" rows="2" maxlength="200" required placeholder="有什么新鲜事？"></textarea>
-					<div class="d-flex justify-content-end">
+					<div class="d-flex justify-content-end align-items-center gap-2">
+						<!-- 本次发布可见度（选中项由用户设置 default_visibility 决定） -->
+						<label class="small text-muted" for="post-visibility">可见性</label>
+						<?php $curVis = (string) ($viewer['default_visibility'] ?? 'public'); ?>
+						<select class="form-select form-select-sm" id="post-visibility" name="visibility" style="width:auto;">
+							<?php foreach (array('public' => '完全公开', 'login' => '仅登录用户', 'followers' => '仅粉丝', 'private' => '仅自己') as $v => $label): ?>
+							<option value="<?= $v ?>"<?= $curVis === $v ? ' selected' : '' ?>><?= $label ?></option>
+							<?php endforeach; ?>
+						</select>
 						<button type="submit" class="btn btn-primary btn-sm">发布动态</button>
 					</div>
 				</form>
